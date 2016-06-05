@@ -1,8 +1,6 @@
-﻿#from PIL import ImageTk
-from PIL.ImageTk import PhotoImage
-from PIL.Image import ANTIALIAS, BICUBIC, open
-from tkinter import BooleanVar, Canvas, CENTER, Frame, Label, NW
-from os import getcwd
+﻿from PIL.ImageTk import PhotoImage
+from PIL.Image import ANTIALIAS, BICUBIC
+from tkinter import BooleanVar, Canvas, CENTER, Frame, NW
 from colorize import *
 from time import sleep
 
@@ -351,7 +349,7 @@ class Mutatrejt():
                 self.boss.jatekter.itemconfigure(x,state='normal')
             self.boss.xlatszik.set(True)
             self.boss.boss.update()
-        time.sleep(0.25)
+        sleep(0.25)
         self.start()
             
 class Mezo():
@@ -367,6 +365,7 @@ class Mezo():
             self.boss.jatekter.create_image(int((x-0.5)*self.boss.mezomeret),int((y-0.5)*self.boss.mezomeret), image = self.boss.keptar[self.mezotipus], anchor = CENTER)   
         
 if __name__ == '__main__0':
+    from tkinter import Tk
     "A valós működést szimuláló teszthívás."
     a = Tk()
     a.birodalomszotar = {}
@@ -376,49 +375,3 @@ if __name__ == '__main__0':
     jatek.grid()
     jatek.lekepez()
     a.mainloop()
-        
-if __name__ == '__main__':
-    "A lépések működését szimuláló teszthívás."
-    from tkinter import Tk
-    from random import randrange
-    from main import Alkalmazas
-    def figyelo(x,y):
-        global celok
-        for (sor,oszlop) in celok:
-            jatek.jatekter.create_rectangle((sor-1)*jatek.mezomeret,(oszlop-1)*jatek.mezomeret,sor*jatek.mezomeret,oszlop*jatek.mezomeret,fill='blue')
-                       
-    def klikk(event):
-        global celok
-        klikk = (int(event.x/jatek.mezomeret)+1,int(event.y/jatek.mezomeret)+1)
-        if klikk in celok:
-            start = klikk
-            celok = jatek.kormanyos(start[0],start[1],dobas())
-            jatek.jatekter.delete(ALL)
-            for (sor,oszlop) in jatek.mezolista:
-                jatek.jatekter.create_rectangle((sor-1)*jatek.mezomeret,(oszlop-1)*jatek.mezomeret,sor*jatek.mezomeret,oszlop*jatek.mezomeret,fill='dark green')
-            figyelo(start[0],start[1])
-            jatek.jatekter.create_rectangle((start[0]-1)*jatek.mezomeret,(start[1]-1)*jatek.mezomeret,start[0]*jatek.mezomeret,start[1]*jatek.mezomeret,fill='grey')
-        
-    def dobas():
-        global lab,kocka
-        a = randrange(1,7)
-        kocka.config(text=str(a))
-        return 6
-              
-    a = Tk()
-    a.birodalomszotar = {}
-    jatek = Tabla(a)
-    a.title("teszt")
-    for (sor,oszlop) in jatek.mezolista:
-        jatek.jatekter.create_rectangle((sor-1)*jatek.mezomeret,(oszlop-1)*jatek.mezomeret,sor*jatek.mezomeret,oszlop*jatek.mezomeret,fill='dark green')
-    jatek.jatekter.bind("<Button-1>",klikk)
-    jatek.grid(row = 0, column = 0)
-    lab = Frame(a)
-    kocka = Label(lab)
-    kocka.grid(row = 0, column = 0)
-    lab.grid(row = 1, column = 0)
-    start = (5,5)
-    celok = jatek.kormanyos(start[0],start[1],dobas())
-    figyelo(start[0],start[1])
-            
-    jatek.mainloop()

@@ -1,8 +1,9 @@
 from tabla import Tabla
-from naplo import *
+from naplo import Naplo
 from game import *
+from datareader import DataReader
 from adatgazda import *
-from tkinter import ALL, DISABLED, FLAT, N, NORMAL, S, W, Checkbutton, Entry, StringVar, Tk, ttk
+from tkinter import ALL, DISABLED, E, FLAT, N, NORMAL, S, SUNKEN, W, Checkbutton, Entry, StringVar, Tk, ttk
 from tkinter.messagebox import askokcancel
 from tkinter.ttk import Notebook, LabelFrame, Combobox, Separator
 from tkinter import colorchooser
@@ -12,13 +13,18 @@ from colorize import *
 from gc import get_count
 
 
-class Alkalmazas(Tk):
-    """A játék grafikus felülete."""
-
-    def __init__(self, debugmode=0):
+class Application(Tk):
+    def __init__(self, debug_mode=0):
         Tk.__init__(self)
-        self.debugmode = debugmode
-        self.adatolvaso = Adatolvaso(self)
+        self.language = None
+        self.width = 0
+        self.height = 0
+        self.resolution_code = None
+        self.screen = IntVar()
+        self.screen_ratio = None
+        self.resolution_list = []
+        self.debug_mode = debug_mode
+        self.data_reader = DataReader(self)
         self.config_olvasas()
         self.szotar2 = self.szovegezov2(False)
         self.adatgazda = Adatgazda()
@@ -45,11 +51,10 @@ class Alkalmazas(Tk):
         self.kilepesFolyamatban = False
 
     def config_olvasas(self):
-        "A config file beolvasása."
-        self.nyelv, self.width, self.height, fullscreen, self.felbontaskod, self.felbontaslista = self.adatolvaso.beallitasok_betoltese()
-        self.keparany = self.felbontaskod[:4]
-        self.screen = IntVar()
-        self.screen.set(fullscreen)
+        """A config file beolvasása."""
+        self.language, self.width, self.height, full_screen, self.resolution_code, self.resolution_list = self.data_reader.load_settings()
+        self.screen_ratio = self.resolution_code[:4]
+        self.screen.set(full_screen)
         self.minsize(self.width, self.height)  # átméretezhetetlenné tesszük
         self.maxsize(self.width, self.height)  # átméretezhetetlenné tesszük
         if self.screen.get():
@@ -76,14 +81,14 @@ class Alkalmazas(Tk):
             self.tabla.grid(row=0, column=1, rowspan=2, sticky=N + W, padx=5, pady=5)
         self.menu = Fulek(self, menuszelesseg)  # oldalsó menü inicializálása
         self.menu.grid(row=0, column=0, sticky=N + W, padx=5, pady=5)
-        if self.keparany == 'wide':  # ha kell, akkor a hajópanelt is meghívjuk
+        if self.screen_ratio == 'wide':  # ha kell, akkor a hajópanelt is meghívjuk
             hajoszelesseg = self.width - menuszelesseg - self.tablaszelesseg - 30
             self.ship = Frame(self, width=hajoszelesseg)  # helyőrző
             self.ship.grid(row=0, column=2, rowspan=2, sticky=W + N + E, padx=5, pady=5)
 
     def szovegezov2(self, valtozokFeltoltve=True):
         "Kiváltja a szovegezo függvény egy részét, karbantartja a felület nyelvi elemeit."
-        szotar = self.adatolvaso.szotar_betoltese(self.nyelv, tipus='textvariable')
+        szotar = self.data_reader.load_dictionary(self.language, entry_type='textvariable')
         if valtozokFeltoltve:
             for szo in szotar.keys():
                 self.szotar2[szo].set(szotar[szo])
@@ -97,7 +102,7 @@ class Alkalmazas(Tk):
     def szovegezo(self):
         "Újragenerálja a felület állandó szövegelemeit."
         self.szovegezov2()
-        self.szotar = self.adatolvaso.szotar_betoltese(self.nyelv, tipus='text')
+        self.szotar = self.data_reader.load_dictionary(self.language, entry_type='text')
         self.title(self.szotar['cim'])
         self.menu.tab(0, text=self.szotar['fomenu'])
         self.menu.tab(1, text=self.szotar['jatek'])
@@ -140,19 +145,19 @@ class Alkalmazas(Tk):
 
     def nyelvvaltas(self, ujnyelv):
         "Beállítja az új nyelvet."
-        if self.nyelv == ujnyelv:
+        if self.language == ujnyelv:
             return
-        self.nyelv = ujnyelv  # beállítja az új nyelvet
+        self.language = ujnyelv  # beállítja az új nyelvet
         self.szovegezo()  # megjeleníti a kiválasztott nyelven a felület elemeit
-        self.kartyaszotar = self.adatolvaso.kartyak_betoltese("text")  # cseréli az esemény- és kincskártyák szövegét
+        self.kartyaszotar = self.data_reader.load_cards_text()  # cseréli az esemény- és kincskártyák szövegét
         self.naplo.ir(self.szotar['ujnyelv'])
-        mentesSikeres = self.adatolvaso.beallitasok_irasa(ujnyelv=ujnyelv)
+        self.data_reader.save_settings(new_language=ujnyelv)
 
     def meretez(self, ujfelbontas, ujteljeskepernyo):
         "Újraméretezi az ablakot."
         if (self.width, self.height) == (ujfelbontas[0], ujfelbontas[1]) and self.screen.get() == ujteljeskepernyo:
             return
-        configMentesSikeres = self.adatolvaso.beallitasok_irasa(ujfelbontas[2], str(ujteljeskepernyo))
+        self.data_reader.save_settings(ujfelbontas[2], str(ujteljeskepernyo))
         jatekosadatok = []
         if self.jatekinditasFolyamatban.get():
             for i in range(6):
@@ -221,7 +226,7 @@ class Alkalmazas(Tk):
         self.tabla.destroy()
         self.tabla = Tabla(self, self.tablaszelesseg, szelindex)  # játéktér inicializálása
         self.tabla.grid(row=0, column=1, rowspan=2, sticky=N + W, padx=5, pady=5)
-        self.kartyaszotar = self.adatolvaso.kartyak_betoltese("text")
+        self.kartyaszotar = self.data_reader.load_cards_text()
         if uj:
             for adat in adathalmaz:
                 kikoto = self.zaszloszotar[adat[2]]
@@ -361,13 +366,13 @@ class Fulek(Notebook):
             sorszam += 1
         # Felbontás
         self.felbontaslista = sorted(
-            self.boss.felbontaslista)  # rendezzük a listát arra az esetre, ha felhasználó beleírt volna egy új értéket
+            self.boss.resolution_list)  # rendezzük a listát arra az esetre, ha felhasználó beleírt volna egy új értéket
         self.felbontasskala = Scale(self.felbontasmezo, from_=0, to=len(self.felbontaslista) - 1,
                                     orient=HORIZONTAL, resolution=1,
                                     takefocus=0, showvalue=0,
                                     length=self.width, command=self.felbontassav)
         self.felbontasskala.set(
-            self.felbontaslista.index([item for item in self.felbontaslista if item[2] == self.boss.felbontaskod][0]))
+            self.felbontaslista.index([item for item in self.felbontaslista if item[2] == self.boss.resolution_code][0]))
         self.felbontasskala.grid(row=0, column=0, columnspan=2, sticky=E + W)
         self.felbontaskijelzo = Label(self.felbontasmezo, text=(self.boss.width, '×', self.boss.height))
         self.felbontaskijelzo.grid(row=1, column=0, padx=5, pady=5, sticky=W)
@@ -384,7 +389,7 @@ class Fulek(Notebook):
         self.nyelvmodul()
 
     def ful3(self):
-        if not self.boss.debugmode:
+        if not self.boss.debug_mode:
             self.hide(3)
         self.tab(3, text='D')
         gombsor = Frame(self.lap3)
@@ -447,9 +452,9 @@ class Fulek(Notebook):
 
     def nyelvmodul(self):
         "Leképezi a nyelvi modult"
-        self.nyelvlista, self.nyelvlistaR = self.boss.adatolvaso.szotar_betoltese(listaz=True)
+        self.nyelvlista, self.nyelvlistaR = self.boss.data_reader.load_dictionary(is_reverse_required=True)
         self.nyelvvalaszto = Combobox(self.nyelvMezo, value=sorted(list(self.nyelvlista)), takefocus=0)
-        self.nyelvvalaszto.set(self.nyelvlistaR[self.boss.nyelv])
+        self.nyelvvalaszto.set(self.nyelvlistaR[self.boss.language])
         self.nyelvvalaszto.bind("<<ComboboxSelected>>", self.ujnyelv)
         self.nyelvvalaszto.grid(row=0, column=0, padx=5, pady=5)
 
@@ -820,5 +825,5 @@ class Birodalom():
 
 
 if __name__ == '__main__':
-    a = Alkalmazas(1)
+    a = Application(1)
     a.mainloop()

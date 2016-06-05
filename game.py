@@ -204,12 +204,12 @@ class Varos():
             self.hajogombok[hajo].pack(side = LEFT)
             if self.boss.aktivjatekos.hajo in self.boss.vehetoHajok:
                 if self.boss.vehetoHajok.index(self.boss.aktivjatekos.hajo) < self.boss.vehetoHajok.index(hajo):
-                    ar = self.boss.hajotipustar[hajo].ar - self.boss.hajotipustar[self.boss.aktivjatekos.hajo].ar
+                    ar = self.boss.hajotipustar[hajo].price - self.boss.hajotipustar[self.boss.aktivjatekos.hajo].price
                     Label(self.hajoframek[hajo], text = '%s: %i %s' % (self.master.szotar['ar'], ar, self.master.szotar['arany'])).pack(side = LEFT, fill = X)
                 else:
                     Label(self.hajoframek[hajo], text = self.master.szotar['megvasarolva']).pack(side = LEFT, fill = X)
             else:
-                Label(self.hajoframek[hajo], text = '%s: %i %s' % (self.master.szotar['ar'], self.boss.hajotipustar[hajo].ar, self.master.szotar['arany'])).pack(side = LEFT, fill = X)
+                Label(self.hajoframek[hajo], text = '%s: %i %s' % (self.master.szotar['ar'], self.boss.hajotipustar[hajo].price, self.master.szotar['arany'])).pack(side = LEFT, fill = X)
             self.hajoframek[hajo].pack(side = TOP, pady = 5, padx = 5, fill = X)
         self.penzszamolo()
         self.hajoacs.pack(fill = Y, pady = 5)
@@ -236,15 +236,15 @@ class Varos():
             for hajo in self.boss.vehetoHajok:
                 if hajo == self.boss.aktivjatekos.hajo:
                     self.hajogombok[hajo].config(state = DISABLED)
-                elif self.boss.hajotipustar[hajo].ar < self.boss.hajotipustar[self.boss.aktivjatekos.hajo].ar:
+                elif self.boss.hajotipustar[hajo].price < self.boss.hajotipustar[self.boss.aktivjatekos.hajo].price:
                     self.hajogombok[hajo].config(state = DISABLED)
-                elif self.boss.hajotipustar[hajo].ar - self.boss.hajotipustar[self.boss.aktivjatekos.hajo].ar > self.boss.aktivjatekos.kincs.get():
+                elif self.boss.hajotipustar[hajo].price - self.boss.hajotipustar[self.boss.aktivjatekos.hajo].price > self.boss.aktivjatekos.kincs.get():
                     self.hajogombok[hajo].config(state = DISABLED)
                 else:
                     self.hajogombok[hajo].config(state = NORMAL)
         else:
             for hajo in self.boss.vehetoHajok:
-                if self.boss.hajotipustar[hajo].ar > self.boss.aktivjatekos.kincs.get():
+                if self.boss.hajotipustar[hajo].price > self.boss.aktivjatekos.kincs.get():
                     self.hajogombok[hajo].config(state = DISABLED)
                 else:
                     self.hajogombok[hajo].config(state = NORMAL)
@@ -252,11 +252,11 @@ class Varos():
                     
     def berskalat_letrehoz(self):
         "Létrehozza a skálát, a felbérelendő matrózok számának kijelöléséhez."
-        berskalahossz = min((self.boss.hajotipustar[self.boss.aktivjatekos.hajo].maxlegenyseg - self.boss.aktivjatekos.legenyseg.get()), self.matrozokszama.get(), self.boss.aktivjatekos.kincs.get())
+        berskalahossz = min((self.boss.hajotipustar[self.boss.aktivjatekos.hajo].crew_limit - self.boss.aktivjatekos.legenyseg.get()), self.matrozokszama.get(), self.boss.aktivjatekos.kincs.get())
         self.berskala.destroy()
         self.skalaCimke.destroy()
         if not berskalahossz:
-            if self.boss.hajotipustar[self.boss.aktivjatekos.hajo].maxlegenyseg - self.boss.aktivjatekos.legenyseg.get() == 0:
+            if self.boss.hajotipustar[self.boss.aktivjatekos.hajo].crew_limit - self.boss.aktivjatekos.legenyseg.get() == 0:
                 visszajelzes = self.master.szotar['legenyseg_hajotele']
             elif self.matrozokszama.get() == 0:
                 visszajelzes = self.master.szotar['legenyseg_kikotoures']
@@ -294,10 +294,10 @@ class Varos():
         
     def ujHajo(self, tipus = ''):
         "Lebonyolítja az új hajó vásárlásával járó tranzakciót"
-        ar = self.boss.hajotipustar[tipus].ar - self.boss.hajotipustar[self.boss.aktivjatekos.hajo].ar
+        ar = self.boss.hajotipustar[tipus].price - self.boss.hajotipustar[self.boss.aktivjatekos.hajo].price
         self.boss.aktivjatekos.set_hajo(tipus)
         self.boss.aktivjatekos.set_kincs(-ar)
-        self.boss.aktivjatekos.set_legenyseg_max(self.boss.hajotipustar[tipus].maxlegenyseg)
+        self.boss.aktivjatekos.set_legenyseg_max(self.boss.hajotipustar[tipus].crew_limit)
         for hajo in self.boss.vehetoHajok:
             self.hajoframek[hajo].destroy()
             self.hajogombok[hajo].destroy()
@@ -354,13 +354,13 @@ class Vezerlo(Frame):
         self.esemenytalon = []
         self.kincsszotar = {}
         self.kincstalon = []
-        esemenytar, kincstar, penztar, fuggvenytar = self.boss.adatolvaso.kartyak_betoltese()
+        esemenytar, kincstar, penztar, fuggvenytar = self.boss.data_reader.load_cards_data()
         for lap in esemenytar.keys():
             self.boss.tabla.kartyakep2(esemenytar[lap])  # betöltjük a képet
             self.esemenyszotar[lap] = Kartya3(self, self.boss, lap, esemenytar[lap], 'esemeny', fuggvenytar[lap])
             self.esemenypakli.append(lap)
         print("Kihúzható események:",len(self.esemenypakli),"/ 52")
-        self.csataszotar = self.boss.adatolvaso.csatak_betoltese()
+        self.csataszotar = self.boss.data_reader.load_battle_data()
         for csata in self.csataszotar.keys():
             if csata[0] != 'b':
                 self.esemenypakli.append(csata)
@@ -378,20 +378,17 @@ class Vezerlo(Frame):
         self.kincspakli = list(self.kincsszotar.keys())
         print("kihúzható kincsek:", len(self.kincsszotar.keys()), "/ 52\n", self.kincspakli)
         # Hajók elkészítése
-        self.hajotipustar = {}
-        hajoadatok = self.boss.adatolvaso.get_hajotipusok()
-        for tipus,ar,maxlegenyseg in hajoadatok:
-            self.hajotipustar[tipus] = Hajo(ar,maxlegenyseg,tipus)
+        self.hajotipustar = self.boss.data_reader.get_ship_types()
         for jatekos in self.boss.jatekossor:
             p = self.boss.jatekostar[jatekos]
-            p.set_legenyseg_max(self.hajotipustar[p.hajo].maxlegenyseg)
+            p.set_legenyseg_max(self.hajotipustar[p.hajo].crew_limit)
         self.vehetoHajok = []
         hajoarak = []
         for hajo in self.hajotipustar.keys():
-            if self.hajotipustar[hajo].ar > 0:
-                hajoarak.append(self.hajotipustar[hajo].ar)
+            if self.hajotipustar[hajo].price > 0:
+                hajoarak.append(self.hajotipustar[hajo].price)
                 hajoarak = sorted(hajoarak)
-                arPozicio = hajoarak.index(self.hajotipustar[hajo].ar)
+                arPozicio = hajoarak.index(self.hajotipustar[hajo].price)
                 self.vehetoHajok.insert(arPozicio,hajo)
         print('-'*40+'\nVásárolható hajók:',self.vehetoHajok,'\n'+'-'*40)
         # Városablakok előkészítése
@@ -727,20 +724,6 @@ class Dobokocka(Canvas):
         "Átadja a kocka értékét."
         return self.ertek
 
-class Hajo():
-    """Hajóosztály."""
-    def __init__(self, ar = 0, maxlegenyseg = 0, tipus = ''):
-        self.ar = ar
-        self.maxlegenyseg = maxlegenyseg
-        self.tipus = tipus        
-        
-class EllensegesHajo(Hajo):
-    """A szabályok által irányított hajók osztálya."""
-    def __init__(self, ar = 0, maxlegenyseg = 0, tipus = 'szkuner', zaszlo = '', legenyseg = [], nev = ''):
-        Hajo.__init__(self, ar = ar, maxlegenyseg = maxlegenyseg, tipus = tipus)
-        self.legenyseg = legenyseg
-        self.nev = nev
-        self.zaszlo = zaszlo        
 
 class Kartya():
     """Kártya oszály."""
@@ -762,23 +745,3 @@ class Kartya():
         self.boss.aktivjatekos.set_statusz(self.tipus)
         self.ablak.destroy()
         self.boss.szakasz_0()
-        
-if __name__ == '__main__0':
-    def dobas(event):
-        b.dob()
-        print(b.export_ertek())
-        
-    b = Dobokocka(None, 100, '#afff00', '#ffffff', 5)
-    b.pack()
-    b.bind('<Button-1>', dobas)    
-    b.mainloop()
-    
-if __name__ == '__main__1':
-    import main
-    a = main.Alkalmazas(1)
-    a.mainloop()
-    
-if __name__ == '__main__':
-    from main import *
-    a = Alkalmazas(1)
-    a.mainloop()

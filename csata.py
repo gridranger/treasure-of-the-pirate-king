@@ -114,7 +114,7 @@ class Utkozet(Toplevel):
             
     def menekules(self):
         "Menekülési függvény, ha a játékos hajója kisebb, sikeres a menekülés."
-        if self.boss.hajotipustar[self.ellensegesHajoTipusa].ar < self.boss.hajotipustar[self.master.jatekmenet.aktivjatekos.hajo].ar:
+        if self.boss.hajotipustar[self.ellensegesHajoTipusa].price < self.boss.hajotipustar[self.master.jatekmenet.aktivjatekos.hajo].price:
             self.megcsaklyazas()
             self.korOsszegzo.config(text = (self.master.szotar["hajoalathataron_menekules_sikertelen"] + "\n" + self.master.szotar["hajoalathataron_harc"]))
         else:
