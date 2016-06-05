@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<exceptions>
+  <exception id="csapatValueError">Ship %s (encounterId %s) has an invalid teamsize or ship part value in %s. Only the following values are accepted:\n0; 1; 2; 3; 4; 5; 6; powderStore; underWaterHit</exception>
+  <exception id="zsakmanyValueError">Ship %s (encounterId %s) has invalid loot value set in %s.'</exception>
+  <exception id="stringAttributeError">Translation not found.</exception>
+  <exception id="confighelyHianyzikAttributeError">The following config files' path has not set in db/paths.xml:\n %s</exception>
+  <exception id="cardImgMissingAttributeError">kincs_kincs</exception>
+</exceptions>

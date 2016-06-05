@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<paths>
+  <xml>
+    <cards>db/cards.xml</cards>
+    <config>db/config.xml</config>
+    <battles>db/battles.xml</battles>
+    <errors>db/errors.xml</errors>
+    <interface>db/interface.xml</interface>
+    <shiptypes>db/shiptypes.xml</shiptypes>
+  </xml>
+</paths>

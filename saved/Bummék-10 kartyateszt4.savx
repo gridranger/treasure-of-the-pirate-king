@@ -1,0 +1,80 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<save>
+  <player id="player0">
+    <name>Bumm tengernagy</name>
+    <color>#80eb56</color>
+    <home>tortuga</home>
+    <ship>fregatt</ship>
+    <sailors>1</sailors>
+    <money>82</money>
+    <status />
+    <lastRoll>1</lastRoll>
+    <turnsToMiss>0</turnsToMiss>
+    <treasureHuntFinished>True</treasureHuntFinished>
+    <shipsLooted>
+      <score empire="British" ships="0" />
+      <score empire="French" ships="0" />
+      <score empire="Dutch" ships="1" />
+      <score empire="pirate" ships="0" />
+      <score empire="Spanish" ships="0" />
+    </shipsLooted>
+    <coordinates x="1" y="5" />
+  </player>
+  <player id="player1">
+    <name>Ormányos kormányos</name>
+    <color>#5669eb</color>
+    <home>martinique</home>
+    <ship>fregatt</ship>
+    <sailors>24</sailors>
+    <money>9</money>
+    <status>groglazadas</status>
+    <lastRoll>6</lastRoll>
+    <turnsToMiss>0</turnsToMiss>
+    <treasureHuntFinished>True</treasureHuntFinished>
+    <shipsLooted>
+      <score empire="British" ships="0" />
+      <score empire="French" ships="0" />
+      <score empire="Dutch" ships="0" />
+      <score empire="pirate" ships="0" />
+      <score empire="Spanish" ships="0" />
+    </shipsLooted>
+    <coordinates x="1" y="3" />
+  </player>
+  <player id="player2">
+    <name>Narancs parancsnok</name>
+    <color>#60d1e1</color>
+    <home>havanna</home>
+    <ship>fregatt</ship>
+    <sailors>31</sailors>
+    <money>16</money>
+    <status>bobbydick</status>
+    <lastRoll>2</lastRoll>
+    <turnsToMiss>0</turnsToMiss>
+    <treasureHuntFinished>True</treasureHuntFinished>
+    <shipsLooted>
+      <score empire="British" ships="0" />
+      <score empire="French" ships="0" />
+      <score empire="Dutch" ships="0" />
+      <score empire="pirate" ships="1" />
+      <score empire="Spanish" ships="0" />
+    </shipsLooted>
+    <coordinates x="5" y="3" />
+  </player>
+  <currentPlayer>player0</currentPlayer>
+  <windDirection>2</windDirection>
+  <firstMateFound>False</firstMateFound>
+  <grogLordDefeated>False</grogLordDefeated>
+  <taverns>
+    <tavern port="havanna" sailors="5" />
+    <tavern port="tortuga" sailors="5" />
+    <tavern port="martinique" sailors="5" />
+    <tavern port="curacao" sailors="9" />
+    <tavern port="portroyal" sailors="10" />
+  </taverns>
+  <cards>
+    <eventDeck>irany_curacao, irany_tortuga, irany_martinique, irany_havanna, irany_portroyal</eventDeck>
+    <eventStack>17, kraken, vuduatok, vuduszelvarazs, 12, hajotorottek, levego, csapszek, majom3, kincses0, kikoto, 0, 2, 4, 7, 9, 11, 15, szirenek, skorbut, zatonyok, dezertorok, 19, 8, hajotores, szerencse, 13, 16, 6, iranytu, verseny, vitorla, kincses1, tivornya, 1, 3, 5, 10, 14, 18, leviatan, zendules, hadnagy, kisertethajo, rabszolgak</eventStack>
+    <trasureDeck>terkep, kincs20_4, kincs30_4, kutya, kincs30_1, potvitorla, papagaj, kincs10_8, kincs30_2, kincs10_5, kincs10_4, kincs10_7, kincs20_5, kincs10_13, kincs10_12, kincs20_6, kincs20_1, kincs20_2, kincs20_4, kincs20_7, kincs10_0, kincs20_8, puska, granat, majom, szirenkurt, gorogtuz, kincs30_0</trasureDeck>
+    <trasureStack>kincs10_3, pisztoly, labtovis, kincs20_3, kincs10_6, kincs10_1, kincs10_10, kincs30_3, kincs10_2, kincs10_14, kincs10_11, kincs20_0, kartacs</trasureStack>
+  </cards>
+</save>

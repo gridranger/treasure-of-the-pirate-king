@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='utf-8'?>
+<config>
+<language>en</language>
+<resolution>old_1</resolution>
+<fullscreen>0</fullscreen>
+<resolutionlist>
+<res type="old_1" x="1024" y="768" />
+<res type="wide0" x="1366" y="768" />
+<res type="wide1" x="1440" y="900" />
+<res type="wide2" x="1680" y="1050" />
+<res type="wide3" x="1920" y="1080" />
+</resolutionlist>
+</config>
