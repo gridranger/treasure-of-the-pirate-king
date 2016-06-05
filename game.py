@@ -429,7 +429,7 @@ class Vezerlo(Frame):
             self.boss.jatekossor.append(self.boss.jatekossor.pop(0)) # A legutóbb lépett játékost leghátra dobja, ha már lépett az aktív játékos
         self.aktivjatekos = self.boss.jatekostar[self.boss.jatekossor[0]]
         print('-'*20+'\n'+str(self.aktivjatekos.nev),'köre jön\n'+'-'*20) # logoláshoz
-        self.master.naplo.ir(self.master.szotar["ujkor"] %self.aktivjatekos.nev)
+        self.master.naplo.log(self.master.szotar["ujkor"] % self.aktivjatekos.nev)
         self.dobasMegtortent.set(False)
         self.boss.menu.ful1feltolt(self.aktivjatekos)
         if "skorbut" in self.aktivjatekos.statuszlista:
@@ -447,7 +447,7 @@ class Vezerlo(Frame):
         "A mező indukálta feladat elvégzése."
         id = self.methodeNo_get()
         #print("**MetódusID = " + str(id) + " - szakasz_mezoesemeny")
-        self.boss.naplo.ir('')
+        self.boss.naplo.log('')
         if self.boss.kilepesFolyamatban:
             return
         #print(self.aktivjatekos.nev,'a(z)',self.boss.tabla.helyszotarR[self.aktivjatekos.pozicio],'mezőre lépett.')
@@ -567,7 +567,7 @@ class Vezerlo(Frame):
             showinfo(self.boss.szotar["info"], uzenet) # Kiírjuk, a történteket.
             return
         else:
-            self.boss.naplo.ir(self.boss.szotar["vihar_siker"])
+            self.boss.naplo.log(self.boss.szotar["vihar_siker"])
             self.mozgas(viharEreje)
             self.szakasz_mezoesemeny()
             return True
@@ -578,9 +578,9 @@ class Vezerlo(Frame):
         self.aktivjatekos.set_utolsodobas(dobas) # Mentjük a kocka állapotát.
         if dobas == 6:
             self.aktivjatekos.set_kincs(1)
-            self.boss.naplo.ir(self.boss.szotar["uszadek_siker"])
+            self.boss.naplo.log(self.boss.szotar["uszadek_siker"])
         else:
-            self.boss.naplo.ir(self.boss.szotar["uszadek"])
+            self.boss.naplo.log(self.boss.szotar["uszadek"])
         return
 
     def szelcsend(self):
@@ -602,17 +602,17 @@ class Vezerlo(Frame):
                 self.aktivjatekos.set_legenyseg(dobas)
                 felveve = dobas
             if felveve < 2:
-                self.boss.naplo.ir(self.boss.szotar["taino_egy"])
+                self.boss.naplo.log(self.boss.szotar["taino_egy"])
             else:
-                self.boss.naplo.ir(self.boss.szotar["taino_tobb"] % felveve)
+                self.boss.naplo.log(self.boss.szotar["taino_tobb"] % felveve)
         else:
-            self.boss.naplo.ir(self.boss.szotar["taino_nulla"])
+            self.boss.naplo.log(self.boss.szotar["taino_nulla"])
         return
 
     def kincsessziget(self):
         "Egy mező, ahol kincset lehet ásni."
         self.aktivjatekos.set_kincskereses(False)
-        self.boss.naplo.ir(self.boss.szotar["kincskereses"])
+        self.boss.naplo.log(self.boss.szotar["kincskereses"])
         
     def kincsesszigetAsas(self):
         "A teendők, ha már kincses szigeten áll az ember."

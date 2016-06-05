@@ -280,7 +280,7 @@ class Tabla(Frame):
         if not self.boss.jatekmenet.dobasMegtortent.get():
             return
         if self.boss.menu.fold_fold_dobas:
-            self.boss.naplo.ir('')
+            self.boss.naplo.log('')
             self.boss.menu.ful1tartalom.kockamezo.config(relief = "sunken")
             self.boss.menu.fold_fold_dobas_null()
         klikkx,klikky = int(event.x/self.mezomeret)+1,int(event.y/self.mezomeret)+1

@@ -1,6 +1,6 @@
 from models import Empire
 from tabla import Tabla
-from naplo import Naplo
+from logframe import LogFrame
 from game import *
 from datareader import DataReader
 from adatgazda import *
@@ -70,7 +70,7 @@ class Application(Tk):
         self.columnconfigure('all', weight=1)
         self.rowconfigure('all', weight=1)
         menuszelesseg = int(self.height * 0.33 - 10)
-        self.naplo = Naplo(self, menuszelesseg)
+        self.naplo = LogFrame(self, menuszelesseg)
         self.naplo.grid(row=1, column=0, sticky=S + W, padx=5, pady=5)
         self.tablaszelesseg = self.height - 10
         if self.jatekFolyamatban.get():
@@ -149,7 +149,7 @@ class Application(Tk):
         self.language = ujnyelv  # beállítja az új nyelvet
         self.szovegezo()  # megjeleníti a kiválasztott nyelven a felület elemeit
         self.kartyaszotar = self.data_reader.load_cards_text()  # cseréli az esemény- és kincskártyák szövegét
-        self.naplo.ir(self.szotar['ujnyelv'])
+        self.naplo.log(self.szotar['ujnyelv'])
         self.data_reader.save_settings(new_language=ujnyelv)
 
     def meretez(self, ujfelbontas, ujteljeskepernyo):
@@ -177,7 +177,7 @@ class Application(Tk):
                                                            jatekosadatok[i][2])
         self.szovegezo()
         self.menu.select(self.menu.lap2)
-        self.naplo.ir('%s %i×%i' % (self.szotar['ujmeret'], self.width, self.height))
+        self.naplo.log('%s %i×%i' % (self.szotar['ujmeret'], self.width, self.height))
 
     def torolMindent(self):
         "Törli a létrehozott paneleket."
@@ -253,9 +253,9 @@ class Application(Tk):
         self.menu.ful3_var()
         if not uj:
             self.jatekmenet.set_paklik(paklik)
-            self.naplo.ir(self.szotar["jatekbetoltes_kesz"])
+            self.naplo.log(self.szotar["jatekbetoltes_kesz"])
         else:
-            self.naplo.ir(self.szotar["jatekinditas_kesz"])
+            self.naplo.log(self.szotar["jatekinditas_kesz"])
         self.jatekmenet.szakasz_0()
 
     def jatekFolyamatbanValtozasa(self, a=None, b=None, c=None):
@@ -424,11 +424,11 @@ class Fulek(Notebook):
             dobas = self.ful1tartalom.kocka.dob()
             if "fold_fold" in self.boss.jatekmenet.aktivjatekos.statuszlista:
                 print("Újra dobhatna.")
-                self.boss.naplo.ir(self.boss.szotar['foldfold_naplo'])
+                self.boss.naplo.log(self.boss.szotar['foldfold_naplo'])
                 self.boss.jatekmenet.aktivjatekos.set_statusz("fold_fold", 0)
                 self.fold_fold_dobas = True
             else:
-                self.boss.naplo.ir('')
+                self.boss.naplo.log('')
                 self.ful1tartalom.kockamezo.config(relief=SUNKEN)
             self.boss.jatekmenet.set_dobasMegtortent()
             self.boss.set_jatekforduloFolyamatban(1)
@@ -499,7 +499,7 @@ class Fulek(Notebook):
         if not adatok:
             return
         helyzetszotar, kovetkezoJatekos, szelindex, fogadoszotar, paklik = adatok
-        self.boss.naplo.ir(self.boss.szotar['jatekbetoltes'])
+        self.boss.naplo.log(self.boss.szotar['jatekbetoltes'])
         self.update_idletasks()
         self.boss.jatekIndit(helyzetszotar, 0, kovetkezoJatekos, szelindex, fogadoszotar, paklik)
 
@@ -780,18 +780,18 @@ class UjJatekAdatok(Frame):
         for i in range(6):
             if self.jatekosopciok[i].aktiv.get():
                 if self.jatekosopciok[i].nev.get() == '':
-                    self.boss.naplo.ir(self.boss.szotar['nevhiany'] % (i + 1))
+                    self.boss.naplo.log(self.boss.szotar['nevhiany'] % (i + 1))
                     return
                 elif self.jatekosopciok[i].valasztottSzin.get() == '':
-                    self.boss.naplo.ir(self.boss.szotar['szinhiany'] % (self.jatekosopciok[i].nev.get()))
+                    self.boss.naplo.log(self.boss.szotar['szinhiany'] % (self.jatekosopciok[i].nev.get()))
                     return
                 elif self.jatekosopciok[i].zaszlovalaszto.get() == '':
-                    self.boss.naplo.ir(self.boss.szotar['zaszlohiany'] % (self.jatekosopciok[i].nev.get()))
+                    self.boss.naplo.log(self.boss.szotar['zaszlohiany'] % (self.jatekosopciok[i].nev.get()))
                     return
                 elif self.jatekosopciok[i].zaszlovalaszto.get() not in list(self.boss.zaszloszotar.keys()):
-                    self.boss.naplo.ir(self.boss.szotar['zaszloervenytelen'] % (self.jatekosopciok[i].nev.get()))
+                    self.boss.naplo.log(self.boss.szotar['zaszloervenytelen'] % (self.jatekosopciok[i].nev.get()))
                     return
-                self.boss.naplo.ir(self.boss.szotar['jatekinditas'])
+                self.boss.naplo.log(self.boss.szotar['jatekinditas'])
                 self.update_idletasks()
                 jatekosadatok.append([self.jatekosopciok[i].nev.get(), self.jatekosopciok[i].valasztottSzin.get(),
                                       self.jatekosopciok[i].zaszlovalaszto.get()])
