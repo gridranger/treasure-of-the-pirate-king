@@ -23,7 +23,7 @@ class Jatekos():
             self.sajatkikoto = self.boss.tabla.helyszotar[sajatkikoto][0]
         else:
             self.sajatkikoto = self.boss.tabla.helyszotar[self.boss.zaszloszotar[sajatkikoto]][0]
-        self.zaszlo = self.boss.birodalomszotar_query("birodalom", "koordinatak", self.sajatkikoto)
+        self.zaszlo = self.boss.get_empire_by_capital_coordinates(self.sajatkikoto)
         print(self.nev,"zászlaja:",self.zaszlo)
         self.hajo = hajo
         self.legenyseg = IntVar()
@@ -87,7 +87,7 @@ class Jatekos():
         
     def set_birodalom(self):
         "Beállítja a játékos birodalmát."
-        self.birodalom = self.boss.birodalomszotar_query('birodalom','koordinatak',self.sajatkikoto)
+        self.birodalom = self.boss.get_empire_by_capital_coordinates(self.sajatkikoto)
         
     def set_kincskereses(self, ertek):
         "Kívülről hívható függvény, amely megváltoztatja a kincskeresesKesz paraméter értékét."

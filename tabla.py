@@ -54,7 +54,7 @@ class Tabla(Frame):
         self.helyszotarR = {}
         for birodalom in self.boss.birodalomszotar.keys():
             v = self.boss.birodalomszotar[birodalom].varos
-            self.boss.birodalomszotar[birodalom].set_koordinatak(self.helyszotar[v][0])
+            self.boss.birodalomszotar[birodalom].coordinates = self.helyszotar[v][0]
         for hely in self.helyszotar.keys():
             for ertek in self.helyszotar[hely]:
                 self.helyszotarR[ertek] = hely

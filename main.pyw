@@ -1,3 +1,4 @@
+from models import Empire
 from tabla import Tabla
 from naplo import Naplo
 from game import *
@@ -40,11 +41,11 @@ class Application(Tk):
         self.jatekFolyamatban.trace('w', self.jatekFolyamatbanValtozasa)
         self.jatekforduloFolyamatban.trace('w', self.jatekforduloFolyamatbanValtozasa)
         # Alapszótár
-        self.birodalomszotar = dict([('angol', Birodalom('angol', 'portroyal', '', (0, 0))),
-                                     ('francia', Birodalom('francia', 'martinique', '', (0, 0))),
-                                     ('holland', Birodalom('holland', 'curacao', '', (0, 0))),
-                                     ('spanyol', Birodalom('spanyol', 'havanna', '', (0, 0))),
-                                     ('kaloz', Birodalom('kaloz', 'tortuga', '', (0, 0)))])
+        self.birodalomszotar = dict([('angol', Empire('angol', 'portroyal', '', (0, 0))),
+                                     ('francia', Empire('francia', 'martinique', '', (0, 0))),
+                                     ('holland', Empire('holland', 'curacao', '', (0, 0))),
+                                     ('spanyol', Empire('spanyol', 'havanna', '', (0, 0))),
+                                     ('kaloz', Empire('kaloz', 'tortuga', '', (0, 0)))])
         # Feliratok előkészítése
         self.szovegezo()
         self.protocol("WM_DELETE_WINDOW", self.shutdown_ttk_repeat)
@@ -115,7 +116,7 @@ class Application(Tk):
                 else:
                     valasztottZaszlok.append(0)
         for rowid, row in self.birodalomszotar.items():
-            row.set_nev(self.szotar[row.birodalom])
+            row.name = self.szotar[row.empire_id]
         # ------------------------------------------------#
         # Nézetek a birodalomDB létrehozásakor már létezett szótárak helyettesítésére.
         self.zaszloszotar2 = {row.birodalom: row.varos for (rowid, row) in self.birodalomszotar.items()}
@@ -136,12 +137,10 @@ class Application(Tk):
         if self.jatekFolyamatban.get():
             self.menu.ful1feltolt()
 
-    def birodalomszotar_query(self, keresettMezo, ismertMezo, ismertMezoErteke):
-        "Lekérdez egy értéket a birodalomszótárból. Pontosan egy értéket ad válaszul."
-        for rowid, rekord in self.birodalomszotar.items():
-            a = rekord.select(keresettMezo, ismertMezo, ismertMezoErteke)
-            if a:
-                return a
+    def get_empire_by_capital_coordinates(self, coordinates):
+        for empire in self.birodalomszotar:
+            if empire.coordinates == coordinates:
+                return empire.empire_id
 
     def nyelvvaltas(self, ujnyelv):
         "Beállítja az új nyelvet."
@@ -798,30 +797,6 @@ class UjJatekAdatok(Frame):
                                       self.jatekosopciok[i].zaszlovalaszto.get()])
         self.boss.jatekIndit(jatekosadatok)
 
-
-class Birodalom():
-    def __init__(self, birodalom, varos, nev, koordinatak):
-        self.birodalom = birodalom
-        self.varos = varos
-        self.nev = nev
-        self.koordinatak = koordinatak
-
-    def select(self, keresettMezo, ismertMezo, ismertMezoErteke):
-        "SELECT keresettMezo FROM self WHERE ismertMezo = ismertMezoErteke"
-        self.szotar = dict([('birodalom', self.birodalom),
-                            ('varos', self.varos),
-                            ('nev', self.nev),
-                            ('koordinatak', self.koordinatak)])
-        if self.szotar[ismertMezo] == ismertMezoErteke:
-            return self.szotar[keresettMezo]
-
-    def set_nev(self, ujnev):
-        "Az új nyelv választásakor társítja az adott nyelv szavát a megfelelő birodalomhoz."
-        self.nev = ujnev
-
-    def set_koordinatak(self, ujkoordinatak):
-        "A tábla felépítésekor társítja az adott koordinátákat (tuple) a megfelelő birodalomhoz. Előre beépített kompatibilitás véletlenszerű térképekhez."
-        self.koordinatak = ujkoordinatak
 
 
 if __name__ == '__main__':
