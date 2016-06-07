@@ -18,7 +18,7 @@ def image_tint(src, hex=''):
 if __name__ == '__main__':
     import os
 
-    input_image_path = 'piszkozatok/szkuner-z.png'
+    input_image_path = 'piszkozatok/schooner-z.png'
     print('tinting "{}"'.format(input_image_path))
 
     root, ext = os.path.splitext(input_image_path)

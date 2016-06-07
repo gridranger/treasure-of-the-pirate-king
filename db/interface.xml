@@ -1,644 +1,644 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <interface>
-  <nyelvek type="text">
+  <languages type="text">
     <hu>Magyar</hu>
     <en>English</en>
     <arr>Kalóz</arr>
-  </nyelvek>
-  <alkalmaz type="textvariable">
+  </languages>
+  <apply type="textvariable">
     <hu>Alkalmaz</hu>
     <en>Apply</en>
     <arr>Hajrá!</arr>
-  </alkalmaz>
-  <angol type="text">
+  </apply>
+  <british type="text">
     <hu>angol</hu>
     <en>British</en>
     <arr>könyörtelen angol</arr>
-  </angol>
-  <ar type="text">
+  </british>
+  <price type="text">
     <hu>Ár</hu>
     <en>Cost</en>
     <arr>Ár</arr>
-  </ar>
-  <arany type="text">
+  </price>
+  <gold type="text">
     <hu>arany</hu>
     <en>gold</en>
     <arr>arany</arr>
-  </arany>
-  <autoElosztas type="text">
+  </gold>
+  <balance_teams type="text">
     <hu>Csapatok elosztása</hu>
     <en>Balance teams</en>
     <arr>Mindenki a heléyre!</arr>
-  </autoElosztas>
-  <beallitasok type="text">
+  </balance_teams>
+  <settings type="text">
     <hu>Beállítások</hu>
     <en>Settings</en>
     <arr>Fedélköz</arr>
-  </beallitasok>
+  </settings>
   <bermuda type="text">
     <hu>Utad során érinted a Bermuda-háromszöget, de semmi érdekes nem történik.</hu>
-    <en>You sail through the edge of the Bermuda triangle, but nothung happens.</en>
+    <en>You sail through the edge of the Bermuda triangle, but nothing happens.</en>
     <arr>A Bermuda-háromszög szélén a tenger csendes. Arr... Sehol egy hajó!</arr>
   </bermuda>
-  <betolt type="textvariable">
+  <load_saved_game type="textvariable">
     <hu>Játék folytatása</hu>
     <en>Load saved game</en>
     <arr>Folytassuk, kalózok!</arr>
-  </betolt>
-  <brigantin type="text">
+  </load_saved_game>
+  <brigantine type="text">
     <hu>brigantin</hu>
     <en>brigantine</en>
     <arr>brigantin</arr>
-  </brigantin>
-  <celzas type="text">
+  </brigantine>
+  <aiming type="text">
     <hu>Válassz célpontot!</hu>
     <en>Take aim!</en>
     <arr>Célozz!</arr>
-  </celzas>
-  <cetvspolip type="text">
+  </aiming>
+  <whalevsoctopus type="text">
     <hu>megküzd vele</hu>
     <en>fights it</en>
     <arr>megküzd vele</arr>
-  </cetvspolip>
-  <cim type="text">
+  </whalevsoctopus>
+  <title type="text">
     <hu>A kalózkirály kincse</hu>
     <en>The Treasure of the Pirate King</en>
     <arr>A kalózkirály kincse - Vedd el, ami kell, és vissza ne add!</arr>
-  </cim>
-  <csata type="text">
+  </title>
+  <battle type="text">
     <hu>Csata</hu>
     <en>Battle</en>
     <arr>Harc</arr>
-  </csata>
-  <csata_elhagyasa type="text">
+  </battle>
+  <leave_battle type="text">
     <hu>Csata elhagyása</hu>
     <en>Leaving battlefield</en>
     <arr>Gyáva megfutamodás</arr>
-  </csata_elhagyasa>
-  <csata_elhagyasa_szoveg type="text">
+  </leave_battle>
+  <leave_battle_text type="text">
     <hu>Ha bezárod ezt a képernyőt, elveszíted a matrózaid, és a száműzöttek szigetére kerülsz. Biztosan ezt szeretnéd?</hu>
     <en>Leaving the battlefield now makes you lose your entire crew and you will be stranded on the Forgotten Island. Are you sure that you leave now?</en>
     <arr>Ha bezárod ezt a képernyőt, elveszíted a matrózaid, és a száműzöttek szigetére kerülsz. Biztosan ezt szeretnéd?</arr>
-  </csata_elhagyasa_szoveg>
-  <csata_elsullyed type="text">
+  </leave_battle_text>
+  <battle_sink type="text">
     <hu>Az ellenséges hajó elsüllyedt.</hu>
     <en>The enemy ship sunk.</en>
     <arr>Az ellenséges hajót a fenékre küldtük.</arr>
-  </csata_elsullyed>
-  <csata_elvesztese type="text">
+  </battle_sink>
+  <battle_lose type="text">
     <hu>Veszítettél. Ellenfeleid fogságba ejtettek, és a Száműzöttek szigetén tettek partra.</hu>
     <en>You lost. The enemy captain put you ashore at the Forgotten Island.</en>
     <arr>Veszítettél. Ellenfeleid fogságba ejtettek, és a Száműzöttek szigetén tettek partra.</arr>
-  </csata_elvesztese>
-  <esemenykartya type="text">
+  </battle_lose>
+  <event_card type="text">
     <hu>Eseménykártya</hu>
     <en>Event card</en>
     <arr>Eseménykártya</arr>
-  </esemenykartya>
+  </event_card>
   <extra type="text">
     <hu>Válaszd ki, melyik ellenséges csapat ellen indítasz extra támadást!</hu>
     <en>Pick an enemy team to target bonus attack.</en>
     <arr>Válaszd ki, melyik ellenséges csapat ellen indítasz extra támadást!</arr>
   </extra>
-  <felbontas type="text">
+  <resolution type="text">
     <hu>Felbontás</hu>
     <en>Resolution</en>
     <arr>Mérrret</arr>
-  </felbontas>
-  <foldfold type="text">
+  </resolution>
+  <land type="text">
     <hu>Amíg a többiek vannak soron, matrózaid gyümölcsöket és szárnyasokat gyűjtenek be az érintetlen szigetről. A friss koszt fellelkesíti őket, ezért, ha a következő körben hajózáshoz dobott érték kedvezőtlen, egyszer újra dobhatsz helyette.</hu>
     <en>The sailors collect fruits and fowl on the island. If the value you rolled is unfavourable you may roll again at the next turn.</en>
     <arr>Amíg a többiek vannak soron, matrózaid gyümölcsöket és szárnyasokat gyűjtenek be az érintetlen szigetről. A friss koszt fellelkesíti őket, ezért, ha a következő körben hajózáshoz dobott érték kedvezőtlen, egyszer újra dobhatsz helyette.</arr>
-  </foldfold>
-  <foldfold_naplo type="text">
+  </land>
+  <land_log type="text">
     <hu>Újra dobhatsz ehelyett.</hu>
     <en>You may roll again.</en>
     <arr>Újra dobhat, uram, ehelyett.</arr>
-  </foldfold_naplo>
-  <fogado type="text">
+  </land_log>
+  <tavern type="text">
     <hu>Fogadó</hu>
     <en>Tavern</en>
     <arr>Csapszék</arr>
-  </fogado>
-  <francia type="text">
+  </tavern>
+  <french type="text">
     <hu>francia</hu>
     <en>French</en>
     <arr>puhány francia</arr>
-  </francia>
-  <fregatt type="text">
+  </french>
+  <frigate type="text">
     <hu>fregatt</hu>
     <en>frigate</en>
     <arr>fregatt</arr>
-  </fregatt>
-  <fomenu type="text">
+  </frigate>
+  <main_main type="text">
     <hu>Főmenü</hu>
     <en>Main menu</en>
     <arr>Árboc</arr>
-  </fomenu>
+  </main_main>
   <galleon type="text">
     <hu>galleon</hu>
     <en>galleon</en>
     <arr>galleon</arr>
   </galleon>
-  <hajoacs type="text">
+  <shipwright type="text">
     <hu>Hajóács</hu>
     <en>Shipwright</en>
     <arr>Hajóács</arr>
-  </hajoacs>
-  <hajoalathataron type="text">
+  </shipwright>
+  <ship_spotted type="text">
     <hu>Hajó a láthatáron! Mit tegyen a legénység?</hu>
     <en>Ship spotted. What is your order?</en>
     <arr>Hajó a láthatáron! Mit tegyünk, kapitány?</arr>
-  </hajoalathataron>
-  <hajoalathataron_agyuzas type="text">
+  </ship_spotted>
+  <ship_spotted_fire type="text">
     <hu>Tűz!</hu>
     <en>Fire!</en>
     <arr>Pörköljünk oda!</arr>
-  </hajoalathataron_agyuzas>
-  <hajoalathataron_alvarez type="text">
+  </ship_spotted_fire>
+  <ship_spotted_alvarez type="text">
     <hu>Most megváltoztathatod a csapatok felállását.</hu>
     <en>You can rearrange your man.</en>
     <arr>Rendezze újra az embereit, uram!</arr>
-  </hajoalathataron_alvarez>
-  <hajoalathataron_csataindul type="text">
+  </ship_spotted_alvarez>
+  <ship_spotted_battle_starts type="text">
     <hu>Játssz ki egy kártyát, vagy kattints az alábbi gombra a harchoz.</hu>
     <en>Use a card or push the Battle button to fight.</en>
     <arr>Játssz ki egy lapot, vagy harcolj.</arr>
-  </hajoalathataron_csataindul>
-  <hajoalathataron_futnihagyas type="text">
+  </ship_spotted_battle_starts>
+  <ship_spotted_let_them_flee type="text">
     <hu>Hagyjuk futni</hu>
     <en>Let them sail away</en>
     <arr>Ne törődjetek vele</arr>
-  </hajoalathataron_futnihagyas>
-  <hajoalathataron_harc type="text">
+  </ship_spotted_let_them_flee>
+  <ship_spotted_battle type="text">
     <hu>Kezdődik a harc. Oszd be csapatokba az embereidet.</hu>
     <en>The battle begun. Form teams.</en>
     <arr>Kapitány, állítsa össze a csapatokat a harc előtt.</arr>
-  </hajoalathataron_harc>
-  <hajoalathataron_jutalom type="text">
+  </ship_spotted_battle>
+  <ship_spotted_reward type="text">
     <hu>Zsákmányod %i arany%s.</hu>
     <en>Your loot %i gold pieces%s.</en>
     <arr>Megkaparintottunk %i aranyat%s.</arr>
-  </hajoalathataron_jutalom>
-  <hajoalathataron_jutalom2 type="text">
+  </ship_spotted_reward>
+  <ship_spotted_reward2 type="text">
     <hu> és egy kincskártya</hu>
-    <en> and a lootcard.</en>
+    <en> and a loot card.</en>
     <arr> és egy kincskártyát</arr>
-  </hajoalathataron_jutalom2>
-  <hajoalathataron_kaloz type="text">
+  </ship_spotted_reward2>
+  <ship_spotted_pirate type="text">
     <hu>Hajó a láthatáron! Egyenesen felénk tart!</hu>
     <en>Ship spotted. She is on intercept course.</en>
     <arr>Hajó a láthatáron! Felénk tart, kapitány.</arr>
-  </hajoalathataron_kaloz>
-  <hajoalathataron_loporraktar type="text">
+  </ship_spotted_pirate>
+  <ship_spotted_powder_storage type="text">
     <hu>Az ellenséges hajó lőporraktára felrobbant.</hu>
     <en>The enemy ship got a hit to the powder store and exploded.</en>
     <arr>Az ellenséges hajó lőporraktára felrobbant.</arr>
-  </hajoalathataron_loporraktar>
-  <hajoalathataron_megcsaklyazas type="text">
+  </ship_spotted_powder_storage>
+  <ship_spotted_boarding type="text">
     <hu>Csáklyázzuk meg!</hu>
     <en>Board her!</en>
     <arr>Csáklyákat készenlétbe!</arr>
-  </hajoalathataron_megcsaklyazas>
-  <hajoalathataron_menekules type="text">
+  </ship_spotted_boarding>
+  <ship_spotted_fleeing type="text">
     <hu>Menekülés</hu>
     <en>Run for it</en>
     <arr>Menküljünk!</arr>
-  </hajoalathataron_menekules>
-  <hajoalathataron_menekules_sikertelen type="text">
+  </ship_spotted_fleeing>
+  <ship_spotted_fleeing_unsuccesful type="text">
     <hu>Az ellenséges hajó beért, és megtámadott.</hu>
     <en>The hostile ship were faster than you and the enemy sailors are boarding your ship.</en>
     <arr>Nem tudjuk lehagyni őekt, készüljünk a közelharcra!</arr>
-  </hajoalathataron_menekules_sikertelen>
-  <hajoalathataron_papagaj type="text">
+  </ship_spotted_fleeing_unsuccesful>
+  <ship_spotted_parrot type="text">
     <hu>Papagájod megszerezte az ellenséges hajó kincsét!\n</hu>
     <en>Your parrot brings you the treasure from the enemy ship.\n</en>
     <arr>Papagájod megszerezte az ellenséges hajó kincsét!\n</arr>
-  </hajoalathataron_papagaj>
-  <hajoalathataron_veszteseg_ellenfel type="text">
+  </ship_spotted_parrot>
+  <ship_spotted_enemy_casualties type="text">
     <hu>Az ellenfél %i matrózt veszített az ágyúzás során.</hu>
     <en>The enemy lost %i sailor(s) due the cannonfire.</en>
     <arr>Az ellenfél %i matrózt veszített az ágyúzás során.</arr>
-  </hajoalathataron_veszteseg_ellenfel>
-  <hajoalathataron_veszteseg_jatekos type="text">
+  </ship_spotted_enemy_casualties>
+  <ship_spotted_player_casualties type="text">
     <hu>2 matrózt vesztettél az ágyúzás során.</hu>
     <en>You lost 2 sailors due the cannonfire.</en>
     <arr>2 matrózt vesztettünk az ágyúzás során, uram.</arr>
-  </hajoalathataron_veszteseg_jatekos>
-  <hajoalathataron_veszteseg_sullyed type="text">
+  </ship_spotted_player_casualties>
+  <ship_spotted_enemy_sinking type="text">
     <hu>Az ellenfél hajója léket kapott. 3 körön belül elsüllyed!</hu>
     <en>The enemy ship got a leak! It will sink in 3 turns.</en>
     <arr>Léket ütöttünk az ellenséges hajó, uram. 3 kör és elsüllyed.</arr>
-  </hajoalathataron_veszteseg_sullyed>
-  <hajonev_jatekos type="text">
+  </ship_spotted_enemy_sinking>
+  <ship_name_player type="text">
     <hu>Saját hajód</hu>
     <en>Your own ship</en>
     <arr>Saját hajód</arr>
-  </hajonev_jatekos>
-  <hajonev_pirate0 type="text">
+  </ship_name_player>
+  <ship_name_pirate0 type="text">
     <hu>Fekete Sikoly</hu>
     <en>Black Scream</en>
     <arr>Fekete Sikoly</arr>
-  </hajonev_pirate0>
-  <hajonev_pirate1 type="text">
-    <!--Translator, be aware that its name came from Brecht's Three Penny Oprea. It is the ship Pirate Jenny sings about.-->
+  </ship_name_pirate0>
+  <ship_name_pirate1 type="text">
+    <!--Translator, be aware that its name came from Brecht's Three Penny Oper. The one Pirate Jenny sings about.-->
     <hu>Vérszínű Bárka</hu>
     <en>Black Freighter</en>
     <arr>Vérszínű Bárka</arr>
-  </hajonev_pirate1>
-  <hajonev_pirate2 type="text">
+  </ship_name_pirate1>
+  <ship_name_pirate2 type="text">
     <hu>Végzet</hu>
     <en>Destiny</en>
     <arr>Végzet</arr>
-  </hajonev_pirate2>
-  <hajonev_pirate3 type="text">
+  </ship_name_pirate2>
+  <ship_name_pirate3 type="text">
     <hu>Grogbáró</hu>
     <en>Groglord</en>
     <arr>Grogbáró</arr>
-  </hajonev_pirate3>
-  <harc type="text">
+  </ship_name_pirate3>
+  <to_battle type="text">
     <hu>Megküzdünk vele</hu>
     <en>Pick up the fight</en>
     <arr>Harcra!</arr>
-  </harc>
-  <holland type="text">
+  </to_battle>
+  <dutch type="text">
     <hu>holland</hu>
     <en>Dutch</en>
     <arr>pohos holland</arr>
-  </holland>
+  </dutch>
   <info type="text">
     <hu>Üzenet</hu>
     <en>Message</en>
     <arr>Palackposta</arr>
   </info>
-  <jatek type="text">
+  <game type="text">
     <hu>Játék</hu>
     <en>Game</en>
     <arr>Főfedélzet</arr>
-  </jatek>
-  <jatekbetoltes type="text">
+  </game>
+  <loading_game type="text">
     <hu>Játék betöltése...</hu>
     <en>Loadig game...</en>
     <arr>Kötélzet kibogozása...</arr>
-  </jatekbetoltes>
-  <jatekbetoltes_kesz type="text">
+  </loading_game>
+  <loading_done type="text">
     <hu>Játék betöltése... Kész!</hu>
     <en>Loadig game... Done!</en>
     <arr>Kötélzet kibogozása... Kész!</arr>
-  </jatekbetoltes_kesz>
-  <jatekfelbeszakitas type="text">
+  </loading_done>
+  <discard_game type="text">
     <hu>Már folyamatban van egy játék. Ha újat indítasz, az előző játékból minden elvész, ami nem volt mentve. Biztosan új játékot kezdesz?</hu>
     <en>Game is already in progress. If you start a new one, all unsaved changes will be lost. Are you sure you want to start a new game?</en>
     <arr>Teringettét, már kihajóztunk egyszer! Ha újra megtesszük, a korábbi út lejegyzetlen eredményei elvesznek. Hótbiztos kihajózzunk, kapitány?</arr>
-  </jatekfelbeszakitas>
-  <jatekfelbeszakitas-b type="text">
+  </discard_game>
+  <discard_game-b type="text">
     <hu>Már folyamatban van egy játék. Ha betöltesz egy másikat, a jelenlegi játékból minden elvész, ami nincs mentve. Biztosan a betöltést választod?</hu>
     <en>Game is already in progress. If you load a saved one, all unsaved changes will be lost. Are you sure you want to load a saved game?</en>
     <arr>Teringettét, ha hajót váltunk, a jelenlegi zsákmány elmentetlen része odavész. Hótbiztos átszállunk, kapitány?</arr>
-  </jatekfelbeszakitas-b>
-  <jatekinditas type="text">
+  </discard_game-b>
+  <start_game type="text">
     <hu>Játék indítása...</hu>
     <en>Starting game...</en>
     <arr>Mindenki a fedélzetre, kihajózunk!</arr>
-  </jatekinditas>
-  <jatekinditas_kesz type="text">
+  </start_game>
+  <start_game_done type="text">
     <hu>Játék indítása... Kész!</hu>
     <en>Starting game... Done!</en>
     <arr>Kihajóztunk!</arr>
-  </jatekinditas_kesz>
-  <jateksorCimke type="text">
+  </start_game_done>
+  <turn_order type="text">
     <hu>A játékosok sorrendje:</hu>
     <en>Turn order:</en>
     <arr>Csak sorjában, matrózok:</arr>
-  </jateksorCimke>
-  <kaloz type="text">
+  </turn_order>
+  <pirate type="text">
     <hu>kalóz</hu>
     <en>Pirate</en>
     <arr>kalóz</arr>
-  </kaloz>
-  <kartya_eldob type="text">
+  </pirate>
+  <card_discard type="text">
     <hu>Lap eldobása</hu>
     <en>Discard it</en>
     <arr>Eldobom</arr>
-  </kartya_eldob>
-  <kartya_megtart type="text">
+  </card_discard>
+  <card_keep type="text">
     <hu>Lap megtartása</hu>
     <en>Keep card</en>
     <arr>Megtartom</arr>
-  </kartya_megtart>
-  <kartyak type="text">
+  </card_keep>
+  <cards type="text">
     <hu>Kártyák</hu>
     <en>Cards</en>
     <arr>Kártyák</arr>
-  </kartyak>
-  <kesz type="text">
+  </cards>
+  <done type="text">
     <hu>Kész</hu>
     <en>Done</en>
     <arr>Ennyit erről</arr>
-  </kesz>
-  <kikoto type="text">
+  </done>
+  <port type="text">
     <hu>Kikötő</hu>
     <en>Port</en>
     <arr>Kikötő</arr>
-  </kikoto>
-  <kimaradok type="text">
+  </port>
+  <miss_turn type="text">
     <hu>Kimaradok (még %i kör)</hu>
     <en>I miss a turn (%i turns left)</en>
     <arr>Kimaradunk (még %i kör)</arr>
-  </kimaradok>
-  <kimaradok_utoljara type="text">
+  </miss_turn>
+  <miss_turn_last_time type="text">
     <hu>Kimaradok</hu>
     <en>I miss a turn</en>
     <arr>Kimaradunk</arr>
-  </kimaradok_utoljara>
-  <kincs type="text">
+  </miss_turn_last_time>
+  <treasure type="text">
     <hu>Kincs</hu>
     <en>Treasure</en>
     <arr>Zsákmány</arr>
-  </kincs>
-  <kincskartya type="text">
+  </treasure>
+  <treasure_card type="text">
     <hu>Kincskártya</hu>
-    <en>Treasurecard</en>
+    <en>Treasure card</en>
     <arr>Kincskártya</arr>
-  </kincskartya>
-  <kincskereses type="text">
+  </treasure_card>
+  <dig_for_treasure type="text">
     <hu>Kincset áshatsz a következő körben.</hu>
     <en>You can dig for treasuere next turn.</en>
     <arr>Ez egy kincses sziget, kapitány!</arr>
-  </kincskereses>
-  <kincskereses_cimke type="text">
+  </dig_for_treasure>
+  <dig_for_treasure_label type="text">
     <hu>A kincses szigeten</hu>
     <en>You can dig for treasuere next turn.</en>
     <arr>A kincses szigeten</arr>
-  </kincskereses_cimke>
-  <kincskereses_kerdes type="text">
+  </dig_for_treasure_label>
+  <dig_for_treasure_question type="text">
     <hu>Továbbmehetsz, vagy átkutathatod kincsért a szigetet. Maradsz a szigeten?</hu>
     <en>You can sail away or stay to look for treasure. Do you want to stay?</en>
     <arr>Tovább is mehetünk. Maradjunk kincsetkeresni, uram?</arr>
-  </kincskereses_kerdes>
-  <kincskereses_semmi type="text">
+  </dig_for_treasure_question>
+  <dig_for_treasure_nothing type="text">
     <hu>Most nem jártál sikerrel.</hu>
     <en>Bad luck: you found nothing.</en>
     <arr>Semmit sem találtunk, uram.</arr>
-  </kincskereses_semmi>
-  <kilep type="textvariable">
+  </dig_for_treasure_nothing>
+  <exit type="textvariable">
     <hu>Kilépés</hu>
     <en>Exit</en>
     <arr>Takarodó</arr>
-  </kilep>
-  <kormanyzo type="text">
+  </exit>
+  <governor type="text">
     <hu>Kormányzó</hu>
-    <en>Govenor</en>
+    <en>Governor</en>
     <arr>Kormányzó</arr>
-  </kormanyzo>
-  <kormanyzo_buntet type="text">
+  </governor>
+  <governor_punish type="text">
     <hu>A birodalom hajóinak elsüllyesztéséért %i körből kimaradsz.</hu>
     <en>As a pirate you are senteced to inprisonment for %i turn(s). Don't hope such mercy if you are caught plundering our ships again.</en>
     <arr>Kalózkodás vétkéért %i kör börtönbüntetést kapsz. Legközelebb ne számíts irgalmora, ha a birodalmunk hajóit fosztogatod!</arr>
-  </kormanyzo_buntet>
-  <kormanyzo_maxJutalom type="text">
+  </governor_punish>
+  <governor_reward type="text">
     <hu>Az esüllyesztett hajókért a kormányzó %i arany jutalomban részesít.</hu>
     <en>The govenor gives you %i gold(s) as a reward for sinking enemy ships.</en>
     <arr>Áldásos tevékenyégedért %i aranytallér üti a markodat.</arr>
-  </kormanyzo_maxJutalom>
-  <legenyseg type="text">
+  </governor_reward>
+  <crew type="text">
     <hu>Legénység</hu>
     <en>Crew</en>
     <arr>Matrózok</arr>
-  </legenyseg>
-  <legenyseg_uj type="text">
+  </crew>
+  <crew_new type="text">
     <hu>Új matrózok felbérelése:</hu>
     <en>Hire new members:</en>
     <arr>Hány fő kell még, kapitány?</arr>
-  </legenyseg_uj>
-  <legenyseg_hajotele type="text">
+  </crew_new>
+  <crew_ship_full type="text">
     <hu>A hajó megtelt.</hu>
     <en>Ship is fully manned.</en>
     <arr>Tele a hajó, kapitány!</arr>
-  </legenyseg_hajotele>
-  <legenyseg_kikotoures type="text">
+  </crew_ship_full>
+  <crew_port_empty type="text">
     <hu>Nincs kit felbérelni.</hu>
     <en>No one to hire.</en>
     <arr>A csapszék üres.</arr>
-  </legenyseg_kikotoures>
-  <legenyseg_nincspenz type="text">
+  </crew_port_empty>
+  <crew_no_money type="text">
     <hu>Nincs pénz új matrózokra.</hu>
     <en>You have not enough treasure.</en>
     <arr>Nincs pénzünk újakra, kapitány.</arr>
-  </legenyseg_nincspenz>
-  <legenyseg_OK type="text">
+  </crew_no_money>
+  <crew_hire type="text">
     <hu>Felbérel</hu>
     <en>Hire</en>
     <arr>Johó!</arr>
-  </legenyseg_OK>
-  <letszam type="text">
+  </crew_hire>
+  <men_count type="text">
     <hu>%i matróz %i csapatban</hu>
     <en>%i sailor(s) in %i team(s)</en>
     <arr>%i matróz %i csapatban</arr>
-  </letszam>
-  <leviatan_kijatszasa type="text">
+  </men_count>
+  <play_leviathan type="text">
     <hu>Kijátszom a leviatánt</hu>
     <en>Play leviathan</en>
     <arr>Majd a szörny segít!</arr>
-  </leviatan_kijatszasa>
-  <megvasarolva type="text">
+  </play_leviathan>
+  <already_bought type="text">
     <hu>Már megvetted</hu>
     <en>Already bought</en>
     <arr>Már megszereztük</arr>
-  </megvasarolva>
-  <ment type="textvariable">
+  </already_bought>
+  <save type="textvariable">
     <hu>Játék mentése</hu>
     <en>Save game</en>
     <arr>Jegyezzük föl</arr>
-  </ment>
-  <mentEsKilep type="textvariable">
+  </save>
+  <save_and_exit type="textvariable">
     <hu>Mentés és kilépés</hu>
     <en>Save &amp; exit</en>
     <arr>Jegyezd meg és tünés</arr>
-  </mentEsKilep>
-  <nevfelirat type="textvariable">
+  </save_and_exit>
+  <name_label type="textvariable">
     <hu>Név:</hu>
     <en>Name:</en>
     <arr>Neved:</arr>
-  </nevfelirat>
-  <nevhiany type="text">
+  </name_label>
+  <name_missing type="text">
     <hu>%i. játékos névtelen maradt!</hu>
     <en>Player %i has no name.</en>
     <arr>%i. matróz, mi a neved?</arr>
-  </nevhiany>
-  <osszecsapas type="text">
+  </name_missing>
+  <fight type="text">
     <hu>Összecsapás!</hu>
     <en>Fight!</en>
     <arr>Harcra!</arr>
-  </osszecsapas>
-  <nyelv type="text">
+  </fight>
+  <language type="text">
     <hu>Nyelv</hu>
     <en>Language</en>
     <arr>Nyelv...arr...</arr>
-  </nyelv>
-  <pontszamok type="text">
+  </language>
+  <scores type="text">
     <hu>Pontszámok</hu>
     <en>Scores</en>
     <arr>Davy Jones ládája</arr>
-  </pontszamok>
-  <spanyol type="text">
+  </scores>
+  <spanish type="text">
     <hu>spanyol</hu>
     <en>Spanish</en>
     <arr>gaz spanyol</arr>
-  </spanyol>
-  <startgomb type="textvariable">
+  </spanish>
+  <start_button type="textvariable">
     <hu>Start</hu>
     <en>Start</en>
     <arr>Hajrá!</arr>
-  </startgomb>
-  <stringhiany type="text">
+  </start_button>
+  <translation_missing type="text">
     <hu>[Hiányzik a megfelelő szöveg fordítása.]</hu>
     <en>[Translation is missing.]</en>
     <arr>[Kapitány, ezen a nyelven ezt nem tudom elmondani.]</arr>
-  </stringhiany>
-  <szabadMatroz type="text">
+  </translation_missing>
+  <sailors_to_hire type="text">
     <hu>Felbérelhető matrózok</hu>
     <en>Sailors to hire</en>
     <arr>Tettrekész legények</arr>
-  </szabadMatroz>
-  <szamuzottek_marad type="text">
+  </sailors_to_hire>
+  <castaway_no_hope type="text">
     <hu>Ebben a körben nem tudsz megszabadulni a szigetről.</hu>
-    <en>A ship picked you up from the island and brought you to %s.</en>
+    <en>You could not get away from the island in this round.</en>
     <arr>Ebben a körben nem tudsz megszabadulni a szigetről.</arr>
-  </szamuzottek_marad>
-  <szamuzottek_siker type="text">
+  </castaway_no_hope>
+  <castaway_success type="text">
     <hu>Egy hajó felvett a szigetről, és %s kikötőjébe vitt.</hu>
     <en>A ship picked you up from the island and brought you to %s.</en>
     <arr>Egy hajó felvett a szigetről, és %s kikötőjébe vitt.</arr>
-  </szamuzottek_siker>
-  <szelcsend type="text">
+  </castaway_success>
+  <calm type="text">
     <hu>A szélcsend miatt egy körből kimaradsz.</hu>
     <en>You miss a turn because of the dead calm.</en>
     <arr>A szélcsend miatt egy körből kimaradunk, uram.</arr>
-  </szelcsend>
-  <szinfelirat type="textvariable">
+  </calm>
+  <color_label type="textvariable">
     <hu>Szín:</hu>
     <en>Color:</en>
     <arr>Vitorla:</arr>
-  </szinfelirat>
-  <szinhiany type="text">
+  </color_label>
+  <color_missing type="text">
     <hu>%s még nem választott színt!</hu>
     <en>%s has picked no color.</en>
     <arr>%s, válassz színt, de még ma!</arr>
-  </szinhiany>
-  <szirendal type="text">
+  </color_missing>
+  <sirens type="text">
     <hu>Vesztettél %i matrózt.</hu>
     <en>You lost %i sailors.</en>
     <arr>%i matróz a vízbe vetette magát, uram.</arr>
-  </szirendal>
-  <szirendal_legyozve type="text">
+  </sirens>
+  <sirens_skipped type="text">
     <hu>Tiéd a lap, harcban kijátszható.</hu>
     <en>You have the card.</en>
     <arr>Egy szirént befogtunk, uram!</arr>
-  </szirendal_legyozve>
-  <szkuner type="text">
+  </sirens_skipped>
+  <schooner type="text">
     <hu>szkúner</hu>
     <en>schooner</en>
     <arr>szkúner</arr>
-  </szkuner>
-  <taino_egy type="text">
+  </schooner>
+  <taino_one type="text">
     <hu>Egy barátságos benszülött csatlakozott.</hu>
     <en>A friendly native man joined your crew.</en>
     <arr>Egy benszülött csatlakozott hozzánk, uram.</arr>
-  </taino_egy>
-  <taino_nulla type="text">
+  </taino_one>
+  <taino_none type="text">
     <hu>A benszülöttek barátságosan üdvzölnek.</hu>
     <en>Some natives wave you from the shores.</en>
     <arr>Benszülötteket láttunk, uram.</arr>
-  </taino_nulla>
-  <taino_tobb type="text">
+  </taino_none>
+  <taino_some type="text">
     <hu>%i barátságos benszülött csatlakozott.</hu>
     <en>%i friendly native men joined your crew.</en>
     <arr>%i benszülött csatlakozott hozzánk, uram.</arr>
-  </taino_tobb>
-  <teljeskepernyo type="textvariable">
+  </taino_some>
+  <full_screen type="textvariable">
     <hu>Teljes képernyő</hu>
     <en>Full screen</en>
     <arr>Vitorlát bonts!</arr>
-  </teljeskepernyo>
-  <ujjatek type="textvariable">
+  </full_screen>
+  <new_game type="textvariable">
     <hu>Új játék</hu>
     <en>New Game</en>
     <arr>Tengerre, semmirekellők!</arr>
-  </ujjatek>
-  <ujkor type="text">
+  </new_game>
+  <new_turn type="text">
     <hu>%s köre jön.</hu>
     <en>%s's turn.</en>
     <arr>%s köre jön.</arr>
-  </ujkor>
-  <ujmeret type="text">
+  </new_turn>
+  <new_resolution type="text">
     <hu>A beállított új felbontás:</hu>
     <en>Resolution is set to</en>
     <arr>Zsákmányod egy új felbontás:</arr>
-  </ujmeret>
-  <ujnyelv type="text">
+  </new_resolution>
+  <new_language type="text">
     <hu>A magyar nyelvet állítottad be.</hu>
     <en>English is set as display language.</en>
     <arr>A legénység kalózok módjára beszél, johó!</arr>
-  </ujnyelv>
-  <uszadek type="text">
+  </new_language>
+  <driftwood type="text">
     <hu>Az uszadékban semmi hasznosat nem találsz.</hu>
     <en>Nothing useful could be found among the driftwood.</en>
     <arr>Az uszadékban semmi hasznos nem volt, uram!</arr>
-  </uszadek>
-  <uszadek_siker type="text">
+  </driftwood>
+  <driftwood_success type="text">
     <hu>Egy arany értékű kincset találtál.</hu>
     <en>Treasure worth of one gold found among the driftwood.</en>
     <arr>Egy arany értékű kincset találtunk, uram.</arr>
-  </uszadek_siker>
-  <vereseg type="text">
+  </driftwood_success>
+  <defeated_by_kraken type="text">
     <hu>A kraken legyőzött.</hu>
     <en>The kraken defeated you.</en>
     <arr>A kraken legyőzött minket, uram.</arr>
-  </vereseg>
-  <veszteseg type="text">
+  </defeated_by_kraken>
+  <casualties_of_kraken type="text">
     <hu>A kraken elragadta %i matrózod, mielőtt legyőzted.</hu>
     <en>The Kraken killed %i of your saliros before you could fight it off.</en>
     <arr>A kraken elragadott %i matrózt, mielőtt legyőztük, uram.</arr>
-  </veszteseg>
-  <vihar_kimarad type="text">
+  </casualties_of_kraken>
+  <storm_miss_turn type="text">
     <hu>A vihar tönkretette a vitorlázatot. Kimaradsz egy körből, amíg a legénység megfoltozza.</hu>
     <en>The storm shred the sails. Miss a turn while your crew patch it.</en>
     <arr>A vihar tönkretette a vitorlázatot. Kimaradsz egy körből, amíg a legénység megfoltozza.</arr>
-  </vihar_kimarad>
-  <vihar_siker type="text">
+  </storm_miss_turn>
+  <storm_success type="text">
     <hu>A viharos szél tovább röpíti hajódat.</hu>
     <en>Your ship sails further because of the storm's wind.</en>
     <arr>A viharos szél tovább röpíti hajódat.</arr>
-  </vihar_siker>
-  <vihar_vitorla type="text">
+  </storm_success>
+  <storm_sail_damage type="text">
     <hu>A vihar tönkretette a vitorlázatot. Még szerencse, hogy a raktérben volt tartalékvitorla.</hu>
     <en>The storm shred the sails. Fortunately you had some spare sails at the cargo hold.</en>
     <arr>A vihar tönkretette a vitorlázatot. Még szerencse, hogy a raktérben volt tartalékvitorla.</arr>
-  </vihar_vitorla>
-  <zaszloervenytelen type="text">
+  </storm_sail_damage>
+  <flag_invalid type="text">
     <hu>%s érvénytelen zászlót választott!</hu>
     <en>%s has picked no valid flag.</en>
     <arr>%s, válassz zászlót, de érvényeset!</arr>
-  </zaszloervenytelen>
-  <zaszlofelirat type="textvariable">
+  </flag_invalid>
+  <flag_label type="textvariable">
     <hu>Zászló:</hu>
     <en>Flag:</en>
     <arr>Lobogó:</arr>
-  </zaszlofelirat>
-  <zaszlohiany type="text">
+  </flag_label>
+  <flag_missing type="text">
     <hu>%s még nem választott zászlót!</hu>
     <en>%s has picked no flag.</en>
     <arr>%s, válassz zászlót, de még ma!</arr>
-  </zaszlohiany>
-  <zendules_sikeres type="text">
+  </flag_missing>
+  <mutiny_succeeded type="text">
     <hu>A legénység partra tesz egy szigeten.</hu>
     <en>You are put ashore on the Forgotten Island.</en>
     <arr>A matrózaid egy isten háta mögötti szigeten hagynak.</arr>
-  </zendules_sikeres>
-  <zendules_leverve type="text">
+  </mutiny_succeeded>
+  <mutiny_suppressed type="text">
     <hu>Egy hangzatos beszéddel magad mögé állítod a matrózokat, és a főkolompost kiteszitek egy szigetre.</hu>
     <en>You manage to calm you crew down. The crewman who plotted the mutiny is put ashore on an island.</en>
     <arr>Miután rendre utasítottad a kutyákat, a pallóra tereled a vezérüket.</arr>
-  </zendules_leverve>
+  </mutiny_suppressed>
 </interface>

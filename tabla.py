@@ -53,7 +53,7 @@ class Tabla(Frame):
                                 ])
         self.helyszotarR = {}
         for birodalom in self.boss.birodalomszotar.keys():
-            v = self.boss.birodalomszotar[birodalom].varos
+            v = self.boss.birodalomszotar[birodalom].capital
             self.boss.birodalomszotar[birodalom].coordinates = self.helyszotar[v][0]
         for hely in self.helyszotar.keys():
             for ertek in self.helyszotar[hely]:
@@ -81,7 +81,7 @@ class Tabla(Frame):
         self.keptar['mezohatter'] = PhotoImage((open('img/mezo.png').resize((self.mezomeret,self.mezomeret), ANTIALIAS)).convert("RGBA"))
         for (mezox,mezoy) in self.mezolista:
             self.jatekter.create_image(int((mezox-0.5)*self.mezomeret),int((mezoy-0.5)*self.mezomeret), image = self.keptar['mezohatter'], anchor = CENTER)
-        # A mezőikonok betöltése
+        # A mezőiconok betöltése
         for elem in self.helyszotar:
             aktualis = open('img/'+elem+'.png')
             aktualis = aktualis.resize((int(self.mezomeret*0.9),int(self.mezomeret*0.9)), ANTIALIAS)
@@ -123,14 +123,14 @@ class Tabla(Frame):
         # A matrózok betöltése
         self.keptar['matrozok'] = PhotoImage((open('img/matrozok.png').resize((a,a), ANTIALIAS)).convert("RGBA"))
         # Hajók betöltése a hajóács gombjaihoz, és az ellenfelekhez.
-        for hajotipus in ['brigantin','fregatt','szkuner','galleon']:
+        for hajotipus in ['brigantine', 'frigate', 'schooner', 'galleon']:
             hajokep = open('img/'+hajotipus+'.png')
             magassagszorzo = hajokep.size[1]/hajokep.size[0]
             hajokep = hajokep.resize((self.mezomeret, int(self.mezomeret*magassagszorzo)), ANTIALIAS)
             self.keptar[hajotipus] = PhotoImage(hajokep)
         # A zászlók betöltése.
         for birodalom in self.boss.birodalomszotar.keys():
-            zNev = 'zaszlo_'+birodalom
+            zNev = 'flag_'+birodalom
             zKep = open(('img/'+zNev+'.png'))
             magassagszorzo = zKep.size[0]/zKep.size[1]
             self.keptar[zNev] = PhotoImage(zKep.resize((int(self.meret/20*magassagszorzo),int(self.meret/20)), ANTIALIAS))
@@ -140,8 +140,8 @@ class Tabla(Frame):
         self.keptar['matroz1'] = PhotoImage(self.keptar['matroz1'])  
         self.keptar['matroz2'] = PhotoImage(open('img/matroz2.png'))
         # Csatagombok betöltése.
-        for i in ['pisztoly', 'puska', 'labtovis', 'granat', 'kartacs', 'gorogtuz', 'majom', 'szirenkurt', 'szirenek', "alvarez"]:
-            self.keptar['ikon_'+i] = PhotoImage(open('img/ikon_'+i+'.png'))
+        for i in ['gun', 'rifle', 'caltrop', 'grenade', 'grapeshot', 'greek_fire', 'monkey', 'sirenhorn', 'sirens', "alvarez"]:
+            self.keptar['icon_'+i] = PhotoImage(open('img/icon_'+i+'.png'))
         print('leképezés kész')
     
     def kartyakep(self, pakli, prefix):
@@ -289,7 +289,7 @@ class Tabla(Frame):
         else:
             self.villogaski()
             self.hajotathelyez(klikkx,klikky)
-            self.boss.jatekmenet.szakasz_mezoesemeny()
+            self.boss.jatekmenet.szakasz_mezoevent()
             
     def villogaski(self):
         "Kikapcsolja a célnégyzetek villogását."

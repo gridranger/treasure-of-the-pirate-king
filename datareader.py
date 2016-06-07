@@ -11,10 +11,6 @@ class DataReader(object):
         self.master = master
         self.missing_files = []
         self.path_dictionary = self._load_path_dictionary('db/paths.xml')
-        self.term_dictionary = dict(
-            [('spanish', 'spanyol'), ('french', 'francia'), ('dutch', 'holland'), ('british', 'angol'),
-             ('pirate', 'kaloz'),
-             ('galleon', 'galleon'), ('schooner', 'szkuner'), ('brigantine', 'brigantin'), ('frigate', 'fregatt')])
         self.errors = self._load_errors()
         if self.missing_files:
             showerror('Error', (self.errors['configLocationMissingError'] % ', '.join(self.missing_files)))
@@ -81,8 +77,8 @@ class DataReader(object):
         battle_dictionary = {}
         for battle in battles:
             battle_id = battle.get('id')
-            flag = self.term_dictionary[battle.find('flag').text]
-            ship_type = self.term_dictionary[battle.find('shipType').text]
+            flag = battle.find('flag').text
+            ship_type = battle.find('shipType').text
             ship_name = battle.find('shipName').text
             teams = self._load_teams(battle)
             loot = self._load_loot(battle)
@@ -122,8 +118,7 @@ class DataReader(object):
         except ValueError:
             battle_id = battle.get('id')
             ship_name = battle.find('shipName').text
-            showerror('Error', (self.errors['lootValueError'] % (ship_name, battle_id,
-                                                                 self.path_dictionary['battles'])))
+            showerror('Error', (self.errors['lootValueError'] % (ship_name, battle_id, self.path_dictionary['battles'])))
         return loot
 
     @staticmethod
@@ -163,7 +158,7 @@ class DataReader(object):
         card_dictionary = {}
         for event_card in events.findall('card') + loot.findall('card'):
             try:
-                title = event_card.find('title').find(self.master.nyelv).text
+                title = event_card.find('title').find(self.master.language).text
             except AttributeError:
                 title = error_message
             else:
@@ -172,7 +167,7 @@ class DataReader(object):
                 else:
                     title = title.replace('\\n', '\n')
             try:
-                text = event_card.find('text').find(self.master.nyelv).text
+                text = event_card.find('text').find(self.master.language).text
             except AttributeError:
                 text = error_message
             else:
@@ -185,7 +180,7 @@ class DataReader(object):
 
     def _load_common_card_data(self):
         try:
-            error_message = self.master.szotar['stringhiany']
+            error_message = self.master.szotar['translation_missing']
         except AttributeError:
             error_message = self.errors['stringAttributeError']
         all_cards = parse(self.path_dictionary['cards']).getroot()
@@ -205,7 +200,7 @@ class DataReader(object):
         elif is_reverse_required:
             language_list = {}
             language_list_reversed = {}
-            for item in interface.find('nyelvek'):
+            for item in interface.find('languages'):
                 language_list[item.text] = item.tag
                 language_list_reversed[item.tag] = item.text
             return language_list, language_list_reversed

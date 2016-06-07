@@ -1,6 +1,12 @@
 # -*- coding: utf-8 -*-
 __author__ = 'Bárdos Dávid'
 
+BRITISH = 'british'
+FRENCH = 'french'
+DUTCH = 'dutch'
+PIRATE = 'pirate'
+SPANISH = 'spanish'
+
 
 class Empire(object):
     def __init__(self, empire_id, capital, name, coordinates):

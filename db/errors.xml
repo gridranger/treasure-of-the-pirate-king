@@ -4,5 +4,5 @@
   <exception id="lootValueError">Ship %s (encounterId %s) has invalid loot value set in %s.'</exception>
   <exception id="stringAttributeError">Translation not found.</exception>
   <exception id="configLocationMissingError">The following config files' path has not set in db/paths.xml:\n %s</exception>
-  <exception id="cardImgMissingAttributeError">kincs_kincs</exception>
+  <exception id="cardImgMissingAttributeError">treasure_treasure</exception>
 </exceptions>

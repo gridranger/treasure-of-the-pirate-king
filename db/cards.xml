@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <allCards>
   <events>
-    <card id="leviatan">
+    <card id="leviathan">
       <title>
         <hu>Leviatán</hu>
         <en>Leviathan</en>
@@ -12,10 +12,10 @@
         <en>If you have to miss a turn discard the leviathan instead.</en>
         <arr>Az ijesztő tengeri kígyó már-már ráveti magát hajódra, amikor egy ősz matróz szigorúan legorombítja. A szörnyeteg ettől kezes jószággá válik.\nA játékos akkor is dobhat, ha kimaradna, mert a szörny tovább vontatja. Egyszer használható.</arr>
       </text>
-      <img>esemeny_leviatan</img>
+      <img>event_leviathan</img>
       <method>self.csakMegtart()</method>
     </card>
-    <card id="szirenek">
+    <card id="sirens">
       <title>
         <hu>Szirének</hu>
         <en>Sirens</en>
@@ -26,8 +26,8 @@
         <en>Your crew hear strange melody from the direction of a nearby reef.</en>
         <arr>Egy közeli szirt irányából különös dal csendül, amely megzavarja a legénységet.</arr>
       </text>
-      <img>esemeny_szirenek</img>
-      <method>self.szirenek()</method>
+      <img>event_sirens</img>
+      <method>self.sirens()</method>
     </card>
     <card id="bobbydick">
       <title>
@@ -40,10 +40,10 @@
         <en>You encounter a harpooned  great sperm whale. You can either help it or finish it.</en>
         <arr>Az óriás ámbráscet egy szigonytól kínlódik. Eldöntheted, hogy elejted vagy segítesz rajta.</arr>
       </text>
-      <img>esemeny_bobbydick</img>
+      <img>event_bobbydick</img>
       <method>self.bobbyDick()</method>
     </card>
-    <card id="skorbut">
+    <card id="scurvy">
       <title>
         <hu>Skorbut</hu>
         <en>Scurvy</en>
@@ -54,10 +54,10 @@
         <en>Your crew suffer from scurvy. You will lose a sailor in every turn until you get to a port or a fertile island.</en>
         <arr>A fedélzeten skorbutjárvány tör ki. Minden körben egy matrózt veszítesz, amíg Föld! Föld! mezőre vagy kikötőre nem lépsz. </arr>
       </text>
-      <img>esemeny_skorbut</img>
+      <img>event_scurvy</img>
       <method>self.csakMegtart()</method>
     </card>
-    <card id="zendules">
+    <card id="mutiny">
       <title>
         <hu>Zendülés</hu>
         <en>Mutiny</en>
@@ -68,10 +68,10 @@
         <en>One of your sailors organized a mutiny.</en>
         <arr>A legénység fellázadt.</arr>
       </text>
-      <img>esemeny_zendules</img>
-      <method>self.zendules()</method>
+      <img>event_mutiny</img>
+      <method>self.mutiny()</method>
     </card>
-    <card id="zatonyok">
+    <card id="reefs">
       <title>
         <hu>Zátonyok</hu>
         <en>Reefs</en>
@@ -82,10 +82,10 @@
         <en>You navigate through reefs.|The ship run aground on a reef. You miss a turn.</en>
         <arr>Hajód zátonyok közt halad át.|A hajó homokpadra futott, uram. Kimaradunk egy körből.</arr>
       </text>
-      <img>esemeny_zatonyok</img>
-      <method>self.zatonyok()</method>
+      <img>event_reefs</img>
+      <method>self.reefs()</method>
     </card>
-    <card id="dezertorok">
+    <card id="deserters">
       <title>
         <hu>Dezertőrök</hu>
         <en>Deserters</en>
@@ -96,10 +96,10 @@
         <en>One of the longboats is missing. | crewmans deserted.</en>
         <arr>Az egyik csónak eltűnt az éjjel. | fő megszökött, uram.</arr>
       </text>
-      <img>esemeny_zendules</img>
-      <method>self.dezertorok()</method>
+      <img>event_mutiny</img>
+      <method>self.deserters()</method>
     </card>
-    <card id="hadnagy">
+    <card id="treacherous_mate">
       <title>
         <hu>Az áruló hadnagy</hu>
         <en>The treacherous mate</en>
@@ -110,8 +110,8 @@
         <en>You found a delirious castaway who was first mate on Groglord. Before he died he told you how to find the pirate king's treasure once you are on the island that's coordinates are known only to Captain Harrison himself.</en>
         <arr>Egy félrebeszélő hajótöröttben a Grogbáró nevű hajó szökött hadnagyára ismersz. A halála előtti utolsó tiszta pillanatban még elmondja, hogyan lehet megtalálni a kalózkirály kincsét a szigeten, amelynek koordinátáit nem ismeri, csak maga Harrison kapitány.</arr>
       </text>
-      <img>esemeny_terkep</img>
-      <method>self.hadnagy()</method>
+      <img>event_map</img>
+      <method>self.treacherous_mate()</method>
     </card>
     <card id="kraken">
       <title>
@@ -121,13 +121,13 @@
       </title>
       <text>
         <hu>A mélytengerek réme hajódat szemelte ki főfogásnak. </hu>
-        <en></en>
+        <en>This high seas monster decided to consume your ship.</en>
         <arr>A mélytengerek réme hajódat szemelte ki főfogásnak. </arr>
       </text>
-      <img>esemeny_kraken</img>
+      <img>event_kraken</img>
       <method>self.kraken()</method>
     </card>
-    <card id="groglazadas">
+    <card id="grog_riot">
       <title>
         <hu>Groglázadás</hu>
         <en>Grogriot</en>
@@ -138,10 +138,10 @@
         <en>The grog you purchased at the last port is so weak so the sailors begin to sober. Try to get to a port until your next turn is finished or the crew will mutiny.</en>
         <arr>A tengerész szeszesital feliratú hordókban csak hitvány lötty van. A tengeri medvék kijózanodnak. Tartsd meg a kártyát a következő körig. Ha sikerül egy kikötőbe jutnod, a kártya eldobható. Ha nem, kitör a zendülés.</arr>
       </text>
-      <img>esemeny_tivornya</img>
+      <img>event_carousal</img>
       <method>self.grogLazadas()</method>
     </card>
-    <card id="tivornya">
+    <card id="carousal">
       <title>
         <hu>Tivornya</hu>
         <en>Carousal</en>
@@ -152,8 +152,8 @@
         <en>The crew celebrate Davy Jones' birthday. The extra dose of grog makes them spirited. You can roll again in the next turn if your first roll is not satisfying.</en>
         <arr>Davy Jones születésnapja alkalmából a legénység hatalmas tivornyát rendez. A plusz  adag grog fellelkesíti őket, ezért, ha a következő körben hajózáshoz dobott érték kedvezőtlen, egyszer újra dobhatsz helyette.</arr>
       </text>
-      <img>esemeny_tivornya</img>
-      <method>self.tivornya()</method>
+      <img>event_carousal</img>
+      <method>self.carousal()</method>
     </card>
     <card id="majom3">
       <title>
@@ -166,10 +166,10 @@
         <en>A sailor at top spotted a three-headed monkey on a nearby island. You disembark but find nothing.</en>
         <arr>Az árbockosárban ülő matróz egy háromfejű majmot vél látni a közeli feltérképezetlen szigeten. A legénység partra száll, de semmiféle majmot nem találnak.</arr>
       </text>
-      <img>esemeny_majom3</img>
-      <method>self.haromfejumajom()</method>
+      <img>event_monkey</img>
+      <method>self.three_headed_monkey()</method>
     </card>
-    <card id="hajotorottek">
+    <card id="castaways">
       <title>
         <hu>Hajótöröttek</hu>
         <en>Castaways</en>
@@ -177,13 +177,13 @@
       </title>
       <text>
         <hu>Hajótörötteket találsz egy szigeten. | fő csatlakozott.</hu>
-        <en>You found some castaway on an island. | crewmans added.</en>
+        <en>You found some castaway on an island. | crewmen added.</en>
         <arr>Hajótörötteket találsz egy szigeten. | fő csatlakozott.</arr>
       </text>
-      <img>esemeny_kikoto</img>
-      <method>self.hajotorottek()</method>
+      <img>event_port</img>
+      <method>self.castaways()</method>
     </card>
-    <card id="kisertethajo">
+    <card id="ghost_ship">
       <title>
         <hu>Kísértethajó</hu>
         <en>Ghost ship</en>
@@ -194,10 +194,10 @@
         <en>You gaff an abandoned ship. | of your crewmen mysteriously disappear however you find a treasure chest.</en>
         <arr>Egy legénység nélküli hajót csáklyáztunk meg, uram. | főnek rejtélyesen nyoma veszett, viszont a fedélzeten kincset találtunk.</arr>
       </text>
-      <img>esemeny_kisertethajo</img>
-      <method>self.kisertethajo()</method>
+      <img>event_ghost_ship</img>
+      <method>self.ghost_ship()</method>
     </card>
-    <card id="vitorla">
+    <card id="sail">
       <title>
         <hu>Sorold fel a vitorla részeit!</hu>
         <en>List all parts of a sail</en>
@@ -208,10 +208,10 @@
         <en>We believe you can. It's your turn again.</en>
         <arr>A Kalózok Rendelkezéseinek  Egységes Szabályzata (KRESZ) szerint a vitorla egy nagy darab vitorlavászonból áll. Ha jól felsoroltad - és legénységed elhiszi, hogy így történt , újra te jössz.</arr>
       </text>
-      <img>esemeny_vitorla</img>
-      <method>self.vitorlareszei()</method>
+      <img>event_sail</img>
+      <method>self.parts_of_the_sail()</method>
     </card>
-    <card id="rabszolgak">
+    <card id="freed_slaves">
       <title>
         <hu>Felszabadított rabszolgák</hu>
         <en>Freed slaves</en>
@@ -222,10 +222,10 @@
         <en>You intercepted a drifting slaver. The crew is missing mysteriously but some of the slaves are still alive. | crewmen joined.</en>
         <arr>Hajód elfog sodródó slavert. A legénységnek titokzatos módon nyoma veszett, de rabszolgák némelyike még él. | fő csatlakozott a legénységhez, uram.</arr>
       </text>
-      <img>esemeny_kikoto</img>
+      <img>event_port</img>
       <method>self.slaver()</method>
     </card>
-    <card id="irany_portroyal">
+    <card id="set_sail_to_portroyal">
       <title>
         <hu>Irány Port Royal!</hu>
         <en>Set sail for Port Royal!</en>
@@ -236,10 +236,10 @@
         <en></en>
         <arr></arr>
       </text>
-      <img>esemeny_terkep</img>
-      <method>self.irany("portroyal")</method>
+      <img>event_map</img>
+      <method>self.set_sail_to("portroyal")</method>
     </card>
-    <card id="irany_havanna">
+    <card id="set_sail_to_havanna">
       <title>
         <hu>Irány Havanna!</hu>
         <en>Set sail for Havana!</en>
@@ -250,10 +250,10 @@
         <en></en>
         <arr></arr>
       </text>
-      <img>esemeny_terkep</img>
-      <method>self.irany("havanna")</method>
+      <img>event_map</img>
+      <method>self.set_sail_to("havanna")</method>
     </card>
-    <card id="irany_martinique">
+    <card id="set_sail_to_martinique">
       <title>
         <hu>Irány Martinique!</hu>
         <en>Set sail for Martinique!</en>
@@ -264,10 +264,10 @@
         <en></en>
         <arr></arr>
       </text>
-      <img>esemeny_terkep</img>
-      <method>self.irany("martinique")</method>
+      <img>event_map</img>
+      <method>self.set_sail_to("martinique")</method>
     </card>
-    <card id="irany_curacao">
+    <card id="set_sail_to_curacao">
       <title>
         <hu>Irány Curacao!</hu>
         <en>Set sail for Curacao!</en>
@@ -278,10 +278,10 @@
         <en></en>
         <arr></arr>
       </text>
-      <img>esemeny_terkep</img>
-      <method>self.irany("curacao")</method>
+      <img>event_map</img>
+      <method>self.set_sail_to("curacao")</method>
     </card>
-    <card id="irany_tortuga">
+    <card id="set_sail_to_tortuga">
       <title>
         <hu>Irány Tortuga!</hu>
         <en>Set sail for Tortuga!</en>
@@ -292,10 +292,10 @@
         <en></en>
         <arr></arr>
       </text>
-      <img>esemeny_terkep</img>
-      <method>self.irany("tortuga")</method>
+      <img>event_map</img>
+      <method>self.set_sail_to("tortuga")</method>
     </card>
-    <card id="hajotores">
+    <card id="shipwreck">
       <title>
         <hu>Hajótörés</hu>
         <en>Shipwreck</en>
@@ -306,13 +306,13 @@
         <en>You can choose either to miss three turns or to lose your entire crew and get to the Forgotten Island.</en>
         <arr>Választhatsz, hogy kimaradsz három körből, amíg a legénységet újra összegyűjtöd egy új hajó fedélzetén, vagy lemondasz róluk, és kiúszol a száműzöttek szigetére.</arr>
       </text>
-      <img>esemeny_zatonyok</img>
+      <img>event_reefs</img>
       <method>self.dummy()</method>
     </card>
-    <card id="vuduatok">
+    <card id="voodoo_curse">
       <title>
         <hu>Vuduátok</hu>
-        <en>Vodou Curse</en>
+        <en>Voodoo Curse</en>
         <arr>Vuduátok</arr>
       </title>
       <text>
@@ -320,13 +320,13 @@
         <en>A vodou priest cursed your ship. Next time you would get some treasure you will find and empty chest.</en>
         <arr>Egy vudu varázsló átkot mondott a hajódra. Legközelebb ha kincset kell húznod, hagyd ki, és helyette dobd el az átok kártyát.</arr>
       </text>
-      <img>esemeny_vuduatok</img>
+      <img>event_voodoo_curse</img>
       <method>self.dummy()</method>
     </card>
-    <card id="vuduszelvarazs">
+    <card id="voodoo_wind_spell">
       <title>
         <hu>Vudu szélvarázs</hu>
-        <en>Vodou Wind Spell</en>
+        <en>Voodoo Wind Spell</en>
         <arr>Vudu szélvarázs</arr>
       </title>
       <text>
@@ -334,10 +334,10 @@
         <en>A vodou priest asks the loas for blessed wind. You can use this card once to turn the wind to any direciton.</en>
         <arr>Egy vudu pap jó szelet kér számodra a szellemektől. Tedd el a kártyát, és egyszer tetszés szerint elforgathatod a szélirány mutatóját lépés előtt.</arr>
       </text>
-      <img>esemeny_vuduszelvarazs</img>
+      <img>event_voodoo_wind_spell</img>
       <method>self.dummy()</method>
     </card>
-    <card id="csapszek">
+    <card id="tavern_brawl">
       <title>
         <hu>Verekedés a csapszékben</hu>
         <en>Tavern brawl</en>
@@ -348,10 +348,10 @@
         <en>Your men started to brawl at the tavern.</en>
         <arr>Egy összeszólalkozást követően ölre mentek embereid a csapszékében.</arr>
       </text>
-      <img>esemeny_tivornya</img>
+      <img>event_carousal</img>
       <method>self.dummy()</method>
     </card>
-    <card id="kikoto">
+    <card id="found_port">
       <title>
         <hu>Alapíts kalózkikötőt!</hu>
         <en>Establish a pirate anchorage</en>
@@ -362,10 +362,10 @@
         <en>You fame has grown. Your favourite anchorage is more and more popular.</en>
         <arr>Egyre többen ismerik a neved a Karib-tengeren. Kedvenc horgonyzóhelyed egyre népszerűbb.</arr>
       </text>
-      <img>esemeny_kikoto</img>
+      <img>event_port</img>
       <method>self.dummy()</method>
     </card>
-    <card id="verseny">
+    <card id="competition">
       <title>
         <hu>Csomózási verseny</hu>
         <en>Knotting competition</en>
@@ -376,10 +376,10 @@
         <en>You and the quatermaster bet tieing blowline faster.</en>
         <arr>Fogadtál a fedélzetmesterrel, hogy gyorsabban kötsz matrózcsomót, mint ő.</arr>
       </text>
-      <img>esemeny_kikoto</img>
+      <img>event_port</img>
       <method>self.dummy()</method>
     </card>
-    <card id="iranytu">
+    <card id="compass">
       <title>
         <hu>Megzavarodott iránytű</hu>
         <en>Useless compass</en>
@@ -387,13 +387,13 @@
       </title>
       <text>
         <hu>Nem a szigetek mentek arrébb, hanem az iránytű rossz. Egy körből kimaradsz, amíg a csillagok alapján tájolva visszakormányozzátok a hajót a helyes irányba.</hu>
-        <en>It seems that the islands are not at the wrong place only your compass became useless. You miss one turn as you calcualte your location according to the stars.</en>
+        <en>Islands are where they should be it is your compass that became useless. You miss one turn as you calcualte your location according to the stars.</en>
         <arr>Nem a szigetek mentek arrébb, hanem az iránytű rossz. Egy körből kimaradsz, amíg a csillagok alapján tájolva visszakormányozzátok a hajót a helyes irányba.</arr>
       </text>
-      <img>esemeny_iranytu</img>
+      <img>event_compass</img>
       <method>self.dummy()</method>
     </card>
-    <card id="szerencse">
+    <card id="luck">
       <title>
         <hu>Horgászszerencse</hu>
         <en>Fishermen's luck</en>
@@ -404,10 +404,10 @@
         <en></en>
         <arr></arr>
       </text>
-      <img>esemeny_szerencse</img>
+      <img>event_luck</img>
       <method>self.dummy()</method>
     </card>
-    <card id="levego">
+    <card id="breath">
       <title>
         <hu>Lélegzetvisszatartó-\nverseny</hu>
         <en>Hold breath competition</en>
@@ -418,7 +418,7 @@
         <en>The breath holding record was beaten. You lost a sailor.</en>
         <arr>Megvan a lélegzetvisszatartó-verseny győztese. Vesztettél egy matrózt.</arr>
       </text>
-      <img>esemeny_levego</img>
+      <img>event_breath</img>
       <method>self.dummy()</method>
     </card>
     <card id="kincses0">
@@ -432,7 +432,7 @@
         <en>You found a treasure map. If you are at the southern treasure island you instantly find some tresure.</en>
         <arr>Egy kincs helyét felfedő térképre akadtál. Tartsd meg a kártyát, amíg a déli kincses szigetre nem vetődsz, és ott egyből beválthatod kincsre. Utána viszont már nem áshatsz le másik kincsért a következő körben.</arr>
       </text>
-      <img>esemeny_terkep</img>
+      <img>event_map</img>
       <method>self.dummy()</method>
     </card>
     <card id="kincses1">
@@ -446,12 +446,12 @@
         <en>You found a treasure map. If you are at the northwestern treasure island you instantly find some tresure.</en>
         <arr>Egy kincs helyét felfedő térképre akadtál. Tartsd meg a kártyát, amíg az északnyugati kincses szigetre nem vetődsz, és ott egyből beválthatod kincsre. Utána viszont már nem áshatsz le másik kincsért a következő körben.</arr>
       </text>
-      <img>esemeny_terkep</img>
+      <img>event_map</img>
       <method>self.dummy()</method>
     </card>
   </events>
   <loot>
-    <card id="kincs">
+    <card id="treasure">
       <title>
         <hu>Kincs</hu>
         <en>Loot</en>
@@ -462,24 +462,24 @@
         <en>You get %i gold coins.</en>
         <arr>Zsákmányod %i arany.</arr>
       </text>
-      <img>kincs_kincs</img>
-      <method>self.kincs()</method>
+      <img>treasure_treasure</img>
+      <method>self.treasure()</method>
     </card>
-    <card id="gorogtuz">
+    <card id="greek_fire">
       <title>
         <hu>Görögtűz</hu>
-        <en></en>
-        <arr></arr>
+        <en>Greek fire</en>
+        <arr>Görögtűz</arr>
       </title>
       <text>
         <hu>Szétszór egy választott ellenséges csapatot. Egyszer használható csatánként.</hu>
         <en>Scatters the selected enemy team. It can be used once in each battle.</en>
         <arr>Szétkergeti az ellenséget.</arr>
       </text>
-      <img>kincs_gorogtuz</img>
+      <img>treasure_greek_fire</img>
       <method>self.dummy()</method>
     </card>
-    <card id="granat">
+    <card id="grenade">
       <title>
         <hu>Gránát</hu>
         <en>Grenade</en>
@@ -490,10 +490,10 @@
         <en>Vanishes a whole enemy team. Consumable.</en>
         <arr>A pokolra küldi az ellenséget.</arr>
       </text>
-      <img>kincs_granat</img>
+      <img>treasure_grenade</img>
       <method>self.dummy()</method>
     </card>
-    <card id="kartacs">
+    <card id="grapeshot">
       <title>
         <hu>Kartács</hu>
         <en>Grapeshot</en>
@@ -504,10 +504,10 @@
         <en>You can attack once without counterattack.</en>
         <arr>Minden csapatod ágyúból tüzel az ellenfélre, aki nem támad vissza.</arr>
       </text>
-      <img>kincs_kartacs</img>
+      <img>treasure_grapeshot</img>
       <method>self.dummy()</method>
     </card>
-    <card id="kutya">
+    <card id="dog">
       <title>
         <hu>Kutya</hu>
         <en>Dog</en>
@@ -518,10 +518,10 @@
         <en />
         <arr />
       </text>
-      <img>kincs_kutya</img>
+      <img>treasure_dog</img>
       <method>self.dummy()</method>
     </card>
-    <card id="labtovis">
+    <card id="caltrop">
       <title>
         <hu>Lábtövis</hu>
         <en>Caltrop</en>
@@ -532,10 +532,10 @@
         <en>It reduces the enemy's attack strength when used in battle. Consumable.</en>
         <arr>Leszűkíti harcban az ellenfél mozgásterét.</arr>
       </text>
-      <img>kincs_labtovis</img>
+      <img>treasure_caltrop</img>
       <method>self.dummy()</method>
     </card>
-    <card id="majom">
+    <card id="monkey">
       <title>
         <hu>Majom</hu>
         <en>Monkey</en>
@@ -546,10 +546,10 @@
         <en>Recovers treasure from sinking enemy ships.</en>
         <arr>Jack, a majom elhozza a süllyedő hajókról a kincset.</arr>
       </text>
-      <img>kincs_majom</img>
+      <img>treasure_monkey</img>
       <method>self.dummy()</method>
     </card>
-    <card id="papagaj">
+    <card id="parrot">
       <title>
         <hu>Papagáj</hu>
         <en>Parrot</en>
@@ -560,10 +560,10 @@
         <en />
         <arr />
       </text>
-      <img>kincs_papagaj</img>
+      <img>treasure_parrot</img>
       <method>self.dummy()</method>
     </card>
-    <card id="pisztoly">
+    <card id="gun">
       <title>
         <hu>Pisztoly</hu>
         <en>Pistol</en>
@@ -571,13 +571,13 @@
       </title>
       <text>
         <hu>Egy töltött pisztoly mindig jól jön a csatában.</hu>
-        <en>Guns can be really useful in battles.</en>
+        <en>This will come in handy in battles.</en>
         <arr>Tölts, és lőj!</arr>
       </text>
-      <img>kincs_pisztoly</img>
+      <img>treasure_gun</img>
       <method>self.dummy()</method>
     </card>
-    <card id="puska">
+    <card id="rifle">
       <title>
         <hu>Puska</hu>
         <en>Rifle</en>
@@ -588,24 +588,24 @@
         <en>Reloading a rifle is longer than realoading a gun, but it is more accurate.</en>
         <arr>Tölts, tölts, lőj!</arr>
       </text>
-      <img>kincs_puska</img>
+      <img>treasure_rifle</img>
       <method>self.dummy()</method>
     </card>
-    <card id="szirenkurt">
+    <card id="sirenhorn">
       <title>
         <hu>Szirénkürt</hu>
         <en>Sirenhorn</en>
-        <arr></arr>
+        <arr>Szirénkürt</arr>
       </title>
       <text>
         <hu>Minden ellenséges csapatból egy fő átáll a játékoshoz.</hu>
         <en>Makes some enemy sailors join you.</en>
         <arr>Minden ellenséges csapatból egy fő átáll a játékoshoz.</arr>
       </text>
-      <img>kincs_szirenkurt</img>
+      <img>treasure_sirenhorn</img>
       <method>self.dummy()</method>
     </card>
-    <card id="terkep">
+    <card id="map">
       <title>
         <hu>Térkép</hu>
         <en>Map</en>
@@ -616,10 +616,10 @@
         <en />
         <arr />
       </text>
-      <img>kincs_terkep</img>
+      <img>treasure_map</img>
       <method>self.dummy()</method>
     </card>
-    <card id="potvitorla">
+    <card id="spare_sail">
       <title>
         <hu>Tartalékvitorla</hu>
         <en>Spare sail</en>
@@ -630,7 +630,7 @@
         <en />
         <arr />
       </text>
-      <img>kincs_vitorla</img>
+      <img>treasure_spare_sail</img>
       <method>self.dummy()</method>
     </card>
     <card id="hawke">
@@ -644,7 +644,7 @@
         <en>The crew will not mutiny as long as she is aboard.</en>
         <arr>Amíg útitársként a hajón van, a legénység fejében a lázadás gondolata sem fordul meg.</arr>
       </text>
-      <img>kincs_arc_hawke</img>
+      <img>treasure_face_hawke</img>
       <method>self.dummy()</method>
     </card>
     <card id="fuil">
@@ -658,7 +658,7 @@
         <en>He can save some sailors after battle.</en>
         <arr>Megment néhány matrózt csata után.</arr>
       </text>
-      <img>kincs_arc_fuil</img>
+      <img>treasure_face_fuil</img>
       <method>self.dummy()</method>
     </card>
     <card id="lopez">
@@ -672,7 +672,7 @@
         <en>The player may always choose between two treasure cards as long as she is aboard.</en>
         <arr>Amíg útitársként a hajón van, a játékos minden esetben választhat a kincspakli két legfelső lapja közül.</arr>
       </text>
-      <img>kincs_arc_lopez</img>
+      <img>treasure_face_lopez</img>
       <method>self.dummy()</method>
     </card>
     <card id="alvarez">
@@ -686,7 +686,7 @@
         <en>Teams can be rearranged once in every battle as long as he is aboard.</en>
         <arr>Amíg útitársként a hajón van, csatánként egyszer újrarendezhetőek a csapatok.</arr>
       </text>
-      <img>kincs_arc_alvarez</img>
+      <img>treasure_face_alvarez</img>
       <method>self.dummy()</method>
     </card>
     <card id="vandenbergh">
@@ -700,7 +700,7 @@
         <en>Two more sailors can be hired in every inn as long as she is aboard.</en>
         <arr>Amíg útitársként a hajón van, minden kikötőben két fővel több matrózt bérelhet a játékos.</arr>
       </text>
-      <img>kincs_arc_vandenbergh</img>
+      <img>treasure_face_vandenbergh</img>
       <method>self.dummy()</method>
     </card>
     <card id="molenaar">
@@ -714,7 +714,7 @@
         <en>Sailors can be hired cheaper as long as he is aboard.</en>
         <arr>Amíg útitársként a hajón van, a matrózok olcsóbban bérelhetőek.</arr>
       </text>
-      <img>kincs_arc_molenaar</img>
+      <img>treasure_face_molenaar</img>
       <method>self.dummy()</method>
     </card>
     <card id="therese">
@@ -728,7 +728,7 @@
         <en>Scurvy will not affect the crew as long as she is aboard.</en>
         <arr>Amíg útitársként a hajón van, a legénységen sosem vesz erőt a skorbut.</arr>
       </text>
-      <img>kincs_arc_Therese</img>
+      <img>treasure_face_therese</img>
       <method>self.dummy()</method>
     </card>
     <card id="levasseur">
@@ -742,7 +742,7 @@
         <en>The crew has higher chance to navigate through storms as long as he is aboard.</en>
         <arr>Amíg útitársként a hajón van, erősebb viharban is kormányozható a hajó.</arr>
       </text>
-      <img>kincs_arc_levasseur</img>
+      <img>treasure_face_levasseur</img>
       <method>self.dummy()</method>
     </card>
     <card id="lizzy">
@@ -756,7 +756,7 @@
         <en>The only daughter of the pirate king.</en>
         <arr>A kalózkirály egyetlen leánya.</arr>
       </text>
-      <img>kincs_arc_lizzy</img>
+      <img>treasure_face_lizzy</img>
       <method>self.dummy()</method>
     </card>
     <card id="billy">
@@ -770,7 +770,7 @@
         <en>Improved targeting with cannons.</en>
         <arr>Pontosabb ágyúzást tesz lehetővé.</arr>
       </text>
-      <img>kincs_arc_billy</img>
+      <img>treasure_face_billy</img>
       <method>self.dummy()</method>
     </card>
   </loot>

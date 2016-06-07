@@ -2,7 +2,7 @@
 <!--If you add a new shiptype, do not forget to add new key to interface.xml. Where the key tag is the same string as the new ship's type.-->
 <allships>
   <ship type="galleon" maxCrew="10" cost="0"></ship>
-  <ship type="szkuner" maxCrew="10" cost="0"></ship>
-  <ship type="brigantin" maxCrew="20" cost="24"></ship>
-  <ship type="fregatt" maxCrew="36" cost="56"></ship>
+  <ship type="schooner" maxCrew="10" cost="0"></ship>
+  <ship type="brigantine" maxCrew="20" cost="24"></ship>
+  <ship type="frigate" maxCrew="36" cost="56"></ship>
 </allships>
