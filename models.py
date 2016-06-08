@@ -16,6 +16,16 @@ class Empire(object):
         self.coordinates = coordinates
 
 
+class LoadedSettings(object):
+    def __init__(self):
+        self.language = None
+        self.width = 0
+        self.height = 0
+        self.full_screen = False
+        self.resolution_code = ''
+        self.resolution_list = ()
+
+
 class ShipType(object):
     def __init__(self, ship_type, price, crew_limit):
         self.ship_type = ship_type

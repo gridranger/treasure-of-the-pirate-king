@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from models import ShipType
+from models import LoadedSettings, ShipType
 from tkinter.messagebox import showerror
 from xml.etree.ElementTree import parse
 
@@ -34,22 +34,22 @@ class DataReader(object):
         return errors
 
     def load_settings(self):
+        settings = LoadedSettings()
         config_root = parse(self.path_dictionary['config']).getroot()
-        language = config_root.find('language').text
+        settings.language = config_root.find('language').text
         resolution_code_text = config_root.find('resolution').text
         resolution_code = config_root.find(("./resolutionlist/res[@type='" + resolution_code_text + "']"))
-        width = int(resolution_code.get('x'))
-        height = int(resolution_code.get('y'))
+        settings.width = int(resolution_code.get('x'))
+        settings.height = int(resolution_code.get('y'))
         if int(config_root.find('fullscreen').text):
-            full_screen = True
+            settings.full_screen = True
         else:
-            full_screen = False
-        screen_type = resolution_code.get('type')
+            settings.full_screen = False
+        settings.resolution_code = resolution_code.get('type')
         resolution_elements = config_root.find('resolutionlist').findall('res')
-        resolution_tuple = ()
         for res in resolution_elements:
-            resolution_tuple += (int(res.get('x')), int(res.get('y')), res.get('type')),
-        return language, width, height, full_screen, screen_type, resolution_tuple
+            settings.resolution_list += (int(res.get('x')), int(res.get('y')), res.get('type')),
+        return settings
 
     def save_settings(self, new_resolution=None, new_full_screen=None, new_language=None):
         config_xml = parse(self.path_dictionary['config'])
@@ -188,8 +188,8 @@ class DataReader(object):
         loot = all_cards.find('loot')
         return all_cards, error_message, events, loot
 
-    def load_dictionary(self, language=None, entry_type=None, is_reverse_required=None):
-        interface = parse(self.path_dictionary['interface']).getroot()
+    def load_dictionary(self, language=None, entry_type=None):
+        interface = self._get_interface_root()
         if language:
             term_dictionary = []
             for item in interface:
@@ -197,13 +197,17 @@ class DataReader(object):
                     term_dictionary.append(item.tag)
             result = {original: interface.find(original).find(language).text for original in term_dictionary}
             return result
-        elif is_reverse_required:
-            language_list = {}
-            language_list_reversed = {}
-            for item in interface.find('languages'):
-                language_list[item.text] = item.tag
-                language_list_reversed[item.tag] = item.text
-            return language_list, language_list_reversed
+
+    def _get_interface_root(self):
+        interface = parse(self.path_dictionary['interface']).getroot()
+        return interface
+
+    def load_language_list(self):
+        interface = self._get_interface_root()
+        language_list = {}
+        for item in interface.find('languages'):
+            language_list[item.text] = item.tag
+        return language_list
 
     def get_ship_types(self):
         ship_types_root = parse(self.path_dictionary['shiptypes']).getroot()

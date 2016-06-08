@@ -434,7 +434,7 @@ class Vezerlo(Frame):
         self.boss.menu.ful1feltolt(self.aktivjatekos)
         if "scurvy" in self.aktivjatekos.statuszlista:
             self.aktivjatekos.set_legenyseg(-1)
-        self.boss.set_jatekforduloFolyamatban(0)
+        self.boss.set_is_turn_in_progress(0)
         if not self.aktivjatekos.kincskeresesKesz:
             if askyesno(self.boss.szotar["dig_for_treasure_label"], self.boss.szotar["dig_for_treasure_question"]):
                 self.kincsesszigetAsas()
@@ -616,7 +616,7 @@ class Vezerlo(Frame):
         
     def kincsesszigetAsas(self):
         "A teendők, ha már kincses szigeten áll az ember."
-        self.boss.set_jatekforduloFolyamatban(1)
+        self.boss.set_is_turn_in_progress(1)
         self.dobasMegtortent.set(True)
         dobas = self.boss.menu.ful1tartalom.kocka.dob() # Szerencsét próbálunk.
         self.aktivjatekos.set_utolsodobas(dobas) # Mentjük a kocka állapotát.
@@ -636,7 +636,7 @@ class Vezerlo(Frame):
 
     def szamuzottek(self, esent = None):
         "Ez történik, ha valaki legénység nélkül van a száműzöttek szigetén."
-        self.boss.set_jatekforduloFolyamatban(1)
+        self.boss.set_is_turn_in_progress(1)
         self.dobasMegtortent.set(True)
         dobas = self.boss.menu.ful1tartalom.kocka.dob() # Szerencsét próbálunk.
         self.aktivjatekos.set_utolsodobas(dobas) # Mentjük a kocka állapotát.
