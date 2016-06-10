@@ -32,7 +32,7 @@ class Utkozet(Toplevel):
         w, h = self.winfo_width(),self.winfo_height()
         bx, by = self.master.helymeghatarozas()
         bh, bw = self.master.height,self.master.width        
-        self.geometry('+'+str(int(self.master.tabla.mezomeret/2+bx))+'+'+str(self.master.tabla.mezomeret+by))
+        self.geometry('+'+str(int(self.master.tabla.tile_size/2+bx))+'+'+str(self.master.tabla.tile_size+by))
         self.master.wait_window(self)
         
     def fokeret(self, dummy = 0):
@@ -424,12 +424,12 @@ class Hajoablak(Frame):
             nev = boss.ellensegesHajoNeve
             reszletek = '%s %s' % (self.master.szotar[boss.ellensegesZaszlo], self.master.szotar[boss.ellensegesHajoTipusa])
         # Képablak
-        kepkeret = Frame(self, height = self.master.tabla.mezomeret, width = self.master.tabla.mezomeret)
+        kepkeret = Frame(self, height = self.master.tabla.tile_size, width = self.master.tabla.tile_size)
         kepkeret.pack_propagate(0)
         if user:
             kep = self.master.tabla.hajotar[self.master.jatekmenet.aktivjatekos.nev]
         else:
-            kep = self.master.tabla.keptar[self.boss.ellensegesHajoTipusa]
+            kep = self.master.tabla.gallery[self.boss.ellensegesHajoTipusa]
         Label(kepkeret, image = kep).pack(side = BOTTOM)
         kepkeret.pack()
         # Hajó neve
@@ -569,9 +569,9 @@ class MatrozSkala(Frame):
             ellensegesLegenyseg = 0
         self.boss = boss
         self.root = master
-        self.ures = self.root.tabla.keptar['matroz0']
-        self.teli = self.root.tabla.keptar['matroz1']
-        self.serult = self.root.tabla.keptar['matroz2']
+        self.ures = self.root.tabla.gallery['matroz0']
+        self.teli = self.root.tabla.gallery['matroz1']
+        self.serult = self.root.tabla.gallery['matroz2']
         self.value = IntVar()
         self.elo = IntVar()
         if user:
@@ -649,7 +649,7 @@ class Gombjektum():
         self.cooldown = 0
         keret = Frame(hely)
         self.hang = ""
-        self.gomb = Button(keret, image = master.tabla.keptar['icon_'+nev], relief = FLAT, command = self.hasznalat, state = DISABLED)
+        self.gomb = Button(keret, image = master.tabla.gallery['icon_'+nev], relief = FLAT, command = self.hasznalat, state = DISABLED)
         self.gomb.pack(side = TOP)
         Label(keret, text = master.kartyaszotar[nev][0], wraplength = 55).pack(side = TOP)
         keret.pack(side = LEFT, fill = Y)

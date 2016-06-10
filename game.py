@@ -19,10 +19,10 @@ class Jatekos():
             self.masodikszin = 'black'
         else:
             self.masodikszin = 'white'
-        if sajatkikoto in self.boss.tabla.helyszotar.keys():
-            self.sajatkikoto = self.boss.tabla.helyszotar[sajatkikoto][0]
+        if sajatkikoto in self.boss.tabla.locations.keys():
+            self.sajatkikoto = self.boss.tabla.locations[sajatkikoto][0]
         else:
-            self.sajatkikoto = self.boss.tabla.helyszotar[self.boss.zaszloszotar[sajatkikoto]][0]
+            self.sajatkikoto = self.boss.tabla.locations[self.boss.zaszloszotar[sajatkikoto]][0]
         self.zaszlo = self.boss.get_empire_by_capital_coordinates(self.sajatkikoto)
         print(self.nev,"zászlaja:",self.zaszlo)
         self.hajo = hajo
@@ -126,7 +126,7 @@ class Varos():
         self.tevekenysegek = Frame(self.ablak) # Főkeret: tartalma panelek és gombok
         self.tevekenysegek.pack(side = TOP, ipadx = 5)
         # A kép panel
-        self.kep = Label(self.tevekenysegek, image = self.master.tabla.keptar[self.nev])
+        self.kep = Label(self.tevekenysegek, image = self.master.tabla.gallery[self.nev])
         self.kep.pack(side = LEFT, pady = 5, padx = 5, fill = Y)
         # A fogadó panel
         self.fogado = LabelFrame(self.tevekenysegek, text=self.master.szotar['tavern'])
@@ -200,7 +200,7 @@ class Varos():
         self.hajogombok = {}
         for hajo in self.boss.vehetoHajok:
             self.hajoframek[hajo] = Frame(self.hajoacs)
-            self.hajogombok[hajo] = Button(self.hajoframek[hajo], image = self.master.tabla.keptar[hajo], command = lambda hajo = hajo: self.ujHajo(hajo))
+            self.hajogombok[hajo] = Button(self.hajoframek[hajo], image = self.master.tabla.gallery[hajo], command = lambda hajo = hajo: self.ujHajo(hajo))
             self.hajogombok[hajo].pack(side = LEFT)
             if self.boss.aktivjatekos.hajo in self.boss.vehetoHajok:
                 if self.boss.vehetoHajok.index(self.boss.aktivjatekos.hajo) < self.boss.vehetoHajok.index(hajo):
@@ -429,7 +429,7 @@ class Vezerlo(Frame):
             self.boss.jatekossor.append(self.boss.jatekossor.pop(0)) # A legutóbb lépett játékost leghátra dobja, ha már lépett az aktív játékos
         self.aktivjatekos = self.boss.jatekostar[self.boss.jatekossor[0]]
         print('-'*20+'\n'+str(self.aktivjatekos.nev),'köre jön\n'+'-'*20) # logoláshoz
-        self.master.naplo.log(self.master.szotar["new_turn"] % self.aktivjatekos.nev)
+        self.master.status_bar.log(self.master.szotar["new_turn"] % self.aktivjatekos.nev)
         self.dobasMegtortent.set(False)
         self.boss.menu.ful1feltolt(self.aktivjatekos)
         if "scurvy" in self.aktivjatekos.statuszlista:
@@ -447,17 +447,17 @@ class Vezerlo(Frame):
         "A mező indukálta feladat elvégzése."
         id = self.methodeNo_get()
         #print("**MetódusID = " + str(id) + " - szakasz_mezoevent")
-        self.boss.naplo.log('')
+        self.boss.status_bar.log('')
         if self.boss.kilepesFolyamatban:
             return
-        #print(self.aktivjatekos.nev,'a(z)',self.boss.tabla.helyszotarR[self.aktivjatekos.pozicio],'mezőre lépett.')
+        #print(self.aktivjatekos.nev,'a(z)',self.boss.tabla.locationsR[self.aktivjatekos.pozicio],'mezőre lépett.')
         if 'grog_riot' in self.aktivjatekos.statuszlista:
-            if self.boss.tabla.helyszotarR[self.aktivjatekos.pozicio] in self.master.tabla.kikotolista:
+            if self.boss.tabla.locationsR[self.aktivjatekos.pozicio] in self.master.tabla.kikotolista:
                 self.aktivjatekos.set_statusz("grog_riot", 0)
                 self.eventstack.append("grog_riot")
             else:
                 self.eventszotar['grog_riot'].megjelenik()
-        self.hivas = self.teendotar[self.boss.tabla.helyszotarR[self.aktivjatekos.pozicio]]()
+        self.hivas = self.teendotar[self.boss.tabla.locationsR[self.aktivjatekos.pozicio]]()
         if self.hivas == False:
             self.szakasz_0()
         elif self.hivas == None:
@@ -567,7 +567,7 @@ class Vezerlo(Frame):
             showinfo(self.boss.szotar["info"], uzenet) # Kiírjuk, a történteket.
             return
         else:
-            self.boss.naplo.log(self.boss.szotar["storm_success"])
+            self.boss.status_bar.log(self.boss.szotar["storm_success"])
             self.mozgas(viharEreje)
             self.szakasz_mezoevent()
             return True
@@ -578,9 +578,9 @@ class Vezerlo(Frame):
         self.aktivjatekos.set_utolsodobas(dobas) # Mentjük a kocka állapotát.
         if dobas == 6:
             self.aktivjatekos.set_kincs(1)
-            self.boss.naplo.log(self.boss.szotar["driftwood_success"])
+            self.boss.status_bar.log(self.boss.szotar["driftwood_success"])
         else:
-            self.boss.naplo.log(self.boss.szotar["driftwood"])
+            self.boss.status_bar.log(self.boss.szotar["driftwood"])
         return
 
     def szelcsend(self):
@@ -602,17 +602,17 @@ class Vezerlo(Frame):
                 self.aktivjatekos.set_legenyseg(dobas)
                 felveve = dobas
             if felveve < 2:
-                self.boss.naplo.log(self.boss.szotar["taino_one"])
+                self.boss.status_bar.log(self.boss.szotar["taino_one"])
             else:
-                self.boss.naplo.log(self.boss.szotar["taino_some"] % felveve)
+                self.boss.status_bar.log(self.boss.szotar["taino_some"] % felveve)
         else:
-            self.boss.naplo.log(self.boss.szotar["taino_none"])
+            self.boss.status_bar.log(self.boss.szotar["taino_none"])
         return
 
     def kincsessziget(self):
         "Egy mező, ahol kincset lehet ásni."
         self.aktivjatekos.set_kincskereses(False)
-        self.boss.naplo.log(self.boss.szotar["dig_for_treasure"])
+        self.boss.status_bar.log(self.boss.szotar["dig_for_treasure"])
         
     def kincsesszigetAsas(self):
         "A teendők, ha már kincses szigeten áll az ember."
@@ -653,7 +653,7 @@ class Vezerlo(Frame):
             else:
                 varos = celokSzotar[dobas].capitalize()
             uzenet = self.boss.szotar["castaway_success"] % varos
-            x,y = self.boss.tabla.helyszotar[celokSzotar[dobas]][0]
+            x,y = self.boss.tabla.locations[celokSzotar[dobas]][0]
             self.boss.tabla.hajotathelyez(x,y)
             if self.aktivjatekos.kincs.get() < 10:
                 self.aktivjatekos.kincs.set(0)

@@ -1,5 +1,5 @@
 from models import BRITISH, DUTCH, FRENCH, PIRATE, SPANISH, Empire
-from tabla import Tabla
+from board import Board
 from logframe import LogFrame
 from game import *
 from datareader import DataReader
@@ -11,7 +11,6 @@ from tkinter import colorchooser
 from PIL.Image import ANTIALIAS
 from PIL.ImageTk import PhotoImage
 from colorize import *
-from gc import get_count
 
 
 class Application(Tk):
@@ -34,7 +33,7 @@ class Application(Tk):
         self.is_game_setup_in_progress = IntVar(value=0)
         self.is_game_in_progress = IntVar(value=0)
         self.is_turn_in_progress = IntVar(value=1)
-        self.panelek()
+        self.render_panes()
         self.is_game_in_progress.trace('w', self.follow_game_progress_change)
         self.is_turn_in_progress.trace('w', self.follow_turn_progress_change)
         # Alapszótár
@@ -136,28 +135,27 @@ class Application(Tk):
         self._load_text_variables()
         self.szovegezo()  # megjeleníti a kiválasztott nyelven a felület elemeit
         self.kartyaszotar = self.data_reader.load_cards_text()  # cseréli az esemény- és kincskártyák szövegét
-        self.naplo.log(self.szotar['new_language'])
+        self.status_bar.log(self.szotar['new_language'])
         self.data_reader.save_settings(new_language=new_language)
 
-    def panelek(self):
-        "Betölti a paneleket"
+    def render_panes(self):
         self.columnconfigure('all', weight=1)
         self.rowconfigure('all', weight=1)
-        menuszelesseg = int(self.height * 0.33 - 10)
-        self.naplo = LogFrame(self, menuszelesseg)
-        self.naplo.grid(row=1, column=0, sticky=S + W, padx=5, pady=5)
+        menu_width = int(self.height * 0.33 - 10)
+        self.status_bar = LogFrame(self, menu_width)
+        self.status_bar.grid(row=1, column=0, sticky=S + W, padx=5, pady=5)
         self.tablaszelesseg = self.height - 10
         if self.is_game_in_progress.get():
-            self.tabla = Tabla(self, self.tablaszelesseg)  # játéktér inicializálása
+            self.tabla = Board(self, self.tablaszelesseg)
             self.tabla.lekepez()
             self.tabla.grid(row=0, column=1, rowspan=2, sticky=N + W, padx=5, pady=5)
         else:
             self.tabla = Frame(self, width=self.tablaszelesseg, height=self.tablaszelesseg)
             self.tabla.grid(row=0, column=1, rowspan=2, sticky=N + W, padx=5, pady=5)
-        self.menu = Fulek(self, menuszelesseg)  # oldalsó menü inicializálása
+        self.menu = Fulek(self, menu_width)  # oldalsó menü inicializálása
         self.menu.grid(row=0, column=0, sticky=N + W, padx=5, pady=5)
         if self.screen_ratio == 'wide':  # ha kell, akkor a hajópanelt is meghívjuk
-            hajoszelesseg = self.width - menuszelesseg - self.tablaszelesseg - 30
+            hajoszelesseg = self.width - menu_width - self.tablaszelesseg - 30
             self.ship = Frame(self, width=hajoszelesseg)  # helyőrző
             self.ship.grid(row=0, column=2, rowspan=2, sticky=W + N + E, padx=5, pady=5)
 
@@ -177,7 +175,7 @@ class Application(Tk):
                     pass
         self._process_config()
         self.torolMindent()
-        self.panelek()
+        self.render_panes()
         if self.is_game_setup_in_progress.get():
             self.jatekBeallit(0)
             if len(jatekosadatok) > 0:
@@ -186,13 +184,13 @@ class Application(Tk):
                                                            jatekosadatok[i][2])
         self.szovegezo()
         self.menu.select(self.menu.lap2)
-        self.naplo.log('%s %i×%i' % (self.szotar['new_resolution'], self.width, self.height))
+        self.status_bar.log('%s %i×%i' % (self.szotar['new_resolution'], self.width, self.height))
 
     def torolMindent(self):
         "Törli a létrehozott paneleket."
         self.menu.destroy()
         self.tabla.destroy()
-        self.naplo.destroy()
+        self.status_bar.destroy()
         try:
             self.ship.destroy()
         except:
@@ -232,7 +230,7 @@ class Application(Tk):
         self.is_game_in_progress.set(1)
         self.jatekostar = {}
         self.tabla.destroy()
-        self.tabla = Tabla(self, self.tablaszelesseg, szelindex)  # játéktér inicializálása
+        self.tabla = Board(self, self.tablaszelesseg, szelindex)
         self.tabla.grid(row=0, column=1, rowspan=2, sticky=N + W, padx=5, pady=5)
         self.kartyaszotar = self.data_reader.load_cards_text()
         if uj:
@@ -262,9 +260,9 @@ class Application(Tk):
         self.menu.ful3_var()
         if not uj:
             self.jatekmenet.set_paklik(paklik)
-            self.naplo.log(self.szotar["loading_done"])
+            self.status_bar.log(self.szotar["loading_done"])
         else:
-            self.naplo.log(self.szotar["start_game_done"])
+            self.status_bar.log(self.szotar["start_game_done"])
         self.jatekmenet.szakasz_0()
 
     def follow_game_progress_change(self, a=None, b=None, c=None):
@@ -433,11 +431,11 @@ class Fulek(Notebook):
             dobas = self.ful1tartalom.kocka.dob()
             if "fold_fold" in self.boss.jatekmenet.aktivjatekos.statuszlista:
                 print("Újra dobhatna.")
-                self.boss.naplo.log(self.boss.szotar['land_log'])
+                self.boss.status_bar.log(self.boss.szotar['land_log'])
                 self.boss.jatekmenet.aktivjatekos.set_statusz("fold_fold", 0)
                 self.fold_fold_dobas = True
             else:
-                self.boss.naplo.log('')
+                self.boss.status_bar.log('')
                 self.ful1tartalom.kockamezo.config(relief=SUNKEN)
             self.boss.jatekmenet.set_dobasMegtortent()
             self.boss.set_is_turn_in_progress(1)
@@ -501,15 +499,11 @@ class Fulek(Notebook):
         if self.boss.is_game_in_progress.get():
             if not askokcancel(self.boss.ui_text_variables['new_game'].get(), self.boss.szotar['discard_game-b']):
                 return
-            else:
-                # Memóriafelszabadítás
-                print("GC_COUNT =", get_count())
-                # Eddig tartott a memória felszabadítása
         adatok = self.boss.save_handler.load_saved_state()
         if not adatok:
             return
         helyzetszotar, kovetkezoJatekos, szelindex, fogadoszotar, paklik, lieutenant_found, captain_defeated = adatok
-        self.boss.naplo.log(self.boss.szotar['loading_game'])
+        self.boss.status_bar.log(self.boss.szotar['loading_game'])
         self.update_idletasks()
         self.boss.jatekIndit(helyzetszotar, 0, kovetkezoJatekos, szelindex, fogadoszotar, paklik, lieutenant_found, captain_defeated)
 
@@ -789,18 +783,18 @@ class UjJatekAdatok(Frame):
         for i in range(6):
             if self.jatekosopciok[i].aktiv.get():
                 if self.jatekosopciok[i].nev.get() == '':
-                    self.boss.naplo.log(self.boss.szotar['name_missing'] % (i + 1))
+                    self.boss.status_bar.log(self.boss.szotar['name_missing'] % (i + 1))
                     return
                 elif self.jatekosopciok[i].valasztottSzin.get() == '':
-                    self.boss.naplo.log(self.boss.szotar['color_missing'] % (self.jatekosopciok[i].nev.get()))
+                    self.boss.status_bar.log(self.boss.szotar['color_missing'] % (self.jatekosopciok[i].nev.get()))
                     return
                 elif self.jatekosopciok[i].zaszlovalaszto.get() == '':
-                    self.boss.naplo.log(self.boss.szotar['flag_missing'] % (self.jatekosopciok[i].nev.get()))
+                    self.boss.status_bar.log(self.boss.szotar['flag_missing'] % (self.jatekosopciok[i].nev.get()))
                     return
                 elif self.jatekosopciok[i].zaszlovalaszto.get() not in list(self.boss.zaszloszotar.keys()):
-                    self.boss.naplo.log(self.boss.szotar['flag_invalid'] % (self.jatekosopciok[i].nev.get()))
+                    self.boss.status_bar.log(self.boss.szotar['flag_invalid'] % (self.jatekosopciok[i].nev.get()))
                     return
-                self.boss.naplo.log(self.boss.szotar['start_game'])
+                self.boss.status_bar.log(self.boss.szotar['start_game'])
                 self.update_idletasks()
                 jatekosadatok.append([self.jatekosopciok[i].nev.get(), self.jatekosopciok[i].valasztottSzin.get(),
                                       self.jatekosopciok[i].zaszlovalaszto.get()])

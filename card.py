@@ -44,7 +44,7 @@ class KartyaAblak(Toplevel):
         self.title(self.master.szotar[pakli+'_card'])
         cimStilus = 'helvetica 14 bold'
         self.kartyalap = Frame(self, relief = GROOVE, bd = 2, bg = 'ivory')
-        Label(self.kartyalap, image = self.master.tabla.keptar[kep]).pack()
+        Label(self.kartyalap, image = self.master.tabla.gallery[kep]).pack()
         Separator(self.kartyalap, orient = HORIZONTAL).pack(fill = X)
         Label(self.kartyalap, wraplength = 216, text = cim, font = cimStilus).pack(fill = X)
         Separator(self.kartyalap, orient = HORIZONTAL).pack(fill = X)
@@ -308,7 +308,7 @@ class KartyaAblak(Toplevel):
     def set_sail_to(self, celKikoto):
         "A kikötőkbe irányító kártyák közös metódusa."
         self.bezar = self.irany_bezar
-        celkocka = self.master.tabla.helyszotar[celKikoto][0] # Kiolvassuk, hol van az adott város.
+        celkocka = self.master.tabla.locations[celKikoto][0] # Kiolvassuk, hol van az adott város.
         print(celkocka)
         self.master.tabla.hajotathelyez(celkocka[0], celkocka[1]) # Áttesszük oda a játékost.
         Button(self, text = self.master.szotar['done'], command = self.irany_bezar).pack(pady = 5, side = BOTTOM)
@@ -317,5 +317,5 @@ class KartyaAblak(Toplevel):
         self.master.jatekmenet.eventstack.append(self.nev)
         self.destroy()
         print(self.master.jatekmenet.aktivjatekos.pozicio)
-        self.master.jatekmenet.teendotar[self.master.tabla.helyszotarR[self.master.jatekmenet.aktivjatekos.pozicio]]()
+        self.master.jatekmenet.teendotar[self.master.tabla.locationsR[self.master.jatekmenet.aktivjatekos.pozicio]]()
         self.master.jatekmenet.szakasz_0()
