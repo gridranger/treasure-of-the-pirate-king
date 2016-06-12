@@ -38,9 +38,9 @@ class Board(Frame):
                                 ('szamuzottek',     [(5,2)])
                                 ])
         self.locationsR = {}
-        for birodalom in self.boss.birodalomszotar.keys():
-            v = self.boss.birodalomszotar[birodalom].capital
-            self.boss.birodalomszotar[birodalom].coordinates = self.locations[v][0]
+        for birodalom in self.boss.empires.keys():
+            v = self.boss.empires[birodalom].capital
+            self.boss.empires[birodalom].coordinates = self.locations[v][0]
         for hely in self.locations.keys():
             for ertek in self.locations[hely]:
                 self.locationsR[ertek] = hely
@@ -83,8 +83,7 @@ class Board(Frame):
                 tiles.append((row, field))
         return tiles
 
-    def lekepez(self):
-        "Megjeleníti a tábla tartalmát"
+    def render_board(self):
         print('leképezés indul')
         # A háttér betöltése
         self.gallery['hatter'] = PhotoImage(open('img/map.png').resize((self.size, self.size), ANTIALIAS))
@@ -141,7 +140,7 @@ class Board(Frame):
             hajokep = hajokep.resize((self.tile_size, int(self.tile_size * magassagszorzo)), ANTIALIAS)
             self.gallery[hajotipus] = PhotoImage(hajokep)
         # A zászlók betöltése.
-        for birodalom in self.boss.birodalomszotar.keys():
+        for birodalom in self.boss.empires.keys():
             zNev = 'flag_'+birodalom
             zKep = open(('img/'+zNev+'.png'))
             magassagszorzo = zKep.size[0]/zKep.size[1]
@@ -305,7 +304,7 @@ class Board(Frame):
             
     def villogaski(self):
         "Kikapcsolja a célnégyzetek villogását."
-        self.boss.tabla.villogasaktiv = 0
+        self.boss.game_board.villogasaktiv = 0
         if self.xlatszik.get():
             for x in self.xlista:
                 self.board_canvas.itemconfigure(x, state='hidden')

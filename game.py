@@ -10,7 +10,7 @@ from card import *
 class Jatekos():
     """Leír egy játékost."""
     def __init__(self, boss, tabla, nev, szin, sajatkikoto, hajo = 'schooner', legenyseg = 10, pozicio = None, kincs = 0, statusz = [], utolsodobas = 6, kimarad = 0, kincskeresesKesz = True, elfogottHajok = {}):
-        self.tabla = tabla
+        self.game_board = tabla
         self.boss = boss
         self.nev = nev
         self.szin = szin
@@ -19,10 +19,10 @@ class Jatekos():
             self.masodikszin = 'black'
         else:
             self.masodikszin = 'white'
-        if sajatkikoto in self.boss.tabla.locations.keys():
-            self.sajatkikoto = self.boss.tabla.locations[sajatkikoto][0]
+        if sajatkikoto in self.boss.game_board.locations.keys():
+            self.sajatkikoto = self.boss.game_board.locations[sajatkikoto][0]
         else:
-            self.sajatkikoto = self.boss.tabla.locations[self.boss.zaszloszotar[sajatkikoto]][0]
+            self.sajatkikoto = self.boss.game_board.locations[self.boss.zaszloszotar[sajatkikoto]][0]
         self.zaszlo = self.boss.get_empire_by_capital_coordinates(self.sajatkikoto)
         print(self.nev,"zászlaja:",self.zaszlo)
         self.hajo = hajo
@@ -50,7 +50,7 @@ class Jatekos():
     def set_hajo(self, tipus):
         "A megadott típusúra állítja be a játékos hajóját."
         self.hajo = tipus
-        self.boss.tabla.figuratLetrehoz(self.nev, self.pozicio[0], self.pozicio[1], self.hajo, self.szin, 1)
+        self.boss.game_board.figuratLetrehoz(self.nev, self.pozicio[0], self.pozicio[1], self.hajo, self.szin, 1)
         
     def set_legenyseg(self, modosito):
         "Módosítja a legénység létszámát"
@@ -117,25 +117,25 @@ class Varos():
     def letrehoz(self):
         self.ablak = Toplevel()
         if self.nev == 'portroyal':
-            self.ablak.title((self.master.szotar['port']+' - Port Royal'))
+            self.ablak.title((self.master.ui_texts['port']+' - Port Royal'))
         else:
-            self.ablak.title((self.master.szotar['port'], '-', self.nev.capitalize()))
+            self.ablak.title((self.master.ui_texts['port'], '-', self.nev.capitalize()))
         self.ablak.transient(self.master)
         self.ablak.grab_set()
         self.ujMatrozok() # A játékos belépésekor a kocka által mutatott számot hozzáadjuk a helyi matrózok létszámához.
         self.tevekenysegek = Frame(self.ablak) # Főkeret: tartalma panelek és gombok
         self.tevekenysegek.pack(side = TOP, ipadx = 5)
         # A kép panel
-        self.kep = Label(self.tevekenysegek, image = self.master.tabla.gallery[self.nev])
+        self.kep = Label(self.tevekenysegek, image = self.master.game_board.gallery[self.nev])
         self.kep.pack(side = LEFT, pady = 5, padx = 5, fill = Y)
         # A fogadó panel
-        self.fogado = LabelFrame(self.tevekenysegek, text=self.master.szotar['tavern'])
+        self.fogado = LabelFrame(self.tevekenysegek, text=self.master.ui_texts['tavern'])
         line1 = Frame(self.fogado) # a bérelhető létszám
-        Label(line1, text=(self.master.szotar['sailors_to_hire']+':')).pack(side = LEFT)
+        Label(line1, text=(self.master.ui_texts['sailors_to_hire']+':')).pack(side = LEFT)
         self.matrozokszama_kiirva = Label(line1, textvariable=self.matrozokszama).pack(side = RIGHT)
         line1.pack(side = TOP, fill = X)
         line2 = Frame(self.fogado) # legénység / hajó max. kapacitás
-        Label(line2, text=(self.master.szotar['crew']+':')).pack(side = LEFT)
+        Label(line2, text=(self.master.ui_texts['crew']+':')).pack(side = LEFT)
         Label(line2, textvariable=self.boss.aktivjatekos.legenyseg_max).pack(side = RIGHT)
         Label(line2, text='/').pack(side = RIGHT)
         Label(line2, textvariable=self.boss.aktivjatekos.legenyseg).pack(side = RIGHT)
@@ -143,7 +143,7 @@ class Varos():
         berskalahossz = min(self.boss.aktivjatekos.legenyseg_max.get(), self.matrozokszama.get(), self.boss.aktivjatekos.kincs.get())
         Separator(self.fogado, orient = HORIZONTAL).pack(side = TOP, fill = X, pady = 5, padx = 5)
         line3 = Frame(self.fogado) # a skála címe
-        szoveg = self.master.szotar['crew_new']
+        szoveg = self.master.ui_texts['crew_new']
         szoveg = szoveg + ' '*(33-len(szoveg))
         Label(line3, text=szoveg).pack(side = LEFT)
         line3.pack(side = TOP, fill = X)
@@ -152,12 +152,12 @@ class Varos():
         self.line4.pack(side = TOP, fill = X)
         self.line5 = Frame(self.fogado) # a skálán beállított értéket érvényesítő gomb
         self.skalaCimke = Label(self.line5)
-        self.felberel = Button(self.line5, text = self.master.szotar['crew_hire'], command = self.matrozFelberelese)
+        self.felberel = Button(self.line5, text = self.master.ui_texts['crew_hire'], command = self.matrozFelberelese)
         self.felberel.pack(side = RIGHT, padx = 5, pady = 5)
         self.line5.pack(side = TOP, fill = X)
         self.fogado.pack(side = LEFT, pady = 5, padx = 5, fill = Y)
         # A hajóács panel
-        self.hajoacs = LabelFrame(self.tevekenysegek, text = self.master.szotar['shipwright'])
+        self.hajoacs = LabelFrame(self.tevekenysegek, text = self.master.ui_texts['shipwright'])
         self.hajoacs_lekepez()
         self.hajoacs.pack(side = LEFT, fill = Y, pady = 5)
         # A kormányzó panel
@@ -165,18 +165,18 @@ class Varos():
         kormanyzo_mondja = StringVar()
         for pontforras in self.boss.aktivjatekos.hajotar.keys():
             pontok += self.boss.aktivjatekos.hajotar[pontforras].get()
-        self.kormanyzo = LabelFrame(self.tevekenysegek, text=self.master.szotar['governor'])
+        self.kormanyzo = LabelFrame(self.tevekenysegek, text=self.master.ui_texts['governor'])
         if self.zaszlo == 'pirate':
             elsullyesztettHelyiHajok = 0 # A kalózok nem birodalom, nem büntetnek az elsüllyedt kalózhajókért
         else:
             elsullyesztettHelyiHajok = self.boss.aktivjatekos.hajotar[self.zaszlo].get()
         if elsullyesztettHelyiHajok > 0:
-            kormanyzo_mondja.set(self.master.szotar['governor_punish'] % elsullyesztettHelyiHajok)
+            kormanyzo_mondja.set(self.master.ui_texts['governor_punish'] % elsullyesztettHelyiHajok)
             self.boss.aktivjatekos.set_kimarad(elsullyesztettHelyiHajok)
             self.boss.aktivjatekos.set_hajoszam(self.zaszlo,-elsullyesztettHelyiHajok)
         else:
             maxJutalom = self.jutalomszamolo()*8
-            kormanyzo_mondja.set(self.master.szotar['governor_reward'] % maxJutalom)
+            kormanyzo_mondja.set(self.master.ui_texts['governor_reward'] % maxJutalom)
             self.boss.aktivjatekos.set_kincs(maxJutalom)
             self.penzszamolo()
             for birodalom in self.boss.aktivjatekos.hajotar.keys():
@@ -186,7 +186,7 @@ class Varos():
         if self.zaszlo != 'pirate' and pontok > 0:
             self.kormanyzo.pack(side = LEFT, pady = 5, padx = 5, fill = Y)
         # Gombok
-        Button(self.ablak, text=self.master.szotar['done'], command = self.ablak.destroy).pack(side = BOTTOM, pady = 5)
+        Button(self.ablak, text=self.master.ui_texts['done'], command = self.ablak.destroy).pack(side = BOTTOM, pady = 5)
         self.ablak.update_idletasks()
         w, h = self.ablak.winfo_width(),self.ablak.winfo_height()
         bx, by = self.master.helymeghatarozas()
@@ -200,16 +200,16 @@ class Varos():
         self.hajogombok = {}
         for hajo in self.boss.vehetoHajok:
             self.hajoframek[hajo] = Frame(self.hajoacs)
-            self.hajogombok[hajo] = Button(self.hajoframek[hajo], image = self.master.tabla.gallery[hajo], command = lambda hajo = hajo: self.ujHajo(hajo))
+            self.hajogombok[hajo] = Button(self.hajoframek[hajo], image = self.master.game_board.gallery[hajo], command = lambda hajo = hajo: self.ujHajo(hajo))
             self.hajogombok[hajo].pack(side = LEFT)
             if self.boss.aktivjatekos.hajo in self.boss.vehetoHajok:
                 if self.boss.vehetoHajok.index(self.boss.aktivjatekos.hajo) < self.boss.vehetoHajok.index(hajo):
                     ar = self.boss.hajotipustar[hajo].price - self.boss.hajotipustar[self.boss.aktivjatekos.hajo].price
-                    Label(self.hajoframek[hajo], text = '%s: %i %s' % (self.master.szotar['price'], ar, self.master.szotar['gold'])).pack(side = LEFT, fill = X)
+                    Label(self.hajoframek[hajo], text = '%s: %i %s' % (self.master.ui_texts['price'], ar, self.master.ui_texts['gold'])).pack(side = LEFT, fill = X)
                 else:
-                    Label(self.hajoframek[hajo], text = self.master.szotar['already_bought']).pack(side=LEFT, fill=X)
+                    Label(self.hajoframek[hajo], text = self.master.ui_texts['already_bought']).pack(side=LEFT, fill=X)
             else:
-                Label(self.hajoframek[hajo], text = '%s: %i %s' % (self.master.szotar['price'], self.boss.hajotipustar[hajo].price, self.master.szotar['gold'])).pack(side = LEFT, fill = X)
+                Label(self.hajoframek[hajo], text = '%s: %i %s' % (self.master.ui_texts['price'], self.boss.hajotipustar[hajo].price, self.master.ui_texts['gold'])).pack(side = LEFT, fill = X)
             self.hajoframek[hajo].pack(side = TOP, pady = 5, padx = 5, fill = X)
         self.penzszamolo()
         self.hajoacs.pack(fill = Y, pady = 5)
@@ -257,11 +257,11 @@ class Varos():
         self.skalaCimke.destroy()
         if not berskalahossz:
             if self.boss.hajotipustar[self.boss.aktivjatekos.hajo].crew_limit - self.boss.aktivjatekos.legenyseg.get() == 0:
-                visszajelzes = self.master.szotar['crew_ship_full']
+                visszajelzes = self.master.ui_texts['crew_ship_full']
             elif self.matrozokszama.get() == 0:
-                visszajelzes = self.master.szotar['crew_port_empty']
+                visszajelzes = self.master.ui_texts['crew_port_empty']
             else:
-                visszajelzes = self.master.szotar['crew_no_money']
+                visszajelzes = self.master.ui_texts['crew_no_money']
             self.berskala = Label(self.line4, text = visszajelzes)
             self.felberel.config(state = DISABLED)
         else:
@@ -334,10 +334,10 @@ class Vezerlo(Frame):
                                ('tortuga',         lambda : self.varos('tortuga')),
                                ('havanna',         lambda : self.varos('havanna')),
                                ('martinique',      lambda : self.varos('martinique')),
-                               ('szelplusz90',     lambda : self.boss.tabla.szel_valtoztat(90)),
-                               ('szelminusz90',    lambda : self.boss.tabla.szel_valtoztat(-90)),
-                               ('szelplusz45',     lambda : self.boss.tabla.szel_valtoztat(45)),
-                               ('szelminusz45',    lambda : self.boss.tabla.szel_valtoztat(-45)),
+                               ('szelplusz90',     lambda : self.boss.game_board.szel_valtoztat(90)),
+                               ('szelminusz90',    lambda : self.boss.game_board.szel_valtoztat(-90)),
+                               ('szelplusz45',     lambda : self.boss.game_board.szel_valtoztat(45)),
+                               ('szelminusz45',    lambda : self.boss.game_board.szel_valtoztat(-45)),
                                ('bermuda',         self.bermuda),
                                ('foldfold',        self.foldfold),
                                ('vihar',           self.vihar),
@@ -356,7 +356,7 @@ class Vezerlo(Frame):
         self.treasurestack = []
         eventtar, kincstar, penztar, fuggvenytar = self.boss.data_reader.load_cards_data()
         for lap in eventtar.keys():
-            self.boss.tabla.kartyakep2(eventtar[lap])  # betöltjük a képet
+            self.boss.game_board.kartyakep2(eventtar[lap])  # betöltjük a képet
             self.eventszotar[lap] = Kartya3(self, self.boss, lap, eventtar[lap], 'event', fuggvenytar[lap])
             self.eventdeck.append(lap)
         print("Kihúzható események:", len(self.eventdeck),"/ 52")
@@ -372,7 +372,7 @@ class Vezerlo(Frame):
                 iPenz += 1
         print("kihúzható kincsek:", len(self.kincsszotar.keys()), "/ 30")
         for lap in kincstar.keys():
-            self.boss.tabla.kartyakep2(kincstar[lap]) # betöltjük a képet
+            self.boss.game_board.kartyakep2(kincstar[lap]) # betöltjük a képet
             if lap != 'treasure':
                 self.kincsszotar[lap] = Kartya3(self, self.boss, lap, kincstar[lap], 'treasure', fuggvenytar[lap])
         self.kincspakli = list(self.kincsszotar.keys())
@@ -394,10 +394,10 @@ class Vezerlo(Frame):
         # Városablakok előkészítése
         self.varostar = {}
         if fogadoszotar == {}:
-            for varos in self.boss.tabla.kikotolista:
+            for varos in self.boss.game_board.kikotolista:
                 self.varostar[varos] = Varos(self, self.boss, varos)
         else:
-            for varos in self.boss.tabla.kikotolista:
+            for varos in self.boss.game_board.kikotolista:
                 self.varostar[varos] = Varos(self, self.boss, varos, fogadoszotar[varos])
     
     def methodeNo_get(self):
@@ -429,14 +429,14 @@ class Vezerlo(Frame):
             self.boss.jatekossor.append(self.boss.jatekossor.pop(0)) # A legutóbb lépett játékost leghátra dobja, ha már lépett az aktív játékos
         self.aktivjatekos = self.boss.jatekostar[self.boss.jatekossor[0]]
         print('-'*20+'\n'+str(self.aktivjatekos.nev),'köre jön\n'+'-'*20) # logoláshoz
-        self.master.status_bar.log(self.master.szotar["new_turn"] % self.aktivjatekos.nev)
+        self.master.status_bar.log(self.master.ui_texts["new_turn"] % self.aktivjatekos.nev)
         self.dobasMegtortent.set(False)
         self.boss.menu.ful1feltolt(self.aktivjatekos)
         if "scurvy" in self.aktivjatekos.statuszlista:
             self.aktivjatekos.set_legenyseg(-1)
         self.boss.set_is_turn_in_progress(0)
         if not self.aktivjatekos.kincskeresesKesz:
-            if askyesno(self.boss.szotar["dig_for_treasure_label"], self.boss.szotar["dig_for_treasure_question"]):
+            if askyesno(self.boss.ui_texts["dig_for_treasure_label"], self.boss.ui_texts["dig_for_treasure_question"]):
                 self.kincsesszigetAsas()
             else:
                 self.aktivjatekos.set_kincskereses(True)
@@ -450,14 +450,14 @@ class Vezerlo(Frame):
         self.boss.status_bar.log('')
         if self.boss.kilepesFolyamatban:
             return
-        #print(self.aktivjatekos.nev,'a(z)',self.boss.tabla.locationsR[self.aktivjatekos.pozicio],'mezőre lépett.')
+        #print(self.aktivjatekos.nev,'a(z)',self.boss.game_board.locationsR[self.aktivjatekos.pozicio],'mezőre lépett.')
         if 'grog_riot' in self.aktivjatekos.statuszlista:
-            if self.boss.tabla.locationsR[self.aktivjatekos.pozicio] in self.master.tabla.kikotolista:
+            if self.boss.game_board.locationsR[self.aktivjatekos.pozicio] in self.master.game_board.kikotolista:
                 self.aktivjatekos.set_statusz("grog_riot", 0)
                 self.eventstack.append("grog_riot")
             else:
                 self.eventszotar['grog_riot'].megjelenik()
-        self.hivas = self.teendotar[self.boss.tabla.locationsR[self.aktivjatekos.pozicio]]()
+        self.hivas = self.teendotar[self.boss.game_board.locationsR[self.aktivjatekos.pozicio]]()
         if self.hivas == False:
             self.szakasz_0()
         elif self.hivas == None:
@@ -508,10 +508,10 @@ class Vezerlo(Frame):
     def mozgas(self, dobas, szellel = 1):
         "Irányítja a mozgás folyamatát."
         if szellel:
-            celok = self.boss.tabla.kormanyos(self.aktivjatekos.pozicio[0], self.aktivjatekos.pozicio[1], dobas)
+            celok = self.boss.game_board.kormanyos(self.aktivjatekos.pozicio[0], self.aktivjatekos.pozicio[1], dobas)
         else:
-            celok = self.boss.tabla.kormanyos(self.aktivjatekos.pozicio[0], self.aktivjatekos.pozicio[1], dobas, 0)
-        self.boss.tabla.celkereso(celok)
+            celok = self.boss.game_board.kormanyos(self.aktivjatekos.pozicio[0], self.aktivjatekos.pozicio[1], dobas, 0)
+        self.boss.game_board.celkereso(celok)
         
     def kincsetHuz(self):
         if not self.kincspakli:
@@ -532,7 +532,7 @@ class Vezerlo(Frame):
         
     def bermuda(self):
         "A Bermuda mező roppant izgalmas függvénye."
-        showinfo(self.boss.szotar['info'], self.boss.szotar['bermuda'])
+        showinfo(self.boss.ui_texts['info'], self.boss.ui_texts['bermuda'])
         
     def csata(self, csataId):
         "A csatát inicializáló függvény."
@@ -541,7 +541,7 @@ class Vezerlo(Frame):
 
     def foldfold(self):
         "A játékos újra dobhat a következő körben, ha az eredeti dobás kedvezőtlen."
-        showinfo(self.boss.szotar['info'], self.boss.szotar['land'])
+        showinfo(self.boss.ui_texts['info'], self.boss.ui_texts['land'])
         self.aktivjatekos.set_statusz("fold_fold")
         if "scurvy" in self.aktivjatekos.statuszlista:
             self.aktivjatekos.set_statusz("scurvy", 0)
@@ -559,15 +559,15 @@ class Vezerlo(Frame):
             if "spare_sail" in self.aktivjatekos.statuszlista: # Ha a játékosnak van pótvitorlája, megússza, hogy kimaradjon.
                 self.aktivjatekos.set_statusz("spare_sail", 0) # Eldobja a vitorlát.
                 self.treasurestack.append("spare_sail") # A vitorlakártya a talonba kerül.
-                uzenet = self.boss.szotar["storm_sail_damage"]
+                uzenet = self.boss.ui_texts["storm_sail_damage"]
                 return
             else:
                 self.aktivjatekos.set_kimarad(1) # Beállítjuk, hogy kimarad egy körből.
-                uzenet = self.boss.szotar["storm_miss_turn"]
-            showinfo(self.boss.szotar["info"], uzenet) # Kiírjuk, a történteket.
+                uzenet = self.boss.ui_texts["storm_miss_turn"]
+            showinfo(self.boss.ui_texts["info"], uzenet) # Kiírjuk, a történteket.
             return
         else:
-            self.boss.status_bar.log(self.boss.szotar["storm_success"])
+            self.boss.status_bar.log(self.boss.ui_texts["storm_success"])
             self.mozgas(viharEreje)
             self.szakasz_mezoevent()
             return True
@@ -578,15 +578,15 @@ class Vezerlo(Frame):
         self.aktivjatekos.set_utolsodobas(dobas) # Mentjük a kocka állapotát.
         if dobas == 6:
             self.aktivjatekos.set_kincs(1)
-            self.boss.status_bar.log(self.boss.szotar["driftwood_success"])
+            self.boss.status_bar.log(self.boss.ui_texts["driftwood_success"])
         else:
-            self.boss.status_bar.log(self.boss.szotar["driftwood"])
+            self.boss.status_bar.log(self.boss.ui_texts["driftwood"])
         return
 
     def szelcsend(self):
         "Egy körből kimarad a játékos."
         self.aktivjatekos.set_kimarad(1) # Beállítjuk, hogy kimarad egy körből.
-        showinfo(self.boss.szotar["info"], self.boss.szotar["calm"])
+        showinfo(self.boss.ui_texts["info"], self.boss.ui_texts["calm"])
         return
 
     def taino(self):
@@ -602,17 +602,17 @@ class Vezerlo(Frame):
                 self.aktivjatekos.set_legenyseg(dobas)
                 felveve = dobas
             if felveve < 2:
-                self.boss.status_bar.log(self.boss.szotar["taino_one"])
+                self.boss.status_bar.log(self.boss.ui_texts["taino_one"])
             else:
-                self.boss.status_bar.log(self.boss.szotar["taino_some"] % felveve)
+                self.boss.status_bar.log(self.boss.ui_texts["taino_some"] % felveve)
         else:
-            self.boss.status_bar.log(self.boss.szotar["taino_none"])
+            self.boss.status_bar.log(self.boss.ui_texts["taino_none"])
         return
 
     def kincsessziget(self):
         "Egy mező, ahol kincset lehet ásni."
         self.aktivjatekos.set_kincskereses(False)
-        self.boss.status_bar.log(self.boss.szotar["dig_for_treasure"])
+        self.boss.status_bar.log(self.boss.ui_texts["dig_for_treasure"])
         
     def kincsesszigetAsas(self):
         "A teendők, ha már kincses szigeten áll az ember."
@@ -624,7 +624,7 @@ class Vezerlo(Frame):
             self.aktivjatekos.set_kincskereses(True)
             self.kincsetHuz()
         else:
-            showinfo(self.boss.szotar["dig_for_treasure_label"], self.boss.szotar["dig_for_treasure_nothing"])
+            showinfo(self.boss.ui_texts["dig_for_treasure_label"], self.boss.ui_texts["dig_for_treasure_nothing"])
         self.szakasz_0()
     
     def aramlat(self):
@@ -646,21 +646,21 @@ class Vezerlo(Frame):
                             (4, "tortuga"),
                             (5, "portroyal")])
         if dobas == 6:
-            uzenet = self.boss.szotar["castaway_no_hope"]
+            uzenet = self.boss.ui_texts["castaway_no_hope"]
         else:
             if dobas == 5:
                 varos = "Port Royal"
             else:
                 varos = celokSzotar[dobas].capitalize()
-            uzenet = self.boss.szotar["castaway_success"] % varos
-            x,y = self.boss.tabla.locations[celokSzotar[dobas]][0]
-            self.boss.tabla.hajotathelyez(x,y)
+            uzenet = self.boss.ui_texts["castaway_success"] % varos
+            x,y = self.boss.game_board.locations[celokSzotar[dobas]][0]
+            self.boss.game_board.hajotathelyez(x,y)
             if self.aktivjatekos.kincs.get() < 10:
                 self.aktivjatekos.kincs.set(0)
             else:
                 self.aktivjatekos.kincs.set(self.aktivjatekos.kincs.get() - 10)
             self.aktivjatekos.set_legenyseg(10)
-        showinfo(self.boss.szotar["info"], uzenet)
+        showinfo(self.boss.ui_texts["info"], uzenet)
         self.master.jatekmenet.szakasz_0()
         return False
         

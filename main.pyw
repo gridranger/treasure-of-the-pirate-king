@@ -26,26 +26,29 @@ class Application(Tk):
         self.debug_mode = debug_mode
         self.data_reader = DataReader(self)
         self._process_config()
+        self.ui_texts = {}
         self.ui_text_variables = {}
+        self._load_texts()
         self._load_text_variables()
         self.save_handler = SaveHandler()
-        # Panelek megjelenítése
         self.is_game_setup_in_progress = IntVar(value=0)
         self.is_game_in_progress = IntVar(value=0)
         self.is_turn_in_progress = IntVar(value=1)
-        self.render_panes()
+        self._render_panes()
         self.is_game_in_progress.trace('w', self.follow_game_progress_change)
         self.is_turn_in_progress.trace('w', self.follow_turn_progress_change)
-        # Alapszótár
-        self.birodalomszotar = dict([(BRITISH, Empire(BRITISH, 'portroyal', '', (0, 0))),
-                                     (FRENCH, Empire(FRENCH, 'martinique', '', (0, 0))),
-                                     (DUTCH, Empire(DUTCH, 'curacao', '', (0, 0))),
-                                     (SPANISH, Empire(SPANISH, 'havanna', '', (0, 0))),
-                                     (PIRATE, Empire(PIRATE, 'tortuga', '', (0, 0)))])
-        # Feliratok előkészítése
-        self.szovegezo()
+        self.empires = {BRITISH: Empire(BRITISH, 'portroyal', '', (0, 0)),
+                        FRENCH: Empire(FRENCH, 'martinique', '', (0, 0)),
+                        DUTCH: Empire(DUTCH, 'curacao', '', (0, 0)),
+                        SPANISH: Empire(SPANISH, 'havanna', '', (0, 0)),
+                        PIRATE: Empire(PIRATE, 'tortuga', '', (0, 0))}
+        self._text_placer()
         self.protocol("WM_DELETE_WINDOW", self.shutdown_ttk_repeat)
         self.kilepesFolyamatban = False
+
+    @property
+    def board_width(self):
+        return self.height - 10
 
     def _process_config(self):
         settings = self.data_reader.load_settings()
@@ -75,8 +78,7 @@ class Application(Tk):
         self.geometry("{}x{}+{}+{}".format(self.width, self.height, 100, 100))
 
     def _load_texts(self):
-        texts = self.data_reader.load_dictionary(self.language, entry_type='text')
-        return texts
+        self.ui_texts = self.data_reader.load_dictionary(self.language, entry_type='text')
 
     def _load_text_variable_values(self):
         text_variable_values = self.data_reader.load_dictionary(self.language, entry_type='textvariable')
@@ -87,77 +89,81 @@ class Application(Tk):
         for entry in text_variable_values:
             self.ui_text_variables.setdefault(entry, StringVar()).set(text_variable_values[entry])
 
-    def szovegezo(self):
-        "Újragenerálja a felület állandó szövegelemeit."
-        self.szotar = self._load_texts()
-        self.title(self.szotar['title'])
-        self.menu.tab(0, text=self.szotar['main_main'])
-        self.menu.tab(1, text=self.szotar['game'])
-        self.menu.tab(2, text=self.szotar['settings'])
+    def _text_placer(self):
+        self.title(self.ui_texts['title'])
+        self.menu.tab(0, text=self.ui_texts['main_main'])
+        self.menu.tab(1, text=self.ui_texts['game'])
+        self.menu.tab(2, text=self.ui_texts['settings'])
         if self.is_game_setup_in_progress.get():
-            valasztottZaszlok = []
+            picked_nations = []
             for i in range(6):
-                if self.tabla.jatekosopciok[i].zaszlovalaszto.get() != '':
-                    valasztottZaszlok.append(self.zaszloszotar[self.tabla.jatekosopciok[i].zaszlovalaszto.get()])
+                if self.game_board.player_setups[i].nation_picker.get() != '':
+                    picked_nations.append(self.zaszloszotar[self.game_board.player_setups[i].nation_picker.get()])
                 else:
-                    valasztottZaszlok.append(0)
-        for rowid, row in self.birodalomszotar.items():
-            row.name = self.szotar[row.empire_id.lower()]
+                    picked_nations.append(0)
+        for rowid, row in self.empires.items():
+            row.name = self.ui_texts[row.empire_id.lower()]
         # ------------------------------------------------#
         # Nézetek a birodalomDB létrehozásakor már létezett szótárak helyettesítésére.
-        self.zaszloszotar2 = {row.empire_id: row.capital for (rowid, row) in self.birodalomszotar.items()}
-        self.zaszloszotar2R = {row.capital: row.empire_id for (rowid, row) in self.birodalomszotar.items()}
-        self.varosszotar = {row.capital: row.name for (rowid, row) in self.birodalomszotar.items()}
-        self.zaszloszotar = {row.name: row.capital for (rowid, row) in self.birodalomszotar.items()}
+        self.zaszloszotar2 = {row.empire_id: row.capital for (rowid, row) in self.empires.items()}
+        self.zaszloszotar2R = {row.capital: row.empire_id for (rowid, row) in self.empires.items()}
+        self.varosszotar = {row.capital: row.name for (rowid, row) in self.empires.items()}
+        self.zaszloszotar = {row.name: row.capital for (rowid, row) in self.empires.items()}
         # ------------------------------------------------#
         if self.is_game_setup_in_progress.get():
             for i in range(6):
-                # self.tabla.jatekosopciok[i].nevfelirat.config(text=self.szotar['name_label'])
-                # self.tabla.jatekosopciok[i].szinfelirat.config(text=self.szotar['color_label'])
-                # self.tabla.jatekosopciok[i].zaszlofelirat.config(text=self.szotar['flag_label'])
-                self.tabla.jatekosopciok[i].zaszlok = list(self.zaszloszotar.keys())
-                self.tabla.jatekosopciok[i].zaszlovalaszto.config(value=self.tabla.jatekosopciok[i].zaszlok)
-                if valasztottZaszlok[i] != 0:
-                    self.tabla.jatekosopciok[i].zaszlovalaszto.set(self.varosszotar[valasztottZaszlok[i]])
-                    # self.tabla.startgomb.config(text=self.szotar['start_button'])
+                # self.game_board.player_setups[i].nevfelirat.config(text=self.ui_texts['name_label'])
+                # self.game_board.player_setups[i].szinfelirat.config(text=self.ui_texts['color_label'])
+                # self.game_board.player_setups[i].zaszlofelirat.config(text=self.ui_texts['flag_label'])
+                self.game_board.player_setups[i].zaszlok = list(self.zaszloszotar.keys())
+                self.game_board.player_setups[i].nation_picker.config(value=self.game_board.player_setups[i].zaszlok)
+                if picked_nations[i] != 0:
+                    self.game_board.player_setups[i].nation_picker.set(self.varosszotar[picked_nations[i]])
+                    # self.game_board.startgomb.config(text=self.ui_texts['start_button'])
         if self.is_game_in_progress.get():
             self.menu.ful1feltolt()
 
     def get_empire_by_capital_coordinates(self, coordinates):
-        for empire in self.birodalomszotar:
-            if self.birodalomszotar[empire].coordinates == coordinates:
-                return self.birodalomszotar[empire].empire_id
+        for empire in self.empires:
+            if self.empires[empire].coordinates == coordinates:
+                return self.empires[empire].empire_id
 
     def set_new_language(self, new_language):
         if self.language == new_language:
             return
         self.language = new_language  # beállítja az új nyelvet
+        self._load_texts()
         self._load_text_variables()
-        self.szovegezo()  # megjeleníti a kiválasztott nyelven a felület elemeit
+        self._text_placer()  # megjeleníti a kiválasztott nyelven a felület elemeit
         self.kartyaszotar = self.data_reader.load_cards_text()  # cseréli az esemény- és kincskártyák szövegét
-        self.status_bar.log(self.szotar['new_language'])
+        self.status_bar.log(self.ui_texts['new_language'])
         self.data_reader.save_settings(new_language=new_language)
 
-    def render_panes(self):
+    def _render_panes(self):
         self.columnconfigure('all', weight=1)
         self.rowconfigure('all', weight=1)
         menu_width = int(self.height * 0.33 - 10)
         self.status_bar = LogFrame(self, menu_width)
         self.status_bar.grid(row=1, column=0, sticky=S + W, padx=5, pady=5)
-        self.tablaszelesseg = self.height - 10
         if self.is_game_in_progress.get():
-            self.tabla = Board(self, self.tablaszelesseg)
-            self.tabla.lekepez()
-            self.tabla.grid(row=0, column=1, rowspan=2, sticky=N + W, padx=5, pady=5)
+            self._render_game_board()
         else:
-            self.tabla = Frame(self, width=self.tablaszelesseg, height=self.tablaszelesseg)
-            self.tabla.grid(row=0, column=1, rowspan=2, sticky=N + W, padx=5, pady=5)
+            self._render_game_board_placeholder()
         self.menu = Fulek(self, menu_width)  # oldalsó menü inicializálása
         self.menu.grid(row=0, column=0, sticky=N + W, padx=5, pady=5)
         if self.screen_ratio == 'wide':  # ha kell, akkor a hajópanelt is meghívjuk
-            hajoszelesseg = self.width - menu_width - self.tablaszelesseg - 30
+            hajoszelesseg = self.width - menu_width - self.board_width - 30
             self.ship = Frame(self, width=hajoszelesseg)  # helyőrző
             self.ship.grid(row=0, column=2, rowspan=2, sticky=W + N + E, padx=5, pady=5)
+
+    def _render_game_board_placeholder(self):
+        self.game_board = Frame(self, width=self.board_width, height=self.board_width)
+        self.game_board.grid(row=0, column=1, rowspan=2, sticky=N + W, padx=5, pady=5)
+
+    def _render_game_board(self):
+        self.game_board = Board(self, self.board_width)
+        self.game_board.render_board()
+        self.game_board.grid(row=0, column=1, rowspan=2, sticky=N + W, padx=5, pady=5)
 
     def meretez(self, ujfelbontas, ujteljeskepernyo):
         "Újraméretezi az ablakot."
@@ -167,29 +173,29 @@ class Application(Tk):
         jatekosadatok = []
         if self.is_game_setup_in_progress.get():
             for i in range(6):
-                if self.tabla.jatekosopciok[i].aktiv.get():
+                if self.game_board.player_setups[i].aktiv.get():
                     jatekosadatok.append(
-                        [self.tabla.jatekosopciok[i].nev.get(), self.tabla.jatekosopciok[i].valasztottSzin.get(),
-                         self.tabla.jatekosopciok[i].zaszlovalaszto.get()])
+                        [self.game_board.player_setups[i].nev.get(), self.game_board.player_setups[i].valasztottSzin.get(),
+                         self.game_board.player_setups[i].nation_picker.get()])
                 else:
                     pass
         self._process_config()
         self.torolMindent()
-        self.render_panes()
+        self._render_panes()
         if self.is_game_setup_in_progress.get():
             self.jatekBeallit(0)
             if len(jatekosadatok) > 0:
                 for i in range(len(jatekosadatok)):
-                    self.tabla.jatekosopciok[i].visszatolt(jatekosadatok[i][0], jatekosadatok[i][1],
+                    self.game_board.player_setups[i].visszatolt(jatekosadatok[i][0], jatekosadatok[i][1],
                                                            jatekosadatok[i][2])
-        self.szovegezo()
+        self._text_placer()
         self.menu.select(self.menu.lap2)
-        self.status_bar.log('%s %i×%i' % (self.szotar['new_resolution'], self.width, self.height))
+        self.status_bar.log('%s %i×%i' % (self.ui_texts['new_resolution'], self.width, self.height))
 
     def torolMindent(self):
         "Törli a létrehozott paneleket."
         self.menu.destroy()
-        self.tabla.destroy()
+        self.game_board.destroy()
         self.status_bar.destroy()
         try:
             self.ship.destroy()
@@ -199,26 +205,24 @@ class Application(Tk):
     def jatekBeallit(self, turnoff=1):
         "Bekéri a játékosok adatait egy panel megjelenítésével. Kikapcsoláshoz újra meg kell hívni, újrageneráláshoz 0 paraméterrel hívandó."
         if self.is_game_in_progress.get() and not askokcancel(self.ui_text_variables['new_game'].get(),
-                                                           self.szotar['discard_game']):
+                                                           self.ui_texts['discard_game']):
             return
         else:
             self.is_game_in_progress.set(0)
         if self.is_game_setup_in_progress.get() and turnoff:  # Új kattintásra a gomb visszaáll alapheyzetbe, és töri a bevitt adatokat.s
             self.is_game_setup_in_progress.set(0)
-            self.tabla.destroy()
-            self.tabla = Frame(self, width=self.tablaszelesseg, height=self.tablaszelesseg)
-            self.tabla.grid(row=0, column=1, rowspan=2, sticky=N + W, padx=5, pady=5)
+            self.game_board.destroy()
+            self._render_game_board_placeholder()
             self.menu.ujjatekgomb.config(overrelief=RAISED, relief=FLAT)
             return
         self.is_game_setup_in_progress.set(1)
         self.menu.ujjatekgomb.config(relief=SUNKEN, overrelief=SUNKEN)
-        self.tabla.destroy()
-        self.tabla = Frame(self, width=self.tablaszelesseg, height=self.tablaszelesseg)
-        self.tabla.grid(row=0, column=1, rowspan=2, sticky=N + W, padx=5, pady=5)
-        self.tabla = UjJatekAdatok(self, self.tablaszelesseg)
-        self.tabla.columnconfigure('all', weight=1)
-        self.tabla.rowconfigure('all', weight=1)
-        self.tabla.grid(row=0, column=1, rowspan=2, sticky=N + E + W + S, padx=5, pady=5)
+        self.game_board.destroy()
+        self._render_game_board_placeholder()
+        self.game_board = UjJatekAdatok(self, self.board_width)
+        self.game_board.columnconfigure('all', weight=1)
+        self.game_board.rowconfigure('all', weight=1)
+        self.game_board.grid(row=0, column=1, rowspan=2, sticky=N + E + W + S, padx=5, pady=5)
 
     def jatekIndit(self, adathalmaz, uj=1, kezd='player0', szelindex=6, fogadoszotar={}, paklik=[],
                    hadnagyElokerult=False, grogbaroLegyozve=False):
@@ -229,24 +233,24 @@ class Application(Tk):
         self.update_idletasks()
         self.is_game_in_progress.set(1)
         self.jatekostar = {}
-        self.tabla.destroy()
-        self.tabla = Board(self, self.tablaszelesseg, szelindex)
-        self.tabla.grid(row=0, column=1, rowspan=2, sticky=N + W, padx=5, pady=5)
+        self.game_board.destroy()
+        self.game_board = Board(self, self.board_width, szelindex)
+        self.game_board.grid(row=0, column=1, rowspan=2, sticky=N + W, padx=5, pady=5)
         self.kartyaszotar = self.data_reader.load_cards_text()
         if uj:
             for adat in adathalmaz:
                 kikoto = self.zaszloszotar[adat[2]]
-                self.jatekostar['player' + str(adathalmaz.index(adat))] = Jatekos(self, self.tabla, adat[0], adat[1],
+                self.jatekostar['player' + str(adathalmaz.index(adat))] = Jatekos(self, self.game_board, adat[0], adat[1],
                                                                                   adat[2])
         else:
             for adat in adathalmaz:
-                self.jatekostar[adat] = Jatekos(self, self.tabla, adathalmaz[adat][0], adathalmaz[adat][1],
+                self.jatekostar[adat] = Jatekos(self, self.game_board, adathalmaz[adat][0], adathalmaz[adat][1],
                                                 adathalmaz[adat][2], adathalmaz[adat][3], adathalmaz[adat][4],
                                                 adathalmaz[adat][5], adathalmaz[adat][6], adathalmaz[adat][7],
                                                 adathalmaz[adat][8], adathalmaz[adat][9], adathalmaz[adat][10],
                                                 adathalmaz[adat][11])
         self.jatekossor = sorted(self.jatekostar.keys())
-        self.tabla.lekepez()
+        self.game_board.render_board()
         self.menu.select(self.menu.lap1)
         while self.jatekossor[0] != kezd:  # amíg nem a megfelelő játékos következik
             self.jatekossor.append(self.jatekossor.pop(0))  # a legelső játékost leghátra tesszük
@@ -260,9 +264,9 @@ class Application(Tk):
         self.menu.ful3_var()
         if not uj:
             self.jatekmenet.set_paklik(paklik)
-            self.status_bar.log(self.szotar["loading_done"])
+            self.status_bar.log(self.ui_texts["loading_done"])
         else:
-            self.status_bar.log(self.szotar["start_game_done"])
+            self.status_bar.log(self.ui_texts["start_game_done"])
         self.jatekmenet.szakasz_0()
 
     def follow_game_progress_change(self, a=None, b=None, c=None):
@@ -425,13 +429,13 @@ class Fulek(Notebook):
     def dobas(self, event):
         "Dob a kockával."
         if self.fold_fold_dobas:
-            self.boss.tabla.villogaski()
+            self.boss.game_board.villogaski()
             self.boss.jatekmenet.dobasMegtortent.set(False)
         if not self.boss.jatekmenet.dobasMegtortent.get():
             dobas = self.ful1tartalom.kocka.dob()
             if "fold_fold" in self.boss.jatekmenet.aktivjatekos.statuszlista:
                 print("Újra dobhatna.")
-                self.boss.status_bar.log(self.boss.szotar['land_log'])
+                self.boss.status_bar.log(self.boss.ui_texts['land_log'])
                 self.boss.jatekmenet.aktivjatekos.set_statusz("fold_fold", 0)
                 self.fold_fold_dobas = True
             else:
@@ -477,13 +481,13 @@ class Fulek(Notebook):
     def ment(self):
         "Kimenti az aktuális adatokat"
         soronkovetkezoJatekos = self.boss.jatekossor[0]
-        szelindex = self.boss.tabla.szelirany.index(0)
+        szelindex = self.boss.game_board.szelirany.index(0)
         fogadoszotar = {}
         exportszotar = {}
         for jatekos in sorted(list(self.boss.jatekostar.keys())):
             exportszotar[jatekos] = self.boss.jatekostar[jatekos].export()
-            exportszotar[jatekos][2] = self.boss.tabla.kikototarR[exportszotar[jatekos][2]]
-        for fogado in self.boss.tabla.kikotolista:
+            exportszotar[jatekos][2] = self.boss.game_board.kikototarR[exportszotar[jatekos][2]]
+        for fogado in self.boss.game_board.kikotolista:
             fogadoszotar[fogado] = self.boss.jatekmenet.varostar[fogado].export_matroz()
         eventdeck = self.boss.jatekmenet.eventdeck
         eventstack = self.boss.jatekmenet.eventstack
@@ -497,21 +501,21 @@ class Fulek(Notebook):
     def betolt(self):
         "Betölt egy mentett állást."
         if self.boss.is_game_in_progress.get():
-            if not askokcancel(self.boss.ui_text_variables['new_game'].get(), self.boss.szotar['discard_game-b']):
+            if not askokcancel(self.boss.ui_text_variables['new_game'].get(), self.boss.ui_texts['discard_game-b']):
                 return
         adatok = self.boss.save_handler.load_saved_state()
         if not adatok:
             return
         helyzetszotar, kovetkezoJatekos, szelindex, fogadoszotar, paklik, lieutenant_found, captain_defeated = adatok
-        self.boss.status_bar.log(self.boss.szotar['loading_game'])
+        self.boss.status_bar.log(self.boss.ui_texts['loading_game'])
         self.update_idletasks()
         self.boss.jatekIndit(helyzetszotar, 0, kovetkezoJatekos, szelindex, fogadoszotar, paklik, lieutenant_found, captain_defeated)
 
     def kilep(self):
         "Kilép a játékból."
         if self.boss.is_game_in_progress.get():
-            if self.boss.tabla.villogasaktiv:
-                self.boss.tabla.villogasaktiv = -1
+            if self.boss.game_board.villogasaktiv:
+                self.boss.game_board.villogasaktiv = -1
         self.boss.destroy()
 
     def mentEsKilep(self):
@@ -556,18 +560,18 @@ class JatekFul(Frame):
         "A fejléc."
         self.fejlec = Frame(self)
         Label(self.fejlec, text=self.aktivjatekos.nev).grid(row=0, column=0)
-        Label(self.fejlec, image=self.master.tabla.keptar['flag_' + self.aktivjatekos.birodalom]).grid(row=1, column=0)
+        Label(self.fejlec, image=self.master.game_board.gallery['flag_' + self.aktivjatekos.birodalom]).grid(row=1, column=0)
         self.fejlec.grid(row=pozicio, column=0, pady=5)
 
     def kincseslada_epito(self, pozicio):
         "Pénz- és legénységkijelző."
         self.kincseslada = Frame(self)
-        rekesz0 = LabelFrame(self.kincseslada, text=self.master.szotar['treasure'])
-        Label(rekesz0, image=self.master.tabla.keptar['penz-d2']).grid(row=0, column=0)
+        rekesz0 = LabelFrame(self.kincseslada, text=self.master.ui_texts['treasure'])
+        Label(rekesz0, image=self.master.game_board.gallery['penz-d2']).grid(row=0, column=0)
         Label(rekesz0, textvariable=self.aktivjatekos.kincs).grid(row=0, column=1)
         rekesz0.grid(row=0, column=0, sticky=N + E + W + S, padx=5)
-        rekesz1 = LabelFrame(self.kincseslada, text=self.master.szotar['crew'])
-        Label(rekesz1, image=self.master.tabla.keptar['matrozok']).grid(row=0, column=0)
+        rekesz1 = LabelFrame(self.kincseslada, text=self.master.ui_texts['crew'])
+        Label(rekesz1, image=self.master.game_board.gallery['matrozok']).grid(row=0, column=0)
         Label(rekesz1, textvariable=self.aktivjatekos.legenyseg).grid(row=0, column=1)
         rekesz1.grid(row=0, column=1, sticky=N + E + W + S, padx=5)
         self.kincseslada.grid(row=pozicio, column=0)
@@ -579,13 +583,13 @@ class JatekFul(Frame):
 
     def pontszamok_epito(self, pozicio):
         "Pontozótábla."
-        pontmezo = LabelFrame(self, text=self.master.szotar['scores'])
+        pontmezo = LabelFrame(self, text=self.master.ui_texts['scores'])
         ponthelyszamlalo = 0
         pontkeretszotar = {}
-        for birodalom in sorted(self.master.birodalomszotar.keys()):
+        for birodalom in sorted(self.master.empires.keys()):
             if birodalom != self.aktivjatekos.birodalom:
                 pontkeretszotar[birodalom] = Frame(pontmezo)
-                Label(pontkeretszotar[birodalom], image=self.master.tabla.keptar['flag_' + birodalom]).grid(row=0,
+                Label(pontkeretszotar[birodalom], image=self.master.game_board.gallery['flag_' + birodalom]).grid(row=0,
                                                                                                               column=0)
                 Label(pontkeretszotar[birodalom], text=':').grid(row=0, column=1)
                 Label(pontkeretszotar[birodalom], textvariable=self.aktivjatekos.hajotar[birodalom]).grid(row=0,
@@ -605,18 +609,18 @@ class JatekFul(Frame):
         kimaradas = self.aktivjatekos.kimarad.get()
         if kimaradas > 0:
             if kimaradas > 1:
-                uzenet = self.master.szotar["miss_turn"] % kimaradas
+                uzenet = self.master.ui_texts["miss_turn"] % kimaradas
             else:
-                uzenet = self.master.szotar["miss_turn_last_time"]
+                uzenet = self.master.ui_texts["miss_turn_last_time"]
             Button(self.kockamezo, text=uzenet, command=self.master.jatekmenet.kimaradas).pack()
             if "leviathan" in self.master.jatekmenet.aktivjatekos.statuszlista:
-                Button(self.kockamezo, text=self.master.szotar["play_leviathan"],
+                Button(self.kockamezo, text=self.master.ui_texts["play_leviathan"],
                        command=self.master.jatekmenet.leviathan_kijatszasa).pack()
         else:
             self.kockamezo.config(relief=RAISED, bd=2)
             self.kocka = Dobokocka(self.kockamezo, self.boss.width / 4, self.aktivjatekos.szin,
                                    self.aktivjatekos.masodikszin, self.aktivjatekos.utolsodobas)
-            if self.master.jatekmenet.aktivjatekos.pozicio in self.master.tabla.helyszotar[
+            if self.master.jatekmenet.aktivjatekos.pozicio in self.master.game_board.locations[
                 "szamuzottek"] and not self.master.jatekmenet.aktivjatekos.legenyseg.get():
                 self.kocka.bind('<Button-1>', self.master.jatekmenet.szamuzottek)
             else:
@@ -628,7 +632,7 @@ class JatekFul(Frame):
         self.jateksor = Frame(self)
         self.jateksorszotar = {}
         sor = self.master.jatekossor
-        self.jateksorCimke = Label(self.jateksor, text=self.master.szotar['turn_order'])
+        self.jateksorCimke = Label(self.jateksor, text=self.master.ui_texts['turn_order'])
         self.jateksorCimke.grid(row=0, column=0, sticky=W)
         for sorszam in range(len(self.master.jatekossor)):
             self.jateksorszotar['label' + str(sorszam)] = Label(self.jateksor,
@@ -641,7 +645,7 @@ class JatekFul(Frame):
 
     def statusz_epito(self, pozicio):
         "A játékos státuszainak megjelenítője."
-        statuszmezo = LabelFrame(self, text=self.master.szotar['cards'], relief=RAISED, width=self.boss.width - 31)
+        statuszmezo = LabelFrame(self, text=self.master.ui_texts['cards'], relief=RAISED, width=self.boss.width - 31)
         maxStatuszEgySorban = int((self.boss.width - 31) / 32)
         if len(self.master.jatekmenet.aktivjatekos.statuszlista):
             i = 0
@@ -655,7 +659,7 @@ class JatekFul(Frame):
                         hely = self.master.jatekmenet.kincsszotar
                     leendoKep = self.master.jatekmenet.eventszotar[statusz].kep + '_i'
                     leendoKep = leendoKep[(leendoKep.find('_') + 1):]
-                    Button(statuszmezo, image=self.master.tabla.keptar[leendoKep],
+                    Button(statuszmezo, image=self.master.game_board.gallery[leendoKep],
                            command=lambda statusz=statusz: hely[statusz].megjelenik(1)).grid(
                         row=int(i / maxStatuszEgySorban), column=i % maxStatuszEgySorban)
                     i += 1
@@ -693,10 +697,10 @@ class UjJatekos(Frame):
         self.szin.grid(row=1, column=1)
         self.zaszlofelirat = Label(self, textvariable=self.boss.boss.ui_text_variables['flag_label'])
         self.zaszlofelirat.grid(row=2, column=0, sticky=E)
-        self.zaszlovalaszto = Combobox(self, value=self.zaszlok, takefocus=0, width=12, state='readonly')
-        self.zaszlovalaszto.bind("<<ComboboxSelected>>", self.zaszlovalasztas)
-        self.zaszlovalaszto.grid(row=2, column=1)
-        for elem in [self.nev, self.szin, self.zaszlovalaszto]:
+        self.nation_picker = Combobox(self, value=self.zaszlok, takefocus=0, width=12, state='readonly')
+        self.nation_picker.bind("<<ComboboxSelected>>", self.zaszlovalasztas)
+        self.nation_picker.grid(row=2, column=1)
+        for elem in [self.nev, self.szin, self.nation_picker]:
             elem.config(state=DISABLED)
         self.hajo = Label(self, image=self.boss.hajokepszurke)
         self.hajo.grid(row=0, column=2, rowspan=3)
@@ -725,17 +729,17 @@ class UjJatekos(Frame):
     def aktival(self, a=None, b=None, c=None):
         "Hozzáadható vagy kikapcsolható vele egy játékos."
         if self.aktiv.get():
-            for elem in [self.nev, self.szin, self.zaszlovalaszto]:
+            for elem in [self.nev, self.szin, self.nation_picker]:
                 elem.config(state=NORMAL)
             self.hajo.config(image=self.hajokep)
         else:
-            for elem in [self.nev, self.szin, self.zaszlovalaszto]:
+            for elem in [self.nev, self.szin, self.nation_picker]:
                 elem.config(state=DISABLED)
             self.hajo.config(image=self.boss.hajokepszurke)
 
     def zaszlovalasztas(self, event):
         "A legkördülőmenüre kattintáskor végrehajtandó függvény."
-        self.zaszlo = self.zaszlovalaszto.get()
+        self.zaszlo = self.nation_picker.get()
 
     def visszatolt(self, nev='', szin='', zaszlo=''):
         'Fogadja a felbontásváltás után visszatöltendő adatokat.'
@@ -747,7 +751,7 @@ class UjJatekos(Frame):
             self.valasztottSzin.set(szin)
             self.szin.config(bg=self.valasztottSzin.get())
         if zaszlo != '':
-            self.zaszlovalaszto.set(zaszlo)
+            self.nation_picker.set(zaszlo)
 
 
 class UjJatekAdatok(Frame):
@@ -759,20 +763,20 @@ class UjJatekAdatok(Frame):
         self.meret = meret
         self.columnconfigure('all', weight=1)
         self.rowconfigure('all', weight=1)
-        self.jatekosopciok = {}
+        self.player_setups = {}
         self.hajokepszurke = image_tint('img/schooner.png', '#ffffff')
         hajokepszurkew, hajokepszurkeh = self.hajokepszurke.size
         self.hajokepszurke = PhotoImage(
             self.hajokepszurke.resize((int(self.meret / 5), int(self.meret / 5 * hajokepszurkeh / hajokepszurkew)),
                                       ANTIALIAS))
         for i in range(6):
-            self.jatekosopciok[i] = UjJatekos(self)
-            self.jatekosAktiv = Checkbutton(self, takefocus=0, variable=self.jatekosopciok[i].aktiv)
+            self.player_setups[i] = UjJatekos(self)
+            self.jatekosAktiv = Checkbutton(self, takefocus=0, variable=self.player_setups[i].aktiv)
             if i == 0:
-                self.jatekosopciok[i].aktiv.set(1)
+                self.player_setups[i].aktiv.set(1)
                 self.jatekosAktiv.config(state=DISABLED)
             self.jatekosAktiv.grid(row=i % 6, column=0, padx=5, pady=5, sticky=E)
-            self.jatekosopciok[i].grid(row=i % 6, column=1, sticky=W)
+            self.player_setups[i].grid(row=i % 6, column=1, sticky=W)
         self.startgomb = Button(self, textvariable=self.boss.ui_text_variables['start_button'],
                                 command=self.jatekosokBeallitasaKesz)
         self.startgomb.grid(row=0, column=2, rowspan=6, sticky=W)
@@ -781,23 +785,23 @@ class UjJatekAdatok(Frame):
         "Létrehozza a játékosokat a megadott paraméterekkel, és elindítja a játékot."
         jatekosadatok = []
         for i in range(6):
-            if self.jatekosopciok[i].aktiv.get():
-                if self.jatekosopciok[i].nev.get() == '':
-                    self.boss.status_bar.log(self.boss.szotar['name_missing'] % (i + 1))
+            if self.player_setups[i].aktiv.get():
+                if self.player_setups[i].nev.get() == '':
+                    self.boss.status_bar.log(self.boss.ui_texts['name_missing'] % (i + 1))
                     return
-                elif self.jatekosopciok[i].valasztottSzin.get() == '':
-                    self.boss.status_bar.log(self.boss.szotar['color_missing'] % (self.jatekosopciok[i].nev.get()))
+                elif self.player_setups[i].valasztottSzin.get() == '':
+                    self.boss.status_bar.log(self.boss.ui_texts['color_missing'] % (self.player_setups[i].nev.get()))
                     return
-                elif self.jatekosopciok[i].zaszlovalaszto.get() == '':
-                    self.boss.status_bar.log(self.boss.szotar['flag_missing'] % (self.jatekosopciok[i].nev.get()))
+                elif self.player_setups[i].nation_picker.get() == '':
+                    self.boss.status_bar.log(self.boss.ui_texts['flag_missing'] % (self.player_setups[i].nev.get()))
                     return
-                elif self.jatekosopciok[i].zaszlovalaszto.get() not in list(self.boss.zaszloszotar.keys()):
-                    self.boss.status_bar.log(self.boss.szotar['flag_invalid'] % (self.jatekosopciok[i].nev.get()))
+                elif self.player_setups[i].nation_picker.get() not in list(self.boss.zaszloszotar.keys()):
+                    self.boss.status_bar.log(self.boss.ui_texts['flag_invalid'] % (self.player_setups[i].nev.get()))
                     return
-                self.boss.status_bar.log(self.boss.szotar['start_game'])
+                self.boss.status_bar.log(self.boss.ui_texts['start_game'])
                 self.update_idletasks()
-                jatekosadatok.append([self.jatekosopciok[i].nev.get(), self.jatekosopciok[i].valasztottSzin.get(),
-                                      self.jatekosopciok[i].zaszlovalaszto.get()])
+                jatekosadatok.append([self.player_setups[i].nev.get(), self.player_setups[i].valasztottSzin.get(),
+                                      self.player_setups[i].nation_picker.get()])
         self.boss.jatekIndit(jatekosadatok)
 
 

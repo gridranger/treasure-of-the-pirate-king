@@ -180,7 +180,7 @@ class DataReader(object):
 
     def _load_common_card_data(self):
         try:
-            error_message = self.master.szotar['translation_missing']
+            error_message = self.master.ui_texts['translation_missing']
         except AttributeError:
             error_message = self.errors['stringAttributeError']
         all_cards = parse(self.path_dictionary['cards']).getroot()
