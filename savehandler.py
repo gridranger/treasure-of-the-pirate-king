@@ -3,7 +3,8 @@ from xml.etree.ElementTree import Element, ElementTree, parse, SubElement
 
 
 class SaveHandler(object):
-    def __init__(self):
+    def __init__(self, master):
+        self._master = master
         self.extension = '.savx'
         self.type = [('XML mentés', '.savx')]
         
@@ -77,7 +78,7 @@ class SaveHandler(object):
         kovetkezoJatekos = kovetkezoJatekos
         szelindex = szelindex
         varosadatok = varosadatok
-        empire = ['british', 'french', 'dutch', 'pirate', 'spanish']
+        empire = [self._master.empires.keys()]
         eventdeck, eventstack, kincspakli, treasurestack = kartyak
         grogbaroLegyozve = grogbaroLegyozve
         hadnagyElokerult = hadnagyElokerult
@@ -89,7 +90,7 @@ class SaveHandler(object):
                 a = a + ', ' + i
             paklik[paklik.index(pakli)] = a[2:]
         # Elkészítjük az XML-struktúra gyökerét
-        allomany = asksaveasfilename(defaultextension = self.extension, filetypes = self.type, initialdir='saved')
+        allomany = asksaveasfilename(defaultextension=self.extension, filetypes=self.type, initialdir='saved')
         if allomany == '':
             return False
         save = Element('save')
@@ -99,7 +100,7 @@ class SaveHandler(object):
         parameterek = ['name', 'color', 'home', 'ship', 'sailors', 'money', 'status', 'lastRoll', 'turnsToMiss', 'treasureHuntFinished']
         for jatekos in jatekosok:
             player = SubElement(save, 'player')
-            player.set('id',jatekos)
+            player.set('id', jatekos)
             # Kivesszük a paraméterlistából a speciális paramétereket.
             statusz = helyzetek[jatekos][7]
             statusz = str(statusz).strip("[]'") # A statuszt vissza is tesszük.
@@ -113,7 +114,7 @@ class SaveHandler(object):
             kiraboltHajokTag = SubElement(player, 'shipsLooted')
             for kiraboltHajo in kiraboltHajok:
                 pontok = SubElement(kiraboltHajokTag, 'score')
-                pontok.set('empire', empire[kiraboltHajok.index(kiraboltHajo)])
+                pontok.set('empire', kiraboltHajo[0])
                 pontok.set('ships', str(kiraboltHajo[1]))
             # Lementjük a koordinátákat is.
             coords = SubElement(player, 'coordinates')

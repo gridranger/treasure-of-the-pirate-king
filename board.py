@@ -14,38 +14,35 @@ class Board(Frame):
         self.tile_size = int(width / 9)
         self.tiles = self._generate_tiles()
         self.gallery = {}
-        self.locations = dict([('csata_francia',   [(5,9)]),
-                                ('csata_angol',     [(9,5)]),
-                                ('csata_holland',   [(1,5)]),
-                                ('csata_spanyol',   [(5,1)]),
-                                ('portroyal',       [(5,5)]),
-                                ('curacao',         [(1,9)]),
-                                ('tortuga',         [(9,1)]),
-                                ('havanna',         [(1,1)]),
-                                ('martinique',      [(9,9)]),
-                                ('szelplusz90',     [(7,1),(9,7)]),
-                                ('szelminusz90',    [(1,7),(3,5)]),
-                                ('szelplusz45',     [(1,3),(5,7),(7,9),(9,3)]),
-                                ('szelminusz45',    [(3,1),(5,3),(7,5),(3,9)]),
-                                ('bermuda',         [(9,4)]),
-                                ('foldfold',        [(1,6),(2,9),(5,4),(9,2)]),
-                                ('vihar',           [(2,5),(5,6),(9,6)]),
-                                ('uszadek',         [(1,8),(2,1),(6,5),(9,8)]),
-                                ('szelcsend',       [(4,5),(8,9)]),
-                                ('taino',           [(4,1),(6,9)]),
-                                ('kincsessziget',   [(1,2),(4,9),(8,1),(8,5)]),
-                                ('aramlat',         [(1,4),(5,8),(6,1)]),
-                                ('szamuzottek',     [(5,2)])
-                                ])
+        self.locations = dict([('csata_francia',   [(5, 9)]),
+                               ('csata_angol',     [(9, 5)]),
+                               ('csata_holland',   [(1, 5)]),
+                               ('csata_spanyol',   [(5, 1)]),
+                               ('portroyal',       [(5, 5)]),
+                               ('curacao',         [(1, 9)]),
+                               ('tortuga',         [(9, 1)]),
+                               ('havanna',         [(1, 1)]),
+                               ('martinique',      [(9, 9)]),
+                               ('szelplusz90',     [(7, 1), (9, 7)]),
+                               ('szelminusz90',    [(1, 7), (3, 5)]),
+                               ('szelplusz45',     [(1, 3), (5, 7), (7, 9), (9, 3)]),
+                               ('szelminusz45',    [(3, 1), (5, 3), (7, 5), (3, 9)]),
+                               ('bermuda',         [(9, 4)]),
+                               ('foldfold',        [(1, 6), (2, 9), (5, 4), (9, 2)]),
+                               ('vihar',           [(2, 5), (5, 6), (9, 6)]),
+                               ('uszadek',         [(1, 8), (2, 1), (6, 5), (9, 8)]),
+                               ('szelcsend',       [(4, 5), (8, 9)]),
+                               ('taino',           [(4, 1), (6, 9)]),
+                               ('kincsessziget',   [(1, 2), (4, 9), (8, 1), (8, 5)]),
+                               ('aramlat',         [(1, 4), (5, 8), (6, 1)]),
+                               ('szamuzottek',     [(5, 2)])])
         self.locationsR = {}
-        for birodalom in self.boss.empires.keys():
-            v = self.boss.empires[birodalom].capital
-            self.boss.empires[birodalom].coordinates = self.locations[v][0]
+        for empire in self.boss.empires.values():
+            empire.coordinates = self.locations[empire.capital][0]
         for hely in self.locations.keys():
             for ertek in self.locations[hely]:
                 self.locationsR[ertek] = hely
-        self.kikotolista = ['portroyal', 'curacao', 'tortuga', 'havanna', 'martinique']
-        self.kikototarR = {} # A városok koordináta alapú meghatározására szolgál.
+        self.kikototarR = {}  # A városok koordináta alapú meghatározására szolgál.
         self.kikotok = self.kikotokfeltolt()
         self.hajotar = {}
         self.figuraszotar = {}
@@ -129,8 +126,9 @@ class Board(Frame):
         for penzfajta in ['8','d','d2']:
             self.gallery['penz-'+penzfajta] = PhotoImage((open('img/penz-'+penzfajta+'.png').resize((a,a), ANTIALIAS)).convert("RGBA"))
         # A kikötőképek betöltése
-        for kikoto in self.kikotolista:
-            self.gallery[kikoto+'full'] = PhotoImage(open('img/'+kikoto+'.png').convert("RGBA"))
+        for empire in self.boss.empires:
+            capital = self.boss.empires[empire].capital
+            self.gallery[capital + 'full'] = PhotoImage(open('img/' + capital + '.png').convert("RGBA"))
         # A matrózok betöltése
         self.gallery['matrozok'] = PhotoImage((open('img/matrozok.png').resize((a,a), ANTIALIAS)).convert("RGBA"))
         # Hajók betöltése a hajóács gombjaihoz, és az ellenfelekhez.
@@ -269,11 +267,11 @@ class Board(Frame):
         
     def kikotokfeltolt(self):
         "Városlistázó függvény."
-        kikotok = []
-        for varos in self.kikotolista:
-            kikotok.append(self.locations[varos][0])
-            self.kikototarR[self.locations[varos][0]] = varos
-        return sorted(kikotok)
+        ports = []
+        for empire in self.boss.empires.values():
+            ports.append(self.locations[empire.capital][0])
+            self.kikototarR[self.locations[empire.capital][0]] = empire.capital
+        return sorted(ports)
     
     def celkereso(self, tiles):
         "Megmutatja a játékosnak azokat a négyzeteket, ahová majd lépni lehet."
