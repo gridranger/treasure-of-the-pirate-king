@@ -47,7 +47,7 @@ class Jatekos():
     @property
     def sajatkikoto(self):
         empire = self.boss.empires[self.empire]
-        return self.boss.game_board.locations[empire.capital]
+        return self.boss.game_board.locations[empire.capital][0]
         
     def set_hajo(self, tipus):
         "A megadott típusúra állítja be a játékos hajóját."

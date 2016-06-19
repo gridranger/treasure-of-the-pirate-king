@@ -26,6 +26,7 @@ class Application(Tk):
         self.debug_mode = debug_mode
         self.data_reader = DataReader(self)
         self._process_config()
+        self.card_texts = {}
         self.ui_texts = {}
         self.ui_text_variables = {}
         self._load_texts()
@@ -90,28 +91,35 @@ class Application(Tk):
             self.ui_text_variables.setdefault(entry, StringVar()).set(text_variable_values[entry])
 
     def _text_placer(self):
+        picked_nations = []
         self.title(self.ui_texts['title'])
         self.menu.tab(0, text=self.ui_texts['main_main'])
         self.menu.tab(1, text=self.ui_texts['game'])
         self.menu.tab(2, text=self.ui_texts['settings'])
         if self.is_game_setup_in_progress.get():
-            picked_nations = []
-            for i in range(6):
-                empire_name = self.game_board.player_setups[i].nation_picker.get()
-                if empire_name != '':
-                    picked_nations.append(self.get_empire_id_by_name(empire_name))
-                else:
-                    picked_nations.append(0)
+            picked_nations = self._save_game_setup_state()
         for rowid, row in self.empires.items():
             row.name = self.ui_texts[row.empire_id.lower()]
-        if self.is_game_setup_in_progress.get():  # TODO continues from here
-            for i in range(6):
-                self.game_board.player_setups[i].zaszlok = [empire.name for empire in self.empires.values()]
-                self.game_board.player_setups[i].nation_picker.config(value=self.game_board.player_setups[i].zaszlok)
-                if picked_nations[i] != 0:
-                    self.game_board.player_setups[i].nation_picker.set(self.empires[picked_nations[i]].name)
+        if self.is_game_setup_in_progress.get():
+            self._reload_game_setup_state(picked_nations)
         if self.is_game_in_progress.get():
             self.menu.ful1feltolt()
+
+    def _save_game_setup_state(self):
+        picked_nations = []
+        for i in range(6):
+            empire_name = self.game_board.player_setups[i].nation_picker.get()
+            if empire_name != '':
+                picked_nations.append(self.get_empire_id_by_name(empire_name))
+            else:
+                picked_nations.append('')
+        return picked_nations
+
+    def _reload_game_setup_state(self, picked_nations):
+        for i in range(6):
+            self.game_board.player_setups[i].nation_picker.config(value=self.list_empire_names())
+            if picked_nations[i] != '':
+                self.game_board.player_setups[i].nation_picker.set(self.empires[picked_nations[i]].name)
 
     def get_empire_id_by_capital(self, capital):
         for empire in self.empires.values():
@@ -131,36 +139,40 @@ class Application(Tk):
                 return empire.empire_id
         return ''
 
+    def list_empire_names(self):
+        return [empire.name for empire in self.empires.values()]
+
     def set_new_language(self, new_language):
         if self.language == new_language:
             return
-        self.language = new_language  # beállítja az új nyelvet
+        self.language = new_language
         self._load_texts()
         self._load_text_variables()
-        self._text_placer()  # megjeleníti a kiválasztott nyelven a felület elemeit
-        self.kartyaszotar = self.data_reader.load_cards_text()  # cseréli az esemény- és kincskártyák szövegét
+        self._text_placer()
+        self.card_texts = self.data_reader.load_cards_text()
         self.status_bar.log(self.ui_texts['new_language'])
         self.data_reader.save_settings(new_language=new_language)
 
     def _render_panes(self):
         self.columnconfigure('all', weight=1)
         self.rowconfigure('all', weight=1)
-        menu_width = int(self.height * 0.33 - 10)
+        menu_width = int((self.height / 3) - 10)
         self.status_bar = LogFrame(self, menu_width)
         self.status_bar.grid(row=1, column=0, sticky=S + W, padx=5, pady=5)
         if self.is_game_in_progress.get():
             self._render_game_board()
         else:
             self._render_game_board_placeholder()
-        self.menu = Fulek(self, menu_width)  # oldalsó menü inicializálása
+        self.menu = Fulek(self, menu_width)
         self.menu.grid(row=0, column=0, sticky=N + W, padx=5, pady=5)
-        if self.screen_ratio == 'wide':  # ha kell, akkor a hajópanelt is meghívjuk
-            hajoszelesseg = self.width - menu_width - self.board_width - 30
-            self.ship = Frame(self, width=hajoszelesseg)  # helyőrző
+        if self.screen_ratio == 'wide':
+            ship_width = self.width - menu_width - self.board_width - 30
+            self.ship = Frame(self, width=ship_width)
             self.ship.grid(row=0, column=2, rowspan=2, sticky=W + N + E, padx=5, pady=5)
 
     def _render_game_board_placeholder(self):
         self.game_board = Frame(self, width=self.board_width, height=self.board_width)
+        self.game_board.player_setups = []
         self.game_board.grid(row=0, column=1, rowspan=2, sticky=N + W, padx=5, pady=5)
 
     def _render_game_board(self):
@@ -168,20 +180,20 @@ class Application(Tk):
         self.game_board.render_board()
         self.game_board.grid(row=0, column=1, rowspan=2, sticky=N + W, padx=5, pady=5)
 
-    def meretez(self, ujfelbontas, ujteljeskepernyo):
-        "Újraméretezi az ablakot."
-        if (self.width, self.height) == (ujfelbontas[0], ujfelbontas[1]) and self.is_full_screen.get() == ujteljeskepernyo:
+    def resize(self, new_resolution, is_new_full_screen):
+        is_same_resolution = (self.width, self.height) == (new_resolution[0], new_resolution[1])
+        is_same_full_screen_setting = self.is_full_screen.get() == is_new_full_screen
+        if is_same_resolution and is_same_full_screen_setting:
             return
-        self.data_reader.save_settings(ujfelbontas[2], str(ujteljeskepernyo))
+        self.data_reader.save_settings(new_resolution[2], str(is_new_full_screen))
         jatekosadatok = []
         if self.is_game_setup_in_progress.get():
             for i in range(6):
                 if self.game_board.player_setups[i].aktiv.get():
                     jatekosadatok.append(
-                        [self.game_board.player_setups[i].nev.get(), self.game_board.player_setups[i].valasztottSzin.get(),
+                        [self.game_board.player_setups[i].nev.get(),
+                         self.game_board.player_setups[i].valasztottSzin.get(),
                          self.game_board.player_setups[i].nation_picker.get()])
-                else:
-                    pass
         self._process_config()
         self.torolMindent()
         self._render_panes()
@@ -227,9 +239,12 @@ class Application(Tk):
         self.game_board.rowconfigure('all', weight=1)
         self.game_board.grid(row=0, column=1, rowspan=2, sticky=N + E + W + S, padx=5, pady=5)
 
-    def jatekIndit(self, adathalmaz, uj=1, kezd='player0', szelindex=6, fogadoszotar={}, paklik=[],
+    def jatekIndit(self, adathalmaz, uj=1, kezd='player0', szelindex=6, fogadoszotar=None, paklik=None,
                    hadnagyElokerult=False, grogbaroLegyozve=False):
-        "Elindítja a játékot."
+        if fogadoszotar is None:
+            fogadoszotar = {}
+        if paklik is None:
+            paklik = []
         if uj or self.is_game_setup_in_progress.get():
             self.is_game_setup_in_progress.set(0)
         self.menu.ujjatekgomb.config(overrelief=RAISED, relief=FLAT)
@@ -239,18 +254,13 @@ class Application(Tk):
         self.game_board.destroy()
         self.game_board = Board(self, self.board_width, szelindex)
         self.game_board.grid(row=0, column=1, rowspan=2, sticky=N + W, padx=5, pady=5)
-        self.kartyaszotar = self.data_reader.load_cards_text()
+        self.card_texts = self.data_reader.load_cards_text()
         if uj:
             for adat in adathalmaz:
-                self.jatekostar['player' + str(adathalmaz.index(adat))] = Jatekos(self, self.game_board, adat[0], adat[1],
-                                                                                  adat[2])
+                self.jatekostar['player' + str(adathalmaz.index(adat))] = Jatekos(self, self.game_board, *adat)
         else:
             for adat in adathalmaz:
-                self.jatekostar[adat] = Jatekos(self, self.game_board, adathalmaz[adat][0], adathalmaz[adat][1],
-                                                adathalmaz[adat][2], adathalmaz[adat][3], adathalmaz[adat][4],
-                                                adathalmaz[adat][5], adathalmaz[adat][6], adathalmaz[adat][7],
-                                                adathalmaz[adat][8], adathalmaz[adat][9], adathalmaz[adat][10],
-                                                adathalmaz[adat][11])
+                self.jatekostar[adat] = Jatekos(self, self.game_board, *adathalmaz[adat])
         self.jatekossor = sorted(self.jatekostar.keys())
         self.game_board.render_board()
         self.menu.select(self.menu.lap1)
@@ -387,8 +397,8 @@ class Fulek(Notebook):
         self.felbontaskijelzo = Label(self.felbontasmezo, text=(self.boss.width, '×', self.boss.height))
         self.felbontaskijelzo.grid(row=1, column=0, padx=5, pady=5, sticky=W)
         self.felbontasvalto = Button(self.felbontasmezo, textvariable=self.boss.ui_text_variables['apply'],
-                                     command=lambda: self.boss.meretez(self.felbontaslista[self.felbontasskala.get()],
-                                                                       self.newscreen.get()), state=DISABLED)
+                                     command=lambda: self.boss.resize(self.felbontaslista[self.felbontasskala.get()],
+                                                                      self.newscreen.get()), state=DISABLED)
         self.felbontasvalto.grid(row=1, column=1, padx=5, pady=5, sticky=E)
         self.teljeskepernyo = Label(self.felbontasmezo, textvariable=self.boss.ui_text_variables['full_screen'])
         self.teljeskepernyo.grid(row=2, column=0, padx=5, pady=5, sticky=W)
@@ -669,8 +679,6 @@ class JatekFul(Frame):
 
 
 class UjJatekos(Frame):
-    """Az új játékost beállító panel."""
-
     def __init__(self, boss):
         Frame.__init__(self, master=boss, relief=RAISED, bd=2)
         self.boss = boss
@@ -680,7 +688,6 @@ class UjJatekos(Frame):
         self.valasztottSzin = StringVar()
         self.valasztottSzin.trace('w', self.hajoepito)
         self.valasztottSzin.set('')
-        self.zaszlok = [empire.name for empire in self.boss.boss.empires.values()]
         self.hajoepito()
         self.aktiv.trace('w', self.aktival)
         self.config(height=self.boss.meret / 5, width=(self.boss.meret - (3 * self.boss.meret / 10)) / 2)
@@ -696,7 +703,7 @@ class UjJatekos(Frame):
         self.szin.grid(row=1, column=1)
         self.zaszlofelirat = Label(self, textvariable=self.boss.boss.ui_text_variables['flag_label'])
         self.zaszlofelirat.grid(row=2, column=0, sticky=E)
-        self.nation_picker = Combobox(self, value=self.zaszlok, takefocus=0, width=12, state='readonly')
+        self.nation_picker = Combobox(self, value=self.boss.boss.list_empire_names(), takefocus=0, width=12, state='readonly')
         self.nation_picker.bind("<<ComboboxSelected>>", self.zaszlovalasztas)
         self.nation_picker.grid(row=2, column=1)
         for elem in [self.nev, self.szin, self.nation_picker]:
@@ -799,10 +806,10 @@ class UjJatekAdatok(Frame):
                     return
                 self.boss.status_bar.log(self.boss.ui_texts['start_game'])
                 self.update_idletasks()
-                jatekosadatok.append([self.player_setups[i].nev.get(), self.player_setups[i].valasztottSzin.get(),
-                                      self.player_setups[i].nation_picker.get()])
+                jatekosadatok.append([self.player_setups[i].nev.get(),
+                                      self.player_setups[i].valasztottSzin.get(),
+                                      self.boss.get_empire_id_by_name(self.player_setups[i].nation_picker.get())])
         self.boss.jatekIndit(jatekosadatok)
-
 
 
 if __name__ == '__main__':

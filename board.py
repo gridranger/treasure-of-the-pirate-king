@@ -8,6 +8,7 @@ from time import sleep
 class Board(Frame):
     def __init__(self, master, width=768, wind_index=6):  # TODO replace wind index to game instance variables
         Frame.__init__(self, master=master)
+        self.player_setups = []
         self.boss = master
         self.size = width - width % 9
         self.board_canvas = self._add_board_canvas()

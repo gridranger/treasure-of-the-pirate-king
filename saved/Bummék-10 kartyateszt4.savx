@@ -3,7 +3,7 @@
   <player id="player0">
     <name>Bumm tengernagy</name>
     <color>#80eb56</color>
-    <home>pirate</home>
+    <empire>pirate</empire>
     <ship>frigate</ship>
     <sailors>1</sailors>
     <money>82</money>
@@ -23,7 +23,7 @@
   <player id="player1">
     <name>Ormányos kormányos</name>
     <color>#5669eb</color>
-    <home>french</home>
+    <empire>french</empire>
     <ship>frigate</ship>
     <sailors>24</sailors>
     <money>9</money>
@@ -43,7 +43,7 @@
   <player id="player2">
     <name>Narancs parancsnok</name>
     <color>#60d1e1</color>
-    <home>spanish</home>
+    <empire>spanish</empire>
     <ship>frigate</ship>
     <sailors>31</sailors>
     <money>16</money>

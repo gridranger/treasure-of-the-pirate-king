@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <config>
-<language>en</language>
-<resolution>wide0</resolution>
+<language>hu</language>
+<resolution>wide1</resolution>
 <fullscreen>0</fullscreen>
 <resolutionlist>
 <res type="old_1" x="1024" y="768" />

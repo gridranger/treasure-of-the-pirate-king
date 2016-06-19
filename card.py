@@ -36,11 +36,11 @@ class KartyaAblak(Toplevel):
         self.ertek = ertek
         self.fuggveny = fuggveny
         self.bezar = self.destroy
-        cim = self.master.kartyaszotar[self.nev][0]
+        cim = self.master.card_texts[self.nev][0]
         if self.nev == 'treasure':
-            szoveg = self.master.kartyaszotar[self.nev][1] % ertek
+            szoveg = self.master.card_texts[self.nev][1] % ertek
         else:
-            szoveg = self.master.kartyaszotar[self.nev][1]
+            szoveg = self.master.card_texts[self.nev][1]
         self.title(self.master.ui_texts[pakli+'_card'])
         cimStilus = 'helvetica 14 bold'
         self.kartyalap = Frame(self, relief = GROOVE, bd = 2, bg = 'ivory')
@@ -168,7 +168,7 @@ class KartyaAblak(Toplevel):
         "A zátonyok függvénye."
         self.bezar = self.lapotEldob
         siker = randrange(1,7)
-        uzenet = self.master.kartyaszotar[self.nev][1]
+        uzenet = self.master.card_texts[self.nev][1]
         cezura = uzenet.find('|')
         if siker < 4:
             uzenet = uzenet[cezura + 1:]
@@ -193,7 +193,7 @@ class KartyaAblak(Toplevel):
         "A kraken kártyája."
         if 'bobbydick' in self.master.jatekmenet.aktivjatekos.statuszlista: # Megvizsgáljuk, hogy játékos kezében van-e a Bobby Dick-kártya.
             self.bezar = self.kraken_bobbydick # Az ablaki X-gomb függvénye
-            Button(self, text = (self.master.kartyaszotar['bobbydick'][0] + ' ' + self.master.ui_texts['whalevsoctopus']), command = self.kraken_bobbydick).pack(pady = 5, side = BOTTOM) # Gomb azoknak, akik rendelkeznek a Bobby Dick kártyával.
+            Button(self, text = (self.master.card_texts['bobbydick'][0] + ' ' + self.master.ui_texts['whalevsoctopus']), command = self.kraken_bobbydick).pack(pady = 5, side = BOTTOM) # Gomb azoknak, akik rendelkeznek a Bobby Dick kártyával.
         else:
             self.bezar = self.noEscape
             self.btn_kraken_dob = Button(self, text = self.master.ui_texts['to_battle'], command = self.kraken_dob)
@@ -294,7 +294,7 @@ class KartyaAblak(Toplevel):
                 self.master.jatekmenet.aktivjatekos.set_kincskereses(True) # ...és persze leállítjuk a kincskeresést, ha épp aktív volt.
             delta = - delta # Hogy kivonjuk a matrózokat, deltát negatívvá alakítjuk.
         self.master.jatekmenet.aktivjatekos.set_legenyseg(delta) # Lekönyveljük a változást.         
-        uzenet = self.master.kartyaszotar[self.nev][1]
+        uzenet = self.master.card_texts[self.nev][1]
         cezura = uzenet.find('|')
         uzenet = uzenet[:cezura] + str(delta_str) + uzenet[cezura + 1:]
         self.szovegfelirat.config(text = uzenet) # Feltüntetjük a változást a kártya szövegében.

@@ -651,10 +651,10 @@ class Gombjektum():
         self.hang = ""
         self.gomb = Button(keret, image = master.game_board.gallery['icon_'+nev], relief = FLAT, command = self.hasznalat, state = DISABLED)
         self.gomb.pack(side = TOP)
-        Label(keret, text = master.kartyaszotar[nev][0], wraplength = 55).pack(side = TOP)
+        Label(keret, text = master.card_texts[nev][0], wraplength = 55).pack(side = TOP)
         keret.pack(side = LEFT, fill = Y)
         self.talon = self.master.jatekmenet.treasurestack
-        self.tooltipSzoveg = self.master.kartyaszotar[self.nev][1]
+        self.tooltipSzoveg = self.master.card_texts[self.nev][1]
         self.gomb.bind("<Enter>", self.tooltipMutat)
         self.gomb.bind("<Leave>", self.tooltipRejt)
         

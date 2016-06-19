@@ -1,5 +1,6 @@
 from tkinter.filedialog import askopenfilename, asksaveasfilename
-from xml.etree.ElementTree import Element, ElementTree, parse, SubElement
+from xml.dom.minidom import parseString
+from xml.etree.ElementTree import Element, ElementTree, parse, SubElement, tostring
 
 
 class SaveHandler(object):
@@ -31,7 +32,7 @@ class SaveHandler(object):
 
     @staticmethod
     def _load_player(player):
-        parameters = ['name', 'color', 'home', 'ship', 'sailors', 'money', 'lastRoll', 'turnsToMiss',
+        parameters = ['name', 'color', 'empire', 'ship', 'sailors', 'money', 'lastRoll', 'turnsToMiss',
                       'treasureHuntFinished']
         state = []
         for parameter in parameters:
@@ -97,7 +98,7 @@ class SaveHandler(object):
         file = ElementTree(save)
         # Tényleges mentés
         jatekosok = sorted(list(helyzetek.keys()))
-        parameterek = ['name', 'color', 'home', 'ship', 'sailors', 'money', 'status', 'lastRoll', 'turnsToMiss', 'treasureHuntFinished']
+        parameterek = ['name', 'color', 'empire', 'ship', 'sailors', 'money', 'status', 'lastRoll', 'turnsToMiss', 'treasureHuntFinished']
         for jatekos in jatekosok:
             player = SubElement(save, 'player')
             player.set('id', jatekos)
@@ -143,5 +144,9 @@ class SaveHandler(object):
         cardsKp.text = paklik[2]
         cardsKt = SubElement(kartyak, 'treasureStack')
         cardsKt.text = paklik[3]
-        file.write(allomany, xml_declaration = True, encoding = 'utf-8', method = 'xml')
+        rough_xml = tostring(save, encoding='utf-8', method='xml')
+        minidom_xml = parseString(rough_xml)
+        pretty_xml = minidom_xml.toprettyxml('    ')
+        with open(allomany, 'w') as xml_file:
+            xml_file.write(pretty_xml)
         return True

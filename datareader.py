@@ -52,7 +52,8 @@ class DataReader(object):
         return settings
 
     def save_settings(self, new_resolution=None, new_full_screen=None, new_language=None):
-        config_xml = parse(self.path_dictionary['config'])
+        config_xml_path = self.path_dictionary['config']
+        config_xml = parse(config_xml_path)
         config = config_xml.getroot()
         if new_resolution and new_full_screen:
             config.find('resolution').text = new_resolution
@@ -60,15 +61,15 @@ class DataReader(object):
         if new_language:
             config.find('language').text = new_language
         config_xml.write(self.path_dictionary['config'], xml_declaration=True, encoding='utf-8', method='xml')
-        self._reformat_saved_xml()
+        self._reformat_saved_xml(config_xml_path)
 
-    def _reformat_saved_xml(self):
-        with open(self.path_dictionary['config'], 'r') as file_handler:
+    def _reformat_saved_xml(self, xml):
+        with open(xml) as file_handler:
             text = file_handler.read()
         while '\n\n' in text or '\n ' in text:
             text = text.replace('\n\n', '\n')
             text = text.replace('\n ', '\n')
-        with open(self.path_dictionary['config'], 'w') as file_handler:
+        with open(xml, 'w') as file_handler:
             file_handler.write(text)
 
     def load_battle_data(self):
@@ -118,7 +119,8 @@ class DataReader(object):
         except ValueError:
             battle_id = battle.get('id')
             ship_name = battle.find('shipName').text
-            showerror('Error', (self.errors['lootValueError'] % (ship_name, battle_id, self.path_dictionary['battles'])))
+            showerror('Error', (self.errors['lootValueError'] % (ship_name, battle_id,
+                                                                 self.path_dictionary['battles'])))
         return loot
 
     @staticmethod

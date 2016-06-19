@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" ?>
 <save>
     <player id="player0">
         <name>Bumm tengernagy</name>
@@ -7,21 +7,21 @@
         <ship>frigate</ship>
         <sailors>1</sailors>
         <money>82</money>
-        <status />
+        <status/>
         <lastRoll>1</lastRoll>
         <turnsToMiss>0</turnsToMiss>
         <treasureHuntFinished>True</treasureHuntFinished>
         <shipsLooted>
-            <score empire="british" ships="0" />
-            <score empire="dutch" ships="1" />
-            <score empire="french" ships="0" />
-            <score empire="pirate" ships="0" />
-            <score empire="spanish" ships="0" />
+            <score empire="british" ships="0"/>
+            <score empire="dutch" ships="1"/>
+            <score empire="french" ships="0"/>
+            <score empire="pirate" ships="0"/>
+            <score empire="spanish" ships="0"/>
         </shipsLooted>
-        <coordinates x="1" y="5" />
+        <coordinates x="1" y="5"/>
     </player>
     <player id="player1">
-        <name>Orm√°nyos korm√°nyos</name>
+        <name>Orm·nyos korm·nyos</name>
         <color>#5669eb</color>
         <empire>french</empire>
         <ship>frigate</ship>
@@ -32,13 +32,13 @@
         <turnsToMiss>0</turnsToMiss>
         <treasureHuntFinished>True</treasureHuntFinished>
         <shipsLooted>
-            <score empire="british" ships="0" />
-            <score empire="dutch" ships="0" />
-            <score empire="french" ships="0" />
-            <score empire="pirate" ships="0" />
-            <score empire="spanish" ships="0" />
+            <score empire="british" ships="0"/>
+            <score empire="dutch" ships="0"/>
+            <score empire="french" ships="0"/>
+            <score empire="pirate" ships="0"/>
+            <score empire="spanish" ships="0"/>
         </shipsLooted>
-        <coordinates x="1" y="3" />
+        <coordinates x="1" y="3"/>
     </player>
     <player id="player2">
         <name>Narancs parancsnok</name>
@@ -52,24 +52,24 @@
         <turnsToMiss>0</turnsToMiss>
         <treasureHuntFinished>True</treasureHuntFinished>
         <shipsLooted>
-            <score empire="british" ships="0" />
-            <score empire="dutch" ships="0" />
-            <score empire="french" ships="0" />
-            <score empire="pirate" ships="1" />
-            <score empire="spanish" ships="0" />
+            <score empire="british" ships="0"/>
+            <score empire="dutch" ships="0"/>
+            <score empire="french" ships="0"/>
+            <score empire="pirate" ships="1"/>
+            <score empire="spanish" ships="0"/>
         </shipsLooted>
-        <coordinates x="5" y="3" />
+        <coordinates x="5" y="3"/>
     </player>
     <currentPlayer>player0</currentPlayer>
     <windDirection>2</windDirection>
     <firstMateFound>False</firstMateFound>
     <grogLordDefeated>False</grogLordDefeated>
     <taverns>
-        <tavern port="havanna" sailors="5" />
-        <tavern port="martinique" sailors="5" />
-        <tavern port="portroyal" sailors="10" />
-        <tavern port="tortuga" sailors="5" />
-        <tavern port="curacao" sailors="9" />
+        <tavern port="tortuga" sailors="5"/>
+        <tavern port="curacao" sailors="9"/>
+        <tavern port="havanna" sailors="5"/>
+        <tavern port="martinique" sailors="5"/>
+        <tavern port="portroyal" sailors="10"/>
     </taverns>
     <cards>
         <eventDeck>set_sail_to_curacao, set_sail_to_tortuga, set_sail_to_martinique, set_sail_to_havanna, set_sail_to_portroyal</eventDeck>
