@@ -101,7 +101,7 @@ class Jatekos():
 
 class Vezerlo(Frame):
     """Gondoskodik a játék folyamatáról."""
-    def __init__(self, master = None, soros_jatekos=None, fogadoszotar=None):
+    def __init__(self, master = None, fogadoszotar=None):
         Frame.__init__(self, master)
         if fogadoszotar is None:
             fogadoszotar = {}

@@ -63,7 +63,8 @@ class DataReader(object):
         config_xml.write(self.path_dictionary['config'], xml_declaration=True, encoding='utf-8', method='xml')
         self._reformat_saved_xml(config_xml_path)
 
-    def _reformat_saved_xml(self, xml):
+    @staticmethod
+    def _reformat_saved_xml(xml):
         with open(xml) as file_handler:
             text = file_handler.read()
         while '\n\n' in text or '\n ' in text:

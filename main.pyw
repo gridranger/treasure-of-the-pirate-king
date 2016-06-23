@@ -186,50 +186,67 @@ class Application(Tk):
         if is_same_resolution and is_same_full_screen_setting:
             return
         self.data_reader.save_settings(new_resolution[2], str(is_new_full_screen))
-        jatekosadatok = []
+        player_data = []
         if self.is_game_setup_in_progress.get():
-            for i in range(6):
-                if self.game_board.player_setups[i].aktiv.get():
-                    jatekosadatok.append(
-                        [self.game_board.player_setups[i].nev.get(),
-                         self.game_board.player_setups[i].valasztottSzin.get(),
-                         self.game_board.player_setups[i].nation_picker.get()])
+            player_data = self._save_game_setup_before_resize()
         self._process_config()
-        self.torolMindent()
+        self._remove_everything()
         self._render_panes()
         if self.is_game_setup_in_progress.get():
-            self.jatekBeallit(0)
-            if len(jatekosadatok) > 0:
-                for i in range(len(jatekosadatok)):
-                    self.game_board.player_setups[i].visszatolt(jatekosadatok[i][0], jatekosadatok[i][1],
-                                                           jatekosadatok[i][2])
+            self._load_game_setup_before_resize(player_data)
         self._text_placer()
         self.menu.select(self.menu.lap2)
         self.status_bar.log('%s %i×%i' % (self.ui_texts['new_resolution'], self.width, self.height))
 
-    def torolMindent(self):
-        "Törli a létrehozott paneleket."
+    def _save_game_setup_before_resize(self):
+        player_data = []
+        for i in range(6):
+            if self.game_board.player_setups[i].aktiv.get():
+                player_data.append([self.game_board.player_setups[i].nev.get(),
+                                    self.game_board.player_setups[i].valasztottSzin.get(),
+                                    self.game_board.player_setups[i].nation_picker.get()])
+        return player_data
+
+    def _load_game_setup_before_resize(self, player_data):
+        self.start_game_setup()
+        if len(player_data) > 0:
+            for i in range(len(player_data)):
+                self.game_board.player_setups[i].visszatolt(player_data[i][0], player_data[i][1],
+                                                            player_data[i][2])
+
+    def _remove_everything(self):
         self.menu.destroy()
         self.game_board.destroy()
         self.status_bar.destroy()
         try:
             self.ship.destroy()
-        except:
+        except AttributeError:
             pass
 
-    def jatekBeallit(self, turnoff=1):
-        "Bekéri a játékosok adatait egy panel megjelenítésével. Kikapcsoláshoz újra meg kell hívni, újrageneráláshoz 0 paraméterrel hívandó."
-        if self.is_game_in_progress.get() and not askokcancel(self.ui_text_variables['new_game'].get(),
-                                                           self.ui_texts['discard_game']):
-            return
-        else:
+    def confirm_discard_game(self):
+        is_game_in_progress = self.is_game_in_progress.get()
+        if is_game_in_progress and not askokcancel(self.ui_text_variables['new_game'].get(), self.ui_texts['discard_game']):
+            return False
+        elif is_game_in_progress:
             self.is_game_in_progress.set(0)
-        if self.is_game_setup_in_progress.get() and turnoff:  # Új kattintásra a gomb visszaáll alapheyzetbe, és töri a bevitt adatokat.s
-            self.is_game_setup_in_progress.set(0)
-            self.game_board.destroy()
-            self._render_game_board_placeholder()
-            self.menu.ujjatekgomb.config(overrelief=RAISED, relief=FLAT)
-            return
+            return True
+        else:
+            return True
+
+    def start_game_setup(self):
+        confirmed = self.confirm_discard_game()
+        if confirmed:
+            if self.is_game_setup_in_progress.get():
+                self._reset_board()
+            self._prepare_game_setup()
+
+    def _reset_board(self):
+        self.is_game_setup_in_progress.set(0)
+        self.game_board.destroy()
+        self._render_game_board_placeholder()
+        self.menu.ujjatekgomb.config(overrelief=RAISED, relief=FLAT)
+
+    def _prepare_game_setup(self):
         self.is_game_setup_in_progress.set(1)
         self.menu.ujjatekgomb.config(relief=SUNKEN, overrelief=SUNKEN)
         self.game_board.destroy()
@@ -239,44 +256,47 @@ class Application(Tk):
         self.game_board.rowconfigure('all', weight=1)
         self.game_board.grid(row=0, column=1, rowspan=2, sticky=N + E + W + S, padx=5, pady=5)
 
-    def jatekIndit(self, adathalmaz, uj=1, kezd='player0', szelindex=6, fogadoszotar=None, paklik=None,
-                   hadnagyElokerult=False, grogbaroLegyozve=False):
-        if fogadoszotar is None:
-            fogadoszotar = {}
-        if paklik is None:
-            paklik = []
-        if uj or self.is_game_setup_in_progress.get():
-            self.is_game_setup_in_progress.set(0)
+    def load_game(self, player_data, next_player, wind_index, taverns, card_decks, is_lieutenant_found, is_grog_lord_defeated):
+        self._reset_for_game_start()
+        for data in player_data:
+            self.jatekostar[data] = Jatekos(self, self.game_board, *player_data[data])
+        self._preapre_new_ui()
+        self.game_board  # TODO wind_index call!
+        while self.jatekossor[0] != next_player:
+            self.jatekossor.append(self.jatekossor.pop(0))
+        if is_lieutenant_found:
+            self.jatekmenet.set_hadnagyElokerult()
+        if is_grog_lord_defeated:
+            self.jatekmenet.set_grogbaroLegyozve()
+        self.jatekmenet = Vezerlo(self, taverns)
+        self.menu.ful3_var()
+        self.jatekmenet.set_paklik(card_decks)
+        self.status_bar.log(self.ui_texts["loading_done"])
+
+    def _reset_for_game_start(self):
+        self.is_game_setup_in_progress.set(0)
+        self.card_texts = self.data_reader.load_cards_text()
+        self.jatekostar = {}
         self.menu.ujjatekgomb.config(overrelief=RAISED, relief=FLAT)
         self.update_idletasks()
         self.is_game_in_progress.set(1)
-        self.jatekostar = {}
         self.game_board.destroy()
-        self.game_board = Board(self, self.board_width, szelindex)
+        self.game_board = Board(self, self.board_width)
         self.game_board.grid(row=0, column=1, rowspan=2, sticky=N + W, padx=5, pady=5)
-        self.card_texts = self.data_reader.load_cards_text()
-        if uj:
-            for adat in adathalmaz:
-                self.jatekostar['player' + str(adathalmaz.index(adat))] = Jatekos(self, self.game_board, *adat)
-        else:
-            for adat in adathalmaz:
-                self.jatekostar[adat] = Jatekos(self, self.game_board, *adathalmaz[adat])
+
+    def _preapre_new_ui(self):
         self.jatekossor = sorted(self.jatekostar.keys())
         self.game_board.render_board()
         self.menu.select(self.menu.lap1)
-        while self.jatekossor[0] != kezd:  # amíg nem a megfelelő játékos következik
-            self.jatekossor.append(self.jatekossor.pop(0))  # a legelső játékost leghátra tesszük
-        self.jatekmenet = Vezerlo(self, self.jatekossor[0], fogadoszotar)
-        if hadnagyElokerult:
-            self.jatekmenet.set_hadnagyElokerult()
-        if grogbaroLegyozve:
-            self.jatekmenet.set_grogbaroLegyozve()
+
+    def jatekIndit(self, player_data):
+        self._reset_for_game_start()
+        for adat in player_data:
+            self.jatekostar['player' + str(player_data.index(adat))] = Jatekos(self, self.game_board, *adat)
+        self._preapre_new_ui()
+        self.jatekmenet = Vezerlo(self)
         self.menu.ful3_var()
-        if not uj:
-            self.jatekmenet.set_paklik(paklik)
-            self.status_bar.log(self.ui_texts["loading_done"])
-        else:
-            self.status_bar.log(self.ui_texts["start_game_done"])
+        self.status_bar.log(self.ui_texts["start_game_done"])
         self.jatekmenet.szakasz_0()
 
     def follow_game_progress_change(self, a=None, b=None, c=None):
@@ -485,8 +505,7 @@ class Fulek(Notebook):
         self.boss.set_new_language(ujnyelv)
 
     def ujjatek(self):
-        "Új játékot kezd"
-        self.boss.jatekBeallit()
+        self.boss.start_game_setup()
 
     def ment(self):
         "Kimenti az aktuális adatokat"
