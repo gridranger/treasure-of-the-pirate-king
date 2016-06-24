@@ -261,7 +261,6 @@ class Application(Tk):
         for data in player_data:
             self.jatekostar[data] = Jatekos(self, self.game_board, *player_data[data])
         self._preapre_new_ui()
-        # TODO pretty save is badly encoded
         self.game_board.change_wind_direction(wind_index)
         while self.jatekossor[0] != next_player:
             self.jatekossor.append(self.jatekossor.pop(0))

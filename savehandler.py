@@ -146,7 +146,7 @@ class SaveHandler(object):
         cardsKt.text = paklik[3]
         rough_xml = tostring(save, encoding='utf-8', method='xml')
         minidom_xml = parseString(rough_xml)
-        pretty_xml = minidom_xml.toprettyxml('    ')
-        with open(allomany, 'w') as xml_file:
+        pretty_xml = minidom_xml.toprettyxml('    ', encoding='utf-8')
+        with open(allomany, 'wb') as xml_file:
             xml_file.write(pretty_xml)
         return True
