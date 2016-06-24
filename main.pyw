@@ -260,8 +260,9 @@ class Application(Tk):
         self._reset_for_game_start()
         for data in player_data:
             self.jatekostar[data] = Jatekos(self, self.game_board, *player_data[data])
-        self._preapre_new_ui()
-        self.game_board  # TODO wind_index call!
+        self._preapre_new_ui()  # TODO Game play menu is missing.
+        # TODO pretty save is badly encoded
+        self.game_board.change_wind_direction(wind_index)
         while self.jatekossor[0] != next_player:
             self.jatekossor.append(self.jatekossor.pop(0))
         if is_lieutenant_found:
@@ -288,13 +289,13 @@ class Application(Tk):
         self.jatekossor = sorted(self.jatekostar.keys())
         self.game_board.render_board()
         self.menu.select(self.menu.lap1)
+        self.jatekmenet = Vezerlo(self)
 
     def jatekIndit(self, player_data):
         self._reset_for_game_start()
         for adat in player_data:
             self.jatekostar['player' + str(player_data.index(adat))] = Jatekos(self, self.game_board, *adat)
         self._preapre_new_ui()
-        self.jatekmenet = Vezerlo(self)
         self.menu.ful3_var()
         self.status_bar.log(self.ui_texts["start_game_done"])
         self.jatekmenet.szakasz_0()
@@ -537,7 +538,7 @@ class Fulek(Notebook):
         helyzetszotar, kovetkezoJatekos, szelindex, fogadoszotar, paklik, lieutenant_found, captain_defeated = adatok
         self.boss.status_bar.log(self.boss.ui_texts['loading_game'])
         self.update_idletasks()
-        self.boss.jatekIndit(helyzetszotar, 0, kovetkezoJatekos, szelindex, fogadoszotar, paklik, lieutenant_found, captain_defeated)
+        self.boss.load_game(helyzetszotar, kovetkezoJatekos, szelindex, fogadoszotar, paklik, lieutenant_found, captain_defeated)
 
     def kilep(self):
         "Kilép a játékból."

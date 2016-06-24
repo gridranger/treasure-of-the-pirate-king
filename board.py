@@ -6,7 +6,7 @@ from time import sleep
 
 
 class Board(Frame):
-    def __init__(self, master, width=768, wind_index=6):  # TODO replace wind index to game instance variables
+    def __init__(self, master, width=768):  # TODO replace wind index to game instance variables
         Frame.__init__(self, master=master)
         self.player_setups = []
         self.boss = master
@@ -52,6 +52,8 @@ class Board(Frame):
         self.xlatszik.set(0)
         #                 e  ek   k  dk  d  dny  ny  eny
         self.szelirany = [2,  1, -3,  1, 2,   1,  0,   1]
+
+    def change_wind_direction(self, wind_index):
         while self.szelirany[wind_index] != 0:
             self.szelirany.append(self.szelirany.pop(0))
 
@@ -262,8 +264,7 @@ class Board(Frame):
     def szel_valtoztat(self, szog = 0):
         "Megváltoztatja a szél irányát."
         ujszeliranyindex = (self.szelirany.index(0) + int(szog/45))%8
-        while self.szelirany[ujszeliranyindex] != 0:
-            self.szelirany.append(self.szelirany.pop(0))
+        self.change_wind_direction(ujszeliranyindex)
         self.szel_megjelenit()
         
     def kikotokfeltolt(self):
