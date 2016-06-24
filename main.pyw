@@ -260,7 +260,7 @@ class Application(Tk):
         self._reset_for_game_start()
         for data in player_data:
             self.jatekostar[data] = Jatekos(self, self.game_board, *player_data[data])
-        self._preapre_new_ui()  # TODO Game play menu is missing.
+        self._preapre_new_ui()
         # TODO pretty save is badly encoded
         self.game_board.change_wind_direction(wind_index)
         while self.jatekossor[0] != next_player:
@@ -273,6 +273,7 @@ class Application(Tk):
         self.menu.ful3_var()
         self.jatekmenet.set_paklik(card_decks)
         self.status_bar.log(self.ui_texts["loading_done"])
+        self.jatekmenet.szakasz_0()
 
     def _reset_for_game_start(self):
         self.is_game_setup_in_progress.set(0)
@@ -290,13 +291,13 @@ class Application(Tk):
         self.game_board.render_board()
         self.menu.select(self.menu.lap1)
         self.jatekmenet = Vezerlo(self)
+        self.menu.ful3_var()
 
     def jatekIndit(self, player_data):
         self._reset_for_game_start()
         for adat in player_data:
             self.jatekostar['player' + str(player_data.index(adat))] = Jatekos(self, self.game_board, *adat)
         self._preapre_new_ui()
-        self.menu.ful3_var()
         self.status_bar.log(self.ui_texts["start_game_done"])
         self.jatekmenet.szakasz_0()
 
