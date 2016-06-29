@@ -1,3 +1,4 @@
+from models import GameState
 from tkinter.filedialog import askopenfilename, asksaveasfilename
 from xml.dom.minidom import parseString
 from xml.etree.ElementTree import Element, ElementTree, parse, SubElement, tostring
@@ -10,25 +11,24 @@ class SaveHandler(object):
         self.type = [('XML mentés', '.savx')]
         
     def load_saved_state(self):
-        states = {}
+        current_state = GameState()
         file_name = askopenfilename(defaultextension=self.extension, filetypes=self.type, initialdir='saved')
         if file_name == '':
             return False
         xml_content = parse(file_name)
         save = xml_content.getroot()
-        taverns = {}
         for player in save.findall('player'):
             player_id = player.get('id')
-            states[player_id] = self._load_player(player)
-        next_player = save.find('currentPlayer').text
-        wind_index = int(save.find('windDirection').text)
-        lieutenant_found = bool(save.find('firstMateFound').text)
-        captain_defeated = bool(save.find('grogLordDefeated').text)
+            current_state.player_data[player_id] = self._load_player(player)
+        current_state.next_player = save.find('currentPlayer').text
+        current_state.wind_index = int(save.find('windDirection').text)
+        current_state.is_lieutenant_found = bool(save.find('firstMateFound').text)
+        current_state.is_grog_lord_defeated = bool(save.find('grogLordDefeated').text)
         tavern_tag = save.find('taverns')
         for tavern in tavern_tag.findall('tavern'):
-            taverns[tavern.get('port')] = int(tavern.get('sailors'))
-        decks = self._load_cards(save)
-        return states, next_player, wind_index, taverns, decks, lieutenant_found, captain_defeated
+            current_state.taverns[tavern.get('port')] = int(tavern.get('sailors'))
+        current_state.card_decks = self._load_cards(save)
+        return current_state
 
     @staticmethod
     def _load_player(player):

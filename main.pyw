@@ -225,7 +225,8 @@ class Application(Tk):
 
     def confirm_discard_game(self):
         is_game_in_progress = self.is_game_in_progress.get()
-        if is_game_in_progress and not askokcancel(self.ui_text_variables['new_game'].get(), self.ui_texts['discard_game']):
+        if is_game_in_progress and not askokcancel(self.ui_text_variables['new_game'].get(),
+                                                   self.ui_texts['discard_game']):
             return False
         elif is_game_in_progress:
             self.is_game_in_progress.set(0)
@@ -256,21 +257,21 @@ class Application(Tk):
         self.game_board.rowconfigure('all', weight=1)
         self.game_board.grid(row=0, column=1, rowspan=2, sticky=N + E + W + S, padx=5, pady=5)
 
-    def load_game(self, player_data, next_player, wind_index, taverns, card_decks, is_lieutenant_found, is_grog_lord_defeated):
+    def load_game(self, game_state):
         self._reset_for_game_start()
-        for data in player_data:
-            self.jatekostar[data] = Jatekos(self, self.game_board, *player_data[data])
+        for data in game_state.player_data:
+            self.jatekostar[data] = Jatekos(self, self.game_board, *game_state.player_data[data])
         self._preapre_new_ui()
-        self.game_board.change_wind_direction(wind_index)
-        while self.jatekossor[0] != next_player:
+        self.game_board.change_wind_direction(game_state.wind_index)
+        while self.jatekossor[0] != game_state.next_player:
             self.jatekossor.append(self.jatekossor.pop(0))
-        if is_lieutenant_found:
+        if game_state.is_lieutenant_found:
             self.jatekmenet.set_hadnagyElokerult()
-        if is_grog_lord_defeated:
+        if game_state.is_grog_lord_defeated:
             self.jatekmenet.set_grogbaroLegyozve()
-        self.jatekmenet = Vezerlo(self, taverns)
+        self.jatekmenet = Vezerlo(self, game_state.taverns)
         self.menu.ful3_var()
-        self.jatekmenet.set_paklik(card_decks)
+        self.jatekmenet.set_paklik(game_state.card_decks)
         self.status_bar.log(self.ui_texts["loading_done"])
         self.jatekmenet.szakasz_0()
 
@@ -528,17 +529,15 @@ class Fulek(Notebook):
         return mentesSikerult
 
     def betolt(self):
-        "Betölt egy mentett állást."
         if self.boss.is_game_in_progress.get():
             if not askokcancel(self.boss.ui_text_variables['new_game'].get(), self.boss.ui_texts['discard_game-b']):
                 return
-        adatok = self.boss.save_handler.load_saved_state()
-        if not adatok:
+        game_state = self.boss.save_handler.load_saved_state()
+        if not game_state.check():
             return
-        helyzetszotar, kovetkezoJatekos, szelindex, fogadoszotar, paklik, lieutenant_found, captain_defeated = adatok
         self.boss.status_bar.log(self.boss.ui_texts['loading_game'])
         self.update_idletasks()
-        self.boss.load_game(helyzetszotar, kovetkezoJatekos, szelindex, fogadoszotar, paklik, lieutenant_found, captain_defeated)
+        self.boss.load_game(game_state)
 
     def kilep(self):
         "Kilép a játékból."

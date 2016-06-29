@@ -16,6 +16,26 @@ class Empire(object):
         self.coordinates = coordinates
 
 
+class GameState(object):
+    def __init__(self):
+        self.player_data = {}
+        self.next_player = ""
+        self.wind_index = None
+        self.taverns = {}
+        self.card_decks = {}
+        self.is_lieutenant_found = None
+        self.is_grog_lord_defeated = None
+
+    def check(self):
+        if any(var is None for var in (self.wind_index, self.is_lieutenant_found, self.is_grog_lord_defeated)):
+            return False
+        elif any(dictionary == {} for dictionary in (self.player_data, self.taverns, self.card_decks)):
+            return False
+        elif self.next_player == "":
+            return False
+        else:
+            return True
+
 class LoadedSettings(object):
     def __init__(self):
         self.language = None
