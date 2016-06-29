@@ -101,12 +101,12 @@ class Board(Frame):
         self.mezoszotar = {} # ebben tároljuk a mezőket
         for elem in self.locations.keys():
             self.mezoszotar[elem] = Mezo(self, self.locations[elem], elem)
-        for jatekos in self.boss.jatekostar.keys():
-            self.figuratLetrehoz(self.boss.jatekostar[jatekos].nev,
-                                 self.boss.jatekostar[jatekos].pozicio[0],
-                                 self.boss.jatekostar[jatekos].pozicio[1],
-                                 self.boss.jatekostar[jatekos].hajo,
-                                 self.boss.jatekostar[jatekos].szin)
+        for jatekos in self.boss.players.keys():
+            self.figuratLetrehoz(self.boss.players[jatekos].nev,
+                                 self.boss.players[jatekos].pozicio[0],
+                                 self.boss.players[jatekos].pozicio[1],
+                                 self.boss.players[jatekos].hajo,
+                                 self.boss.players[jatekos].szin)
         # Az úticéljelölő betöltése
         self.xkep = open('img/X.png')
         magassagszorzo = self.xkep.size[1]/self.xkep.size[0]
@@ -288,7 +288,7 @@ class Board(Frame):
           
     def klikk(self,event):
         "A mezőválasztást kezelő függvény."
-        if not self.boss.jatekmenet.dobasMegtortent.get():
+        if not self.boss.engine.dobasMegtortent.get():
             return
         if self.boss.menu.fold_fold_dobas:
             self.boss.status_bar.log('')
@@ -300,7 +300,7 @@ class Board(Frame):
         else:
             self.villogaski()
             self.hajotathelyez(klikkx,klikky)
-            self.boss.jatekmenet.szakasz_mezoevent()
+            self.boss.engine.szakasz_mezoevent()
             
     def villogaski(self):
         "Kikapcsolja a célnégyzetek villogását."
@@ -313,8 +313,8 @@ class Board(Frame):
             
     def hajotathelyez(self, celx, cely):
         "Végrehajtja a kijelölt lépést."
-        self.board_canvas.coords(self.figuraszotar[self.boss.jatekmenet.aktivjatekos.nev], (celx - 0.5) * self.tile_size, (cely - 0.5) * self.tile_size)
-        self.boss.jatekmenet.aktivjatekos.pozicio = (celx, cely)
+        self.board_canvas.coords(self.figuraszotar[self.boss.engine.aktivjatekos.nev], (celx - 0.5) * self.tile_size, (cely - 0.5) * self.tile_size)
+        self.boss.engine.aktivjatekos.pozicio = (celx, cely)
         
 class Mutatrejt():
     """A villogást irányító osztály."""

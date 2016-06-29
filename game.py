@@ -173,8 +173,8 @@ class Vezerlo(Frame):
         print("kihúzható kincsek:", len(self.kincsszotar.keys()), "/ 52\n", self.kincspakli)
         # Hajók elkészítése
         self.hajotipustar = self.boss.data_reader.get_ship_types()
-        for jatekos in self.boss.jatekossor:
-            p = self.boss.jatekostar[jatekos]
+        for jatekos in self.boss.player_order:
+            p = self.boss.players[jatekos]
             p.set_legenyseg_max(self.hajotipustar[p.hajo].crew_limit)
         self.vehetoHajok = []
         hajoarak = []
@@ -220,15 +220,15 @@ class Vezerlo(Frame):
         if self.kincsKiasva:
             print('Vége a játéknak. A győztes:',self.aktivjatekos)
         if self.dobasMegtortent.get():
-            self.boss.jatekossor.append(self.boss.jatekossor.pop(0)) # A legutóbb lépett játékost leghátra dobja, ha már lépett az aktív játékos
-        self.aktivjatekos = self.boss.jatekostar[self.boss.jatekossor[0]]
+            self.boss.player_order.append(self.boss.player_order.pop(0)) # A legutóbb lépett játékost leghátra dobja, ha már lépett az aktív játékos
+        self.aktivjatekos = self.boss.players[self.boss.player_order[0]]
         print('-'*20+'\n'+str(self.aktivjatekos.nev),'köre jön\n'+'-'*20) # logoláshoz
         self.master.status_bar.log(self.master.ui_texts["new_turn"] % self.aktivjatekos.nev)
         self.dobasMegtortent.set(False)
         self.boss.menu.ful1feltolt(self.aktivjatekos)
         if "scurvy" in self.aktivjatekos.statuszlista:
             self.aktivjatekos.set_legenyseg(-1)
-        self.boss.set_is_turn_in_progress(0)
+        self.boss.is_turn_in_progress.set(0)
         if not self.aktivjatekos.kincskeresesKesz:
             if askyesno(self.boss.ui_texts["dig_for_treasure_label"], self.boss.ui_texts["dig_for_treasure_question"]):
                 self.kincsesszigetAsas()
@@ -242,7 +242,7 @@ class Vezerlo(Frame):
         id = self.methodeNo_get()
         #print("**MetódusID = " + str(id) + " - szakasz_mezoevent")
         self.boss.status_bar.log('')
-        if self.boss.kilepesFolyamatban:
+        if self.boss.exit_in_progress:
             return
         port_list = [empire.capital for empire in self.master.empires.values()]
         if 'grog_riot' in self.aktivjatekos.statuszlista:
@@ -410,7 +410,7 @@ class Vezerlo(Frame):
         
     def kincsesszigetAsas(self):
         "A teendők, ha már kincses szigeten áll az ember."
-        self.boss.set_is_turn_in_progress(1)
+        self.boss.is_turn_in_progress.set(1)
         self.dobasMegtortent.set(True)
         dobas = self.boss.menu.ful1tartalom.kocka.dob() # Szerencsét próbálunk.
         self.aktivjatekos.set_utolsodobas(dobas) # Mentjük a kocka állapotát.
@@ -430,7 +430,7 @@ class Vezerlo(Frame):
 
     def szamuzottek(self, esent = None):
         "Ez történik, ha valaki legénység nélkül van a száműzöttek szigetén."
-        self.boss.set_is_turn_in_progress(1)
+        self.boss.is_turn_in_progress.set(1)
         self.dobasMegtortent.set(True)
         dobas = self.boss.menu.ful1tartalom.kocka.dob() # Szerencsét próbálunk.
         self.aktivjatekos.set_utolsodobas(dobas) # Mentjük a kocka állapotát.
@@ -455,7 +455,7 @@ class Vezerlo(Frame):
                 self.aktivjatekos.kincs.set(self.aktivjatekos.kincs.get() - 10)
             self.aktivjatekos.set_legenyseg(10)
         showinfo(self.boss.ui_texts["info"], uzenet)
-        self.master.jatekmenet.szakasz_0()
+        self.master.engine.szakasz_0()
         return False
         
     def szamuzottekKozvetlen(self):

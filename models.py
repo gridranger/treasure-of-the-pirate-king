@@ -36,6 +36,7 @@ class GameState(object):
         else:
             return True
 
+
 class LoadedSettings(object):
     def __init__(self):
         self.language = None

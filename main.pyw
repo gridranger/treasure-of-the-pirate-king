@@ -16,6 +16,7 @@ from colorize import *
 class Application(Tk):
     def __init__(self, debug_mode=0):
         Tk.__init__(self)
+        self.engine = None
         self.language = None
         self.width = 0
         self.height = 0
@@ -36,16 +37,17 @@ class Application(Tk):
         self.is_game_in_progress = IntVar(value=0)
         self.is_turn_in_progress = IntVar(value=1)
         self._render_panes()
-        self.is_game_in_progress.trace('w', self.follow_game_progress_change)
-        self.is_turn_in_progress.trace('w', self.follow_turn_progress_change)
+        self.is_game_in_progress.trace('w', self._follow_game_progress_change)
+        self.is_turn_in_progress.trace('w', self._follow_turn_progress_change)
+        self.players = {}
         self.empires = {BRITISH: Empire(BRITISH, 'portroyal', '', (0, 0)),
                         FRENCH: Empire(FRENCH, 'martinique', '', (0, 0)),
                         DUTCH: Empire(DUTCH, 'curacao', '', (0, 0)),
                         SPANISH: Empire(SPANISH, 'havanna', '', (0, 0)),
                         PIRATE: Empire(PIRATE, 'tortuga', '', (0, 0))}
         self._text_placer()
-        self.protocol("WM_DELETE_WINDOW", self.shutdown_ttk_repeat)
-        self.kilepesFolyamatban = False
+        self.protocol("WM_DELETE_WINDOW", self.shutdown_ttk_repeat_fix)
+        self.exit_in_progress = False
 
     @property
     def board_width(self):
@@ -260,25 +262,25 @@ class Application(Tk):
     def load_game(self, game_state):
         self._reset_for_game_start()
         for data in game_state.player_data:
-            self.jatekostar[data] = Jatekos(self, self.game_board, *game_state.player_data[data])
-        self._preapre_new_ui()
+            self.players[data] = Jatekos(self, self.game_board, *game_state.player_data[data])
+        self._prepare_new_ui()
         self.game_board.change_wind_direction(game_state.wind_index)
-        while self.jatekossor[0] != game_state.next_player:
-            self.jatekossor.append(self.jatekossor.pop(0))
+        while self.player_order[0] != game_state.next_player:
+            self.player_order.append(self.player_order.pop(0))
         if game_state.is_lieutenant_found:
-            self.jatekmenet.set_hadnagyElokerult()
+            self.engine.set_hadnagyElokerult()
         if game_state.is_grog_lord_defeated:
-            self.jatekmenet.set_grogbaroLegyozve()
-        self.jatekmenet = Vezerlo(self, game_state.taverns)
+            self.engine.set_grogbaroLegyozve()
+        self.engine = Vezerlo(self, game_state.taverns)
         self.menu.ful3_var()
-        self.jatekmenet.set_paklik(game_state.card_decks)
+        self.engine.set_paklik(game_state.card_decks)
         self.status_bar.log(self.ui_texts["loading_done"])
-        self.jatekmenet.szakasz_0()
+        self.engine.szakasz_0()
 
     def _reset_for_game_start(self):
         self.is_game_setup_in_progress.set(0)
         self.card_texts = self.data_reader.load_cards_text()
-        self.jatekostar = {}
+        self.players = {}
         self.menu.ujjatekgomb.config(overrelief=RAISED, relief=FLAT)
         self.update_idletasks()
         self.is_game_in_progress.set(1)
@@ -286,38 +288,28 @@ class Application(Tk):
         self.game_board = Board(self, self.board_width)
         self.game_board.grid(row=0, column=1, rowspan=2, sticky=N + W, padx=5, pady=5)
 
-    def _preapre_new_ui(self):
-        self.jatekossor = sorted(self.jatekostar.keys())
+    def _prepare_new_ui(self):
+        self.player_order = sorted(self.players.keys())
         self.game_board.render_board()
         self.menu.select(self.menu.lap1)
-        self.jatekmenet = Vezerlo(self)
+        self.engine = Vezerlo(self)
         self.menu.ful3_var()
 
-    def jatekIndit(self, player_data):
+    def start_game(self, player_data):
         self._reset_for_game_start()
         for adat in player_data:
-            self.jatekostar['player' + str(player_data.index(adat))] = Jatekos(self, self.game_board, *adat)
-        self._preapre_new_ui()
+            self.players['player' + str(player_data.index(adat))] = Jatekos(self, self.game_board, *adat)
+        self._prepare_new_ui()
         self.status_bar.log(self.ui_texts["start_game_done"])
-        self.jatekmenet.szakasz_0()
+        self.engine.szakasz_0()
 
-    def follow_game_progress_change(self, a=None, b=None, c=None):
-        "A figyelt változónak megfelelően engedélyezi vagy letiltja a Játék fület."
+    def _follow_game_progress_change(self, *args, **kwargs):
         if self.is_game_in_progress.get():
             self.menu.tab(1, state=NORMAL)
         else:
             self.menu.tab(1, state=DISABLED)
 
-    def set_is_turn_in_progress(self, ertek=1):
-        "Lehetővé teszi a változó manipulálását kívülről"
-        self.is_turn_in_progress.set(ertek)
-        # if ertek == 1:
-        #    print(str(self.jatekmenet.get_korokSzama())+". kör eleje.")
-        # if ertek == 0:
-        #    print(str(self.jatekmenet.korokSzama)+". kör vége.")
-
-    def follow_turn_progress_change(self, a=None, b=None, c=None):
-        "Ki és be kapcsolja azokat a funkciókat, amelyeket egy körön belül nem használhatnak a játékosok."
+    def _follow_turn_progress_change(self, *args, **kwargs):
         if not self.is_turn_in_progress.get():
             self.menu.mentgomb.config(state=NORMAL)
             self.menu.mentEsKilepgomb.config(state=NORMAL)
@@ -329,20 +321,18 @@ class Application(Tk):
             self.menu.tab(0, state=DISABLED)
             self.menu.tab(2, state=DISABLED)
 
-    def shutdown_ttk_repeat(self):
-        'Javítja a ttk modul egy hibáját, és leállítja a gyermekszálakat.'
+    def shutdown_ttk_repeat_fix(self):
         self.eval('::ttk::CancelRepeat')
-        self.kilepesFolyamatban = True
+        self.exit_in_progress = True
         self.menu.kilep()
 
-    def helymeghatarozas(self):
-        'Visszaadja saját jelenlegi pozícióját.'
+    def get_window_position(self):
         info = self.winfo_geometry()
         xpos = info.index('+') + 1
-        ypos = info[(xpos):].index('+') + xpos
-        x = int(info[(xpos):(ypos)])
-        y = int(info[(ypos):])
-        return (x, y)
+        ypos = info[xpos:].index('+') + xpos
+        x = int(info[xpos:ypos])
+        y = int(info[ypos:])
+        return x, y
 
 
 class Fulek(Notebook):
@@ -435,22 +425,22 @@ class Fulek(Notebook):
             self.hide(3)
         self.tab(3, text='D')
         gombsor = Frame(self.lap3)
-        Button(gombsor, text='Kincskártya húzása', command=lambda: self.boss.jatekmenet.kincsetHuz()).grid()
+        Button(gombsor, text='Kincskártya húzása', command=lambda: self.boss.engine.kincsetHuz()).grid()
         gombsor.grid(row=0)
         aranybeallit = Frame(self.lap3)
         Label(aranybeallit, text='Arany növelése:').grid(column=0, row=0)
         aranyMezo = Entry(aranybeallit, width=3)
         aranyMezo.grid(column=1, row=0)
         Button(aranybeallit, text='Beállít',
-               command=lambda: self.boss.jatekmenet.aktivjatekos.set_kincs(int(aranyMezo.get()))).grid(column=2, row=0)
+               command=lambda: self.boss.engine.aktivjatekos.set_kincs(int(aranyMezo.get()))).grid(column=2, row=0)
         aranybeallit.grid(row=1)
 
     def ful3_var(self):
         valtozok = Frame(self.lap3)
         Label(valtozok, text='hadnagyElokerult:').grid(column=0, row=0)
         Label(valtozok, text='grogbaroLegyozve:').grid(column=0, row=1)
-        Label(valtozok, textvar=self.boss.jatekmenet.hadnagyElokerult).grid(column=1, row=0)
-        Label(valtozok, textvar=self.boss.jatekmenet.grogbaroLegyozve).grid(column=1, row=1)
+        Label(valtozok, textvar=self.boss.engine.hadnagyElokerult).grid(column=1, row=0)
+        Label(valtozok, textvar=self.boss.engine.grogbaroLegyozve).grid(column=1, row=1)
         valtozok.grid(row=2)
 
     def ful1feltolt(self, aktivjatekos=None):
@@ -462,21 +452,21 @@ class Fulek(Notebook):
         "Dob a kockával."
         if self.fold_fold_dobas:
             self.boss.game_board.villogaski()
-            self.boss.jatekmenet.dobasMegtortent.set(False)
-        if not self.boss.jatekmenet.dobasMegtortent.get():
+            self.boss.engine.dobasMegtortent.set(False)
+        if not self.boss.engine.dobasMegtortent.get():
             dobas = self.ful1tartalom.kocka.dob()
-            if "fold_fold" in self.boss.jatekmenet.aktivjatekos.statuszlista:
+            if "fold_fold" in self.boss.engine.aktivjatekos.statuszlista:
                 print("Újra dobhatna.")
                 self.boss.status_bar.log(self.boss.ui_texts['land_log'])
-                self.boss.jatekmenet.aktivjatekos.set_statusz("fold_fold", 0)
+                self.boss.engine.aktivjatekos.set_statusz("fold_fold", 0)
                 self.fold_fold_dobas = True
             else:
                 self.boss.status_bar.log('')
                 self.ful1tartalom.kockamezo.config(relief=SUNKEN)
-            self.boss.jatekmenet.set_dobasMegtortent()
-            self.boss.set_is_turn_in_progress(1)
-            self.boss.jatekmenet.aktivjatekos.set_utolsodobas(dobas)
-            self.boss.jatekmenet.mozgas(dobas, 1)
+            self.boss.engine.set_dobasMegtortent()
+            self.boss.is_turn_in_progress.set(1)
+            self.boss.engine.aktivjatekos.set_utolsodobas(dobas)
+            self.boss.engine.mozgas(dobas, 1)
 
     def fold_fold_dobas_null(self):
         "Amennyiben elfogadta az első dobást, itt kerül kikapcsolásra az isméltlés lehetősége."
@@ -511,18 +501,18 @@ class Fulek(Notebook):
 
     def ment(self):
         "Kimenti az aktuális adatokat"
-        soronkovetkezoJatekos = self.boss.jatekossor[0]
+        soronkovetkezoJatekos = self.boss.player_order[0]
         szelindex = self.boss.game_board.szelirany.index(0)
         fogadoszotar = {}
         exportszotar = {}
-        for jatekos in sorted(list(self.boss.jatekostar.keys())):
-            exportszotar[jatekos] = self.boss.jatekostar[jatekos].export()
+        for jatekos in sorted(list(self.boss.players.keys())):
+            exportszotar[jatekos] = self.boss.players[jatekos].export()
         for empire in self.boss.empires.values():
-            fogadoszotar[empire.capital] = self.boss.jatekmenet.varostar[empire.capital].export_matroz()
-        eventdeck = self.boss.jatekmenet.eventdeck
-        eventstack = self.boss.jatekmenet.eventstack
-        kincspakli = self.boss.jatekmenet.kincspakli
-        treasurestack = self.boss.jatekmenet.treasurestack
+            fogadoszotar[empire.capital] = self.boss.engine.varostar[empire.capital].export_matroz()
+        eventdeck = self.boss.engine.eventdeck
+        eventstack = self.boss.engine.eventstack
+        kincspakli = self.boss.engine.kincspakli
+        treasurestack = self.boss.engine.treasurestack
         kartyak = [eventdeck, eventstack, kincspakli, treasurestack]
         mentesSikerult = self.boss.save_handler.set_adatok_fileba(exportszotar, soronkovetkezoJatekos, szelindex,
                                                                fogadoszotar, kartyak)
@@ -550,7 +540,7 @@ class Fulek(Notebook):
         "Menti a játékot, és kilép."
         mentesSikerult = self.ment()
         if mentesSikerult:
-            self.boss.shutdown_ttk_repeat()
+            self.boss.shutdown_ttk_repeat_fix()
 
 
 class JatekFul(Frame):
@@ -562,7 +552,7 @@ class JatekFul(Frame):
         self.master = self.boss.boss
         self.aktivjatekos = None
         if self.master.is_game_in_progress.get():
-            self.aktivjatekos = self.master.jatekmenet.aktivjatekos
+            self.aktivjatekos = self.master.engine.aktivjatekos
             self.feltolt()
         else:
             self.boss.tab(1, state=DISABLED)
@@ -640,17 +630,17 @@ class JatekFul(Frame):
                 uzenet = self.master.ui_texts["miss_turn"] % kimaradas
             else:
                 uzenet = self.master.ui_texts["miss_turn_last_time"]
-            Button(self.kockamezo, text=uzenet, command=self.master.jatekmenet.kimaradas).pack()
-            if "leviathan" in self.master.jatekmenet.aktivjatekos.statuszlista:
+            Button(self.kockamezo, text=uzenet, command=self.master.engine.kimaradas).pack()
+            if "leviathan" in self.master.engine.aktivjatekos.statuszlista:
                 Button(self.kockamezo, text=self.master.ui_texts["play_leviathan"],
-                       command=self.master.jatekmenet.leviathan_kijatszasa).pack()
+                       command=self.master.engine.leviathan_kijatszasa).pack()
         else:
             self.kockamezo.config(relief=RAISED, bd=2)
             self.kocka = Dobokocka(self.kockamezo, self.boss.width / 4, self.aktivjatekos.szin,
                                    self.aktivjatekos.masodikszin, self.aktivjatekos.utolsodobas)
-            if self.master.jatekmenet.aktivjatekos.pozicio in self.master.game_board.locations[
-                "szamuzottek"] and not self.master.jatekmenet.aktivjatekos.legenyseg.get():
-                self.kocka.bind('<Button-1>', self.master.jatekmenet.szamuzottek)
+            if self.master.engine.aktivjatekos.pozicio in self.master.game_board.locations[
+                "szamuzottek"] and not self.master.engine.aktivjatekos.legenyseg.get():
+                self.kocka.bind('<Button-1>', self.master.engine.szamuzottek)
             else:
                 self.kocka.bind('<Button-1>', self.boss.dobas)
             self.kocka.grid(row=0, column=0)
@@ -659,15 +649,15 @@ class JatekFul(Frame):
         "A sorrend megjelenítője."
         self.jateksor = Frame(self)
         self.jateksorszotar = {}
-        sor = self.master.jatekossor
+        sor = self.master.player_order
         self.jateksorCimke = Label(self.jateksor, text=self.master.ui_texts['turn_order'])
         self.jateksorCimke.grid(row=0, column=0, sticky=W)
-        for sorszam in range(len(self.master.jatekossor)):
+        for sorszam in range(len(self.master.player_order)):
             self.jateksorszotar['label' + str(sorszam)] = Label(self.jateksor,
-                                                                text=str(sorszam + 1) + '. ' + self.master.jatekostar[
+                                                                text=str(sorszam + 1) + '. ' + self.master.players[
                                                                     sor[sorszam]].nev,
-                                                                bg=self.master.jatekostar[sor[sorszam]].szin,
-                                                                fg=self.master.jatekostar[sor[sorszam]].masodikszin)
+                                                                bg=self.master.players[sor[sorszam]].szin,
+                                                                fg=self.master.players[sor[sorszam]].masodikszin)
             self.jateksorszotar['label' + str(sorszam)].grid(row=sorszam + 1, column=0, sticky=W, padx=10)
         self.jateksor.grid(row=pozicio, column=0, sticky=W, padx=5)
 
@@ -675,17 +665,17 @@ class JatekFul(Frame):
         "A játékos státuszainak megjelenítője."
         statuszmezo = LabelFrame(self, text=self.master.ui_texts['cards'], relief=RAISED, width=self.boss.width - 31)
         maxStatuszEgySorban = int((self.boss.width - 31) / 32)
-        if len(self.master.jatekmenet.aktivjatekos.statuszlista):
+        if len(self.master.engine.aktivjatekos.statuszlista):
             i = 0
-            for statusz in self.master.jatekmenet.aktivjatekos.statuszlista:
-                if statusz in self.master.jatekmenet.nemKartyaStatusz:
+            for statusz in self.master.engine.aktivjatekos.statuszlista:
+                if statusz in self.master.engine.nemKartyaStatusz:
                     pass
                 else:
-                    if statusz in self.master.jatekmenet.eventszotar.keys():
-                        hely = self.master.jatekmenet.eventszotar
+                    if statusz in self.master.engine.eventszotar.keys():
+                        hely = self.master.engine.eventszotar
                     else:
-                        hely = self.master.jatekmenet.kincsszotar
-                    leendoKep = self.master.jatekmenet.eventszotar[statusz].kep + '_i'
+                        hely = self.master.engine.kincsszotar
+                    leendoKep = self.master.engine.eventszotar[statusz].kep + '_i'
                     leendoKep = leendoKep[(leendoKep.find('_') + 1):]
                     Button(statuszmezo, image=self.master.game_board.gallery[leendoKep],
                            command=lambda statusz=statusz: hely[statusz].megjelenik(1)).grid(
@@ -828,7 +818,7 @@ class UjJatekAdatok(Frame):
                 jatekosadatok.append([self.player_setups[i].nev.get(),
                                       self.player_setups[i].valasztottSzin.get(),
                                       self.boss.get_empire_id_by_name(self.player_setups[i].nation_picker.get())])
-        self.boss.jatekIndit(jatekosadatok)
+        self.boss.start_game(jatekosadatok)
 
 
 if __name__ == '__main__':

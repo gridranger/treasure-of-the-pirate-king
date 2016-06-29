@@ -103,7 +103,7 @@ class Varos(object):
         Button(self.ablak, text=self.master.ui_texts['done'], command=self.ablak.destroy).pack(side=BOTTOM, pady=5)
         self.ablak.update_idletasks()
         w, h = self.ablak.winfo_width(), self.ablak.winfo_height()
-        bx, by = self.master.helymeghatarozas()
+        bx, by = self.master.get_window_position()
         bh, bw = self.master.height, self.master.width
         self.ablak.geometry('+' + str(int(bx + (bw + (bh / 3) - w) / 2)) + '+' + str(int(by + (bh - h) / 2)))
         self.master.wait_window(self.ablak)
