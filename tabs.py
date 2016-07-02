@@ -14,27 +14,28 @@ class Tabs(Notebook):
         Notebook.__init__(self, master=boss, width=width)
         self.boss = boss
         self.width = width
-        self.fold_fold_dobas = False
-        # Leképezzük a füleket
-        self.lap0 = Frame(self)
-        self.lap1 = Frame(self)
-        self.lap2 = Frame(self)
-        self.lap3 = Frame(self)
-        for lap in (self.lap0, self.lap1, self.lap2, self.lap3):
-            lap.columnconfigure(0, weight=1)
-            lap.grid(row=0, column=0)
-            self.add(lap, text='', underline=0, sticky=N + E + W)  # ezzek rögzítjük a lapkat a notebookba
-        self.enable_traversal()  # engedélyezzük a gyorsbillentyűket
+        self.may_use_land_land_roll = False
+        self.tabs = [Frame(self), Frame(self), Frame(self), Frame(self)]
+        for tab in self.tabs:
+            self._position_tab(tab)
+        self._enable_hotkeys()
         self.grid(row=0, column=0)
-        # Betöltjük a füleket
         self.ful0()
         self.ful1()
         self.ful2()
         self.ful3()
 
+    def _position_tab(self, tab):
+        tab.columnconfigure(0, weight=1)
+        tab.grid(row=0, column=0)
+        self.add(tab, text='', underline=0, sticky=N + E + W)
+
+    def _enable_hotkeys(self):
+        self.enable_traversal()
+
     def ful0(self):
         "A főmenü elemeinek betöltése."
-        keret = Frame(self.lap0)
+        keret = Frame(self.tabs[0])
         keret.grid(row=0, column=0, pady=10)
         self.ujjatekgomb = Button(keret, textvariable=self.boss.ui_text_variables['new_game'], command=self.ujjatek, width=20,
                                   overrelief=RAISED, relief=FLAT)
@@ -61,8 +62,8 @@ class Tabs(Notebook):
             self.tab(1, state=DISABLED)
 
     def ful2(self):
-        self.felbontasmezo = LabelFrame(self.lap2, text='')
-        self.nyelvMezo = LabelFrame(self.lap2, text='')
+        self.felbontasmezo = LabelFrame(self.tabs[2], text='')
+        self.nyelvMezo = LabelFrame(self.tabs[2], text='')
         self.newscreen = IntVar()
         self.newscreen.set(self.boss.is_full_screen.get())
         sorszam = 0
@@ -98,10 +99,10 @@ class Tabs(Notebook):
         if not self.boss.debug_mode:
             self.hide(3)
         self.tab(3, text='D')
-        gombsor = Frame(self.lap3)
+        gombsor = Frame(self.tabs[3])
         Button(gombsor, text='Kincskártya húzása', command=lambda: self.boss.engine.kincsetHuz()).grid()
         gombsor.grid(row=0)
-        aranybeallit = Frame(self.lap3)
+        aranybeallit = Frame(self.tabs[3])
         Label(aranybeallit, text='Arany növelése:').grid(column=0, row=0)
         aranyMezo = Entry(aranybeallit, width=3)
         aranyMezo.grid(column=1, row=0)
@@ -110,7 +111,7 @@ class Tabs(Notebook):
         aranybeallit.grid(row=1)
 
     def ful3_var(self):
-        valtozok = Frame(self.lap3)
+        valtozok = Frame(self.tabs[3])
         Label(valtozok, text='hadnagyElokerult:').grid(column=0, row=0)
         Label(valtozok, text='grogbaroLegyozve:').grid(column=0, row=1)
         Label(valtozok, textvar=self.boss.engine.hadnagyElokerult).grid(column=1, row=0)
@@ -119,12 +120,12 @@ class Tabs(Notebook):
 
     def ful1feltolt(self, aktivjatekos=None):
         self.ful1tartalom.destroy()
-        self.ful1tartalom = GameTab(self, self.lap1)
+        self.ful1tartalom = GameTab(self, self.tabs[1])
         self.ful1tartalom.grid(pady=5)
 
     def dobas(self, event):
         "Dob a kockával."
-        if self.fold_fold_dobas:
+        if self.may_use_land_land_roll:
             self.boss.game_board.villogaski()
             self.boss.engine.dobasMegtortent.set(False)
         if not self.boss.engine.dobasMegtortent.get():
@@ -133,7 +134,7 @@ class Tabs(Notebook):
                 debug("New roll is possible because of Land, land! bonus.")
                 self.boss.status_bar.log(self.boss.ui_texts['land_log'])
                 self.boss.engine.aktivjatekos.set_statusz("fold_fold", 0)
-                self.fold_fold_dobas = True
+                self.may_use_land_land_roll = True
             else:
                 self.boss.status_bar.log('')
                 self.ful1tartalom.kockamezo.config(relief=SUNKEN)
@@ -141,10 +142,6 @@ class Tabs(Notebook):
             self.boss.is_turn_in_progress.set(1)
             self.boss.engine.aktivjatekos.set_utolsodobas(dobas)
             self.boss.engine.mozgas(dobas, 1)
-
-    def fold_fold_dobas_null(self):
-        "Amennyiben elfogadta az első dobást, itt kerül kikapcsolásra az isméltlés lehetősége."
-        self.fold_fold_dobas = False
 
     def felbontassav(self, ertek):
         "A felbontáscsúszka betöltése"

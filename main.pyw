@@ -203,7 +203,7 @@ class Application(Tk):
         if self.is_game_setup_in_progress.get():
             self._load_game_setup_before_resize(player_data)
         self._text_placer()
-        self.menu.select(self.menu.lap2)
+        self.menu.select(self.menu.tabs[2])
         self.status_bar.log('%s %i×%i' % (self.ui_texts['new_resolution'], self.width, self.height))
 
     def _save_game_setup_before_resize(self):
@@ -297,7 +297,7 @@ class Application(Tk):
     def _prepare_new_ui(self):
         self.player_order = sorted(self.players.keys())
         self.game_board.render_board()
-        self.menu.select(self.menu.lap1)
+        self.menu.select(self.menu.tabs[1])
         self.engine = Vezerlo(self)
         self.menu.ful3_var()
 
