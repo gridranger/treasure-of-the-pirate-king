@@ -4,10 +4,11 @@ from board import Board
 from colorize import *
 from datareader import DataReader
 from game import *
+from logging import DEBUG, basicConfig, getLogger
 from logframe import LogFrame
 from models import BRITISH, DUTCH, FRENCH, PIRATE, SPANISH, Empire
 from savehandler import *
-from tabs import Fulek
+from tabs import Tabs
 from tkinter import E, FLAT, N,S, SUNKEN, W, Checkbutton, Entry, Tk
 from tkinter import colorchooser
 from tkinter.messagebox import askokcancel
@@ -26,6 +27,9 @@ class Application(Tk):
         self.screen_ratio = None
         self.resolution_list = []
         self.debug_mode = debug_mode
+        if self.debug_mode:
+            basicConfig(level=DEBUG)
+            pil_logger = getLogger()  # TODO contunue from here
         self.data_reader = DataReader(self)
         self._process_config()
         self.card_texts = {}
@@ -166,7 +170,7 @@ class Application(Tk):
             self._render_game_board()
         else:
             self._render_game_board_placeholder()
-        self.menu = Fulek(self, menu_width)
+        self.menu = Tabs(self, menu_width)
         self.menu.grid(row=0, column=0, sticky=N + W, padx=5, pady=5)
         if self.screen_ratio == 'wide':
             ship_width = self.width - menu_width - self.board_width - 30

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from logging import debug
 from gametab import GameTab
 from tkinter import DISABLED, E, FLAT, HORIZONTAL, NORMAL, RAISED, SUNKEN, N, W
 from tkinter import Checkbutton, Button, Entry, Frame, IntVar, Label, Scale
@@ -8,7 +9,7 @@ from tkinter.ttk import Combobox, LabelFrame, Notebook
 __author__ = 'Bárdos Dávid'
 
 
-class Fulek(Notebook):
+class Tabs(Notebook):
     def __init__(self, boss=None, width=0):
         Notebook.__init__(self, master=boss, width=width)
         self.boss = boss
@@ -129,7 +130,7 @@ class Fulek(Notebook):
         if not self.boss.engine.dobasMegtortent.get():
             dobas = self.ful1tartalom.kocka.dob()
             if "fold_fold" in self.boss.engine.aktivjatekos.statuszlista:
-                print("Újra dobhatna.")
+                debug("New roll is possible because of Land, land! field bonus.")
                 self.boss.status_bar.log(self.boss.ui_texts['land_log'])
                 self.boss.engine.aktivjatekos.set_statusz("fold_fold", 0)
                 self.fold_fold_dobas = True
