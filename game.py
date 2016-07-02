@@ -1,3 +1,4 @@
+from logging import debug
 from tkinter import BOTTOM, BooleanVar, Button, Canvas, DISABLED, Frame, GROOVE, HORIZONTAL, IntVar, Label, LEFT, NORMAL, RAISED, RIDGE, RIGHT, Scale, StringVar, TOP, Toplevel, X, Y
 from tkinter.messagebox import showinfo, askyesno
 from math import sqrt
@@ -21,7 +22,7 @@ class Jatekos():
         else:
             self.masodikszin = 'white'
         self.zaszlo = self.boss.get_empire_id_by_capital_coordinates(self.sajatkikoto)
-        print(self.nev,"zászlaja:",self.zaszlo)
+        debug(self.nev + "zászlaja:" + self.zaszlo)
         self.hajo = hajo
         self.legenyseg = IntVar()
         self.legenyseg.set(legenyseg)
@@ -68,12 +69,12 @@ class Jatekos():
         
     def set_statusz(self, statusz, ertek = 1):
         "Ad vagy megvon egy adott státuszt."
-        #print(self.nev,"státusza módosítás előtt:", self.statuszlista)
+        #debug(self.nev,"státusza módosítás előtt:", self.statuszlista)
         if ertek:
             self.statuszlista.append(statusz)
         else:
             self.statuszlista.remove(statusz)
-        #print(self.nev,"státusza módosítás után:", self.statuszlista)
+        #debug(self.nev,"státusza módosítás után:", self.statuszlista)
             
     def set_utolsodobas(self, ertek):
         "Megadja az utoljára dobott értéket."
@@ -153,24 +154,21 @@ class Vezerlo(Frame):
             self.boss.game_board.kartyakep2(eventtar[lap])  # betöltjük a képet
             self.eventszotar[lap] = Kartya3(self, self.boss, lap, eventtar[lap], 'event', fuggvenytar[lap])
             self.eventdeck.append(lap)
-        print("Kihúzható események:", len(self.eventdeck),"/ 52")
+        debug("Event cards in deck: {}/52".format(len(self.eventdeck)))
         self.csataszotar = self.boss.data_reader.load_battle_data()
         for csata in self.csataszotar.keys():
             if csata[0] != 'b':
                 self.eventdeck.append(csata)
-        print("Kihúzható események:", len(self.eventdeck),"/ 52")
         for penz in penztar.keys():
             iPenz = 0
             for i in range(penztar[penz]):
                 self.kincsszotar['treasure'+penz+'_'+str(iPenz)] = Kartya3(self, self.boss, 'treasure', kincstar['treasure'], 'treasure', fuggvenytar["treasure"], int(penz))
                 iPenz += 1
-        print("kihúzható kincsek:", len(self.kincsszotar.keys()), "/ 30")
         for lap in kincstar.keys():
             self.boss.game_board.kartyakep2(kincstar[lap]) # betöltjük a képet
             if lap != 'treasure':
                 self.kincsszotar[lap] = Kartya3(self, self.boss, lap, kincstar[lap], 'treasure', fuggvenytar[lap])
         self.kincspakli = list(self.kincsszotar.keys())
-        print("kihúzható kincsek:", len(self.kincsszotar.keys()), "/ 52\n", self.kincspakli)
         # Hajók elkészítése
         self.hajotipustar = self.boss.data_reader.get_ship_types()
         for jatekos in self.boss.player_order:
@@ -184,7 +182,7 @@ class Vezerlo(Frame):
                 hajoarak = sorted(hajoarak)
                 arPozicio = hajoarak.index(self.hajotipustar[hajo].price)
                 self.vehetoHajok.insert(arPozicio,hajo)
-        print('-'*40+'\nVásárolható hajók:',self.vehetoHajok,'\n'+'-'*40)
+        debug('Ships to purchase:' + str(self.vehetoHajok))
         # Városablakok előkészítése
         self.varostar = {}
         if fogadoszotar == {}:
@@ -216,13 +214,13 @@ class Vezerlo(Frame):
     def szakasz_0(self):
         "A lépés előtti rész, szünet két játékos lépése között. Adminisztráljuk a váltást."
         id = self.methodeNo_get()
-        #print("**MetódusID = " + str(id) + " - szakasz_0")
+        #debug("**MetódusID = " + str(id) + " - szakasz_0")
         if self.kincsKiasva:
-            print('Vége a játéknak. A győztes:',self.aktivjatekos)
+            debug('Vége a játéknak. A győztes:',self.aktivjatekos)
         if self.dobasMegtortent.get():
             self.boss.player_order.append(self.boss.player_order.pop(0)) # A legutóbb lépett játékost leghátra dobja, ha már lépett az aktív játékos
         self.aktivjatekos = self.boss.players[self.boss.player_order[0]]
-        print('-'*20+'\n'+str(self.aktivjatekos.nev),'köre jön\n'+'-'*20) # logoláshoz
+        debug("\n{0}\nIt's {1}'s turn.\n{0}\n".format('-' * 20, self.aktivjatekos.nev))
         self.master.status_bar.log(self.master.ui_texts["new_turn"] % self.aktivjatekos.nev)
         self.dobasMegtortent.set(False)
         self.boss.menu.ful1feltolt(self.aktivjatekos)
@@ -234,13 +232,13 @@ class Vezerlo(Frame):
                 self.kincsesszigetAsas()
             else:
                 self.aktivjatekos.set_kincskereses(True)
-        #print("**MetódusID = " + str(id)+ " - szakasz_0 lezárva")
+        #debug("**MetódusID = " + str(id)+ " - szakasz_0 lezárva")
         self.unfinishedMethodes.remove(id)
         
     def szakasz_mezoevent(self):
         "A mező indukálta feladat elvégzése."
         id = self.methodeNo_get()
-        #print("**MetódusID = " + str(id) + " - szakasz_mezoevent")
+        #debug("**MetódusID = " + str(id) + " - szakasz_mezoevent")
         self.boss.status_bar.log('')
         if self.boss.exit_in_progress:
             return
@@ -256,13 +254,13 @@ class Vezerlo(Frame):
             self.szakasz_0()
         elif self.hivas == None:
             self.szakasz_kartyaevent()
-        #print("**MetódusID = " + str(id) + " - szakasz_mezoevent lezárva")
+        #debug("**MetódusID = " + str(id) + " - szakasz_mezoevent lezárva")
         self.unfinishedMethodes.remove(id)
         
     def szakasz_kartyaevent(self):
         "Egy kártya húzása, és az általa hordozott feladat elvégzése."
         id = self.methodeNo_get()
-        #print("**MetódusID = " + str(id) + " - szakasz_kartyaevent")
+        #debug("**MetódusID = " + str(id) + " - szakasz_kartyaevent")
         if not self.eventdeck:
             for elem in self.eventstack:
                 self.eventdeck.append(elem)
@@ -270,12 +268,12 @@ class Vezerlo(Frame):
         kovetkezoLap = randrange(len(self.eventdeck))
         huz = self.eventdeck.pop(kovetkezoLap)
         if len(huz) < 4: #3
-            #print('A kihúzott lap:',huz,';',self.csataszotar[huz])
+            #debug('A kihúzott lap:',huz,';',self.csataszotar[huz])
             self.eventstack.append(huz) # eldobjuk a kártyát
             self.harc = Utkozet(self, self.boss, self.csataszotar[huz]) # lejátsszuk a csatát
         else:
             self.eventszotar[huz].megjelenik()
-        #print("**MetódusID = " + str(id) + " - szakasz_kartyaevent lezárva")
+        #debug("**MetódusID = " + str(id) + " - szakasz_kartyaevent lezárva")
         self.unfinishedMethodes.remove(id)
     
     def kimaradas(self):
@@ -291,13 +289,17 @@ class Vezerlo(Frame):
         self.eventstack = et
         self.kincspakli = kp
         self.treasurestack = kt
-        print(self.eventdeck, self.eventstack, self.kincspakli, self.treasurestack)
+        debug("Loaded decks:")
+        debug("Event deck: {}").format(self.eventdeck)
+        debug("Event stack: {}").format(self.eventstack)
+        debug("Treasure deck: {}").format(self.kincspakli)
+        debug("Treasure stack: {}").format(self.treasurestack)
 
     def set_dobasMegtortent(self):
         "Híváskor érvényteleníti a kockát."
         self.dobasMegtortent.set(True)
         if self.unfinishedMethodes:
-            print("HIBA - Beragadt metódus:", self.unfinishedMethodes)
+            debug("HIBA - Beragadt metódus:", self.unfinishedMethodes)
     
     def mozgas(self, dobas, szellel = 1):
         "Irányítja a mozgás folyamatát."
@@ -309,7 +311,7 @@ class Vezerlo(Frame):
         
     def kincsetHuz(self):
         if not self.kincspakli:
-            print("Kincspakli keverése.")
+            debug("Kincspakli keverése.")
             for elem in self.treasurestack:
                 self.kincspakli.append(elem)
             self.treasurestack = []

@@ -1,3 +1,4 @@
+from logging import debug
 from tkinter import BooleanVar, BOTTOM, Button, CENTER, DISABLED, FLAT, Frame, GROOVE, IntVar, Label, LEFT, NORMAL, Radiobutton, RIGHT, StringVar, SUNKEN, TOP, Toplevel, X, Y
 from tkinter.messagebox import askyesno
 from random import randrange
@@ -38,7 +39,7 @@ class Utkozet(Toplevel):
     def fokeret(self, dummy = 0):
         'Leképezi az ablak tartalmát'
         if dummy == 1:
-            print('Győzelem')
+            debug('Victory')
             return True
         # játékos
         self.jatekos = Hajoablak(self, self.master, user = 1)
@@ -118,7 +119,7 @@ class Utkozet(Toplevel):
             self.megcsaklyazas()
             self.korOsszegzo.config(text = (self.master.ui_texts["ship_spotted_fleeing_unsuccesful"] + "\n" + self.master.ui_texts["ship_spotted_battle"]))
         else:
-            print(self.master.engine.aktivjatekos.nev + " elmenekült.")
+            debug(self.master.engine.aktivjatekos.nev + " elmenekült.")
             self.bezar()
         
     def megcsaklyazas(self):
@@ -194,7 +195,7 @@ class Utkozet(Toplevel):
     
     def harcikor(self):
         "Levezényel egy harci kört."
-        print('-----------------Új kör')
+        debug('-----------------Új kör')
         self.csataIndulGomb.configure(state = DISABLED)
         for gomb in self.gombszotar.keys():
             self.gombszotar[gomb].gomb.configure(state = DISABLED)
@@ -217,18 +218,18 @@ class Utkozet(Toplevel):
         self.valosCelpontok = []
         self.valosCelpontKockak = []
         celpontok,celpontKockak = self.szabadKockak(self.szabadKockaLista)
-        print("Lehetséges célpontok:",celpontok,"Ahogy a kockákból összeáll:",celpontKockak)
+        debug("Lehetséges célpontok:",celpontok,"Ahogy a kockákból összeáll:",celpontKockak)
         for celpont in celpontok:
             if self.ellenfel.skalaszotar[celpont].elo.get():
-                print('Célba vett csapat: ',celpont,'Ennyi matróz van benne:',self.ellenfel.skalaszotar[celpont].elo.get())
+                debug('Célba vett csapat: ',celpont,'Ennyi matróz van benne:',self.ellenfel.skalaszotar[celpont].elo.get())
                 self.valosCelpontok.append(celpont)
                 self.valosCelpontKockak.append(celpontKockak[celpontok.index(celpont)])
             else:
-                print('Csapat üres, célpont kizárva.')
-        print(self.valosCelpontok, self.valosCelpontKockak)
+                debug('Csapat üres, célpont kizárva.')
+        debug(self.valosCelpontok, self.valosCelpontKockak)
         if self.valosCelpontok:
             if len(self.valosCelpontok) == 1:
-                print("AutoExtra")
+                debug("AutoExtra")
                 self.ellenfel.valasztottCsapat.set(self.valosCelpontok[0])
                 self.ellenfel.celzas()
             else:
@@ -261,7 +262,7 @@ class Utkozet(Toplevel):
     
     def szabadKockak(self, szabadKockak):
         "Kiszámolja a lehetséges szabadkocka felhasználási módokat."
-        print('Szabad kockák:',szabadKockak)
+        debug('Szabad kockák:',szabadKockak)
         ertekkeszlet = []
         ertekkeszletKockak = []
         for dobas in szabadKockak:
@@ -289,12 +290,12 @@ class Utkozet(Toplevel):
     def harc_vege(self):
         "Ellenőrzi a felek harcképességét."
         if not self.jatekos.ertekkeszlet():
-            print('Vesztítettél.')
+            debug('Vesztítettél.')
             self.korOsszegzo.configure(text = self.master.ui_texts["battle_lose"])
             self.vereseg()
             return True
         elif (len(self.jatekos.ertekkeszlet()) == 1 and not len(self.ellenfel.ertekkeszlet())) or (len(self.jatekos.ertekkeszlet()) > 1 and len(self.ellenfel.ertekkeszlet()) < 2):
-            print('Győztél.')
+            debug('Győztél.')
             self.matroztVisszair() # mentjük a megmaradt matrózok számát a játékos profiljába
             self.master.engine.aktivjatekos.hajotar[self.ellensegesZaszlo].set(self.master.engine.aktivjatekos.hajotar[self.ellensegesZaszlo].get()+1) # megnöveljük az elfogott hajók számát
             if not self.kincsMegszerezve:
@@ -303,7 +304,7 @@ class Utkozet(Toplevel):
                 self.korOsszegzo.config(text = "")
             return True
         elif self.ellenfelSullyed.get() and not self.sullyedesigHatravan:
-            print("Az ellenséges hajó elsüllyedt.")
+            debug("Az ellenséges hajó elsüllyedt.")
             self.matroztVisszair() # mentjük a megmaradt matrózok számát a játékos profiljába
             self.master.engine.aktivjatekos.hajotar[self.ellensegesZaszlo].set(self.master.engine.aktivjatekos.hajotar[self.ellensegesZaszlo].get()+1) # megnöveljük az elfogott hajók számát
             self.korOsszegzo.config(text = self.master.ui_texts["battle_sink"])
@@ -347,13 +348,13 @@ class Utkozet(Toplevel):
         idx = self.valosCelpontok.index(ertek)
         for elem in self.valosCelpontKockak[idx]:
             self.szabadKockaLista.remove(elem)
-            print("A szabad kockák közül törölve:",elem)
-        print("Megmaradt szabad kockák:",self.szabadKockaLista)
+            debug("A szabad kockák közül törölve:",elem)
+        debug("Megmaradt szabad kockák:",self.szabadKockaLista)
         if len(self.szabadKockaLista) > 1:
-            print('További extra lövésre van lehetőség.')
+            debug('További extra lövésre van lehetőség.')
             self.extra_talalatok()
         else:
-            print('Nincs több extra lövésre lehetőség.')
+            debug('Nincs több extra lövésre lehetőség.')
             self.harcikor_vege()
     
     def kincsMegszerzese(self, papagaj = 0):
@@ -367,7 +368,7 @@ class Utkozet(Toplevel):
         if papagaj:
             szoveg = self.master.ui_texts["ship_spotted_parrot"] + szoveg
         self.master.engine.aktivjatekos.kincs.set(self.master.engine.aktivjatekos.kincs.get()+self.zsakmany)
-        print(self.master.engine.aktivjatekos.kincs.get())
+        debug(self.master.engine.aktivjatekos.kincs.get())
         self.korOsszegzo.config(text = szoveg)
         self.kincsMegszerezve = True
 
@@ -376,7 +377,7 @@ class Utkozet(Toplevel):
         visszairando = 0
         for i in self.jatekos.skalaszotar.keys():
             visszairando += self.jatekos.skalaszotar[i].elo.get()
-        print("Életben maradt matrózok:",visszairando)
+        debug("Életben maradt matrózok:",visszairando)
         self.master.engine.aktivjatekos.legenyseg.set(visszairando)
 
     def bezar(self):
@@ -681,7 +682,7 @@ class Gombjektum():
         
     def hasznalat(self):
         "Meghívja a működést, majd futtat egy feltételvizsgálatot."
-        print(self.hang)
+        debug(self.hang)
         for i in self.boss.gombszotar.keys():
             self.boss.gombszotar[i].gomb.config(state = DISABLED)
         self.mukodes()
@@ -729,11 +730,11 @@ class Puska(Gombjektum):
             if self.boss.ellenfel.skalaszotar[celpont].elo.get():
                 celpontok2.append(celpont)
             else:
-                print('Célpont',celpont,'eltávolítva.')
+                debug('Célpont',celpont,'eltávolítva.')
         if not celpontok2:
-            print("Mellé.")
+            debug("Mellé.")
         elif len(celpontok2) == 1:
-            print("AutoCélzás.")
+            debug("AutoCélzás.")
             self.boss.ellenfel.celzas_sima(celpontok2[0])
             self.boss.csataIndulGomb.configure(state = NORMAL)
         else:
@@ -775,7 +776,7 @@ class Granat(Gombjektum):
             if self.boss.ellenfel.skalaszotar[celpont].elo.get():
                 celpontok.append(celpont)
         if len(celpontok) == 1:
-            print("AutoCélzás.")
+            debug("AutoCélzás.")
             for i in self.boss.ellenfel.skalaszotar[celpontok[0]].elo.get():
                 self.boss.ellenfel.celzas_sima(celpontok[0])
         else:

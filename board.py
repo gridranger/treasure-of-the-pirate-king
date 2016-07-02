@@ -1,8 +1,9 @@
 ﻿from PIL.ImageTk import PhotoImage
 from PIL.Image import ANTIALIAS, BICUBIC
-from tkinter import BooleanVar, Canvas, CENTER, Frame, NW
 from colorize import *
+from logging import debug
 from time import sleep
+from tkinter import BooleanVar, Canvas, CENTER, Frame, NW
 
 
 class Board(Frame):
@@ -84,7 +85,7 @@ class Board(Frame):
         return tiles
 
     def render_board(self):
-        print('leképezés indul')
+        debug('Board rendering started.')
         # A háttér betöltése
         self.gallery['hatter'] = PhotoImage(open('img/map.png').resize((self.size, self.size), ANTIALIAS))
         self.board_canvas.create_image(0, 0, image = self.gallery['hatter'], anchor = NW)
@@ -154,7 +155,7 @@ class Board(Frame):
         # Csatagombok betöltése.
         for i in ['gun', 'rifle', 'caltrop', 'grenade', 'grapeshot', 'greek_fire', 'monkey', 'sirenhorn', 'sirens', "alvarez"]:
             self.gallery['icon_'+i] = PhotoImage(open('img/icon_'+i+'.png'))
-        print('leképezés kész')
+        debug('Board rendering finished.')
     
     def kartyakep(self, pakli, prefix):
         "Leképezi a kártyákhoz szükséges képeket."

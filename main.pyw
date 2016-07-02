@@ -4,7 +4,7 @@ from board import Board
 from colorize import *
 from datareader import DataReader
 from game import *
-from logging import DEBUG, basicConfig, getLogger
+from logging import DEBUG, WARNING, basicConfig, getLogger
 from logframe import LogFrame
 from models import BRITISH, DUTCH, FRENCH, PIRATE, SPANISH, Empire
 from savehandler import *
@@ -29,7 +29,8 @@ class Application(Tk):
         self.debug_mode = debug_mode
         if self.debug_mode:
             basicConfig(level=DEBUG)
-            pil_logger = getLogger()  # TODO contunue from here
+            pil_logger = getLogger("PIL.PngImagePlugin")
+            pil_logger.level = WARNING
         self.data_reader = DataReader(self)
         self._process_config()
         self.card_texts = {}

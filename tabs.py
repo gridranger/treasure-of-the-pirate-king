@@ -130,7 +130,7 @@ class Tabs(Notebook):
         if not self.boss.engine.dobasMegtortent.get():
             dobas = self.ful1tartalom.kocka.dob()
             if "fold_fold" in self.boss.engine.aktivjatekos.statuszlista:
-                debug("New roll is possible because of Land, land! field bonus.")
+                debug("New roll is possible because of Land, land! bonus.")
                 self.boss.status_bar.log(self.boss.ui_texts['land_log'])
                 self.boss.engine.aktivjatekos.set_statusz("fold_fold", 0)
                 self.fold_fold_dobas = True

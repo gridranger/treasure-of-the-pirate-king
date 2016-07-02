@@ -1,3 +1,4 @@
+from logging import debug
 from random import randrange
 from tkinter import BOTTOM, Button, DISABLED, Frame, GROOVE, HORIZONTAL, Label, LEFT, NORMAL, RIGHT, TOP, Toplevel, X
 from tkinter.ttk import Separator
@@ -60,13 +61,10 @@ class KartyaAblak(Toplevel):
         self.resizable(False,False)
         
     def noEscape(self):
-        "Az X-gomb kiiktatása"
-        print("Nincs menekvés.")
-        pass
+        debug("There is no escape.")
         
     def dummy(self):
-        "Helyőrző függvény."
-        print("Kártyafüggvény kidolgozás alatt.")
+        debug("Card method is yet to be developed.")
         self.bezar = self.lapotEldob
         return
     
@@ -82,8 +80,7 @@ class KartyaAblak(Toplevel):
         self.master.engine.szakasz_0()
         
     def lapotEldob(self, event = None):
-        "A lap eldobásának függvénye."
-        print("Klikk.")
+        debug("Card discarded.")
         if self.pakli == "event":
             self.master.engine.eventstack.append(self.nev)
             self.destroy()
@@ -306,16 +303,15 @@ class KartyaAblak(Toplevel):
         Button(self, text = self.master.ui_texts['done'], command=self.lapotEldob).pack(pady = 5, side = BOTTOM)
 
     def set_sail_to(self, celKikoto):
-        "A kikötőkbe irányító kártyák közös metódusa."
         self.bezar = self.irany_bezar
         celkocka = self.master.game_board.locations[celKikoto][0] # Kiolvassuk, hol van az adott város.
-        print(celkocka)
+        debug("Set sail target city is at {}".format_map(celkocka))
         self.master.game_board.hajotathelyez(celkocka[0], celkocka[1]) # Áttesszük oda a játékost.
         Button(self, text = self.master.ui_texts['done'], command = self.irany_bezar).pack(pady = 5, side = BOTTOM)
         
     def irany_bezar(self):
         self.master.engine.eventstack.append(self.nev)
         self.destroy()
-        print(self.master.engine.aktivjatekos.pozicio)
+        debug("Arrived at: {}".format(self.master.engine.aktivjatekos.pozicio))
         self.master.engine.teendotar[self.master.game_board.locationsR[self.master.engine.aktivjatekos.pozicio]]()
         self.master.engine.szakasz_0()
