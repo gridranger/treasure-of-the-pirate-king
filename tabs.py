@@ -212,3 +212,9 @@ class Tabs(Notebook):
         mentesSikerult = self.ment()
         if mentesSikerult:
             self.boss.shutdown_ttk_repeat_fix()
+
+
+class MainTab(Frame):
+    def __init__(self, parent):
+        Frame.__init__(self, parent)
+        
