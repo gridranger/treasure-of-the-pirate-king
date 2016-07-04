@@ -3,7 +3,6 @@ from logging import debug
 from gametab import GameTab
 from tkinter import DISABLED, E, FLAT, HORIZONTAL, NORMAL, RAISED, SUNKEN, N, W
 from tkinter import Checkbutton, Button, Entry, Frame, IntVar, Label, Scale
-from tkinter.messagebox import askokcancel
 from tkinter.ttk import Combobox, LabelFrame, Notebook
 
 __author__ = 'Bárdos Dávid'
@@ -157,7 +156,6 @@ class Tabs(Notebook):
         "Meghívja főfolyamat nyelvváltó eseményét."
         ujnyelv = self.nyelvlista[self.nyelvvalaszto.get()]  # kinyerjük a választott nyelvet
         self.boss.set_new_language(ujnyelv)
-
 
 
 class MainTab(Frame):

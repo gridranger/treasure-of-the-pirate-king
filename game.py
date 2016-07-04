@@ -22,7 +22,7 @@ class Jatekos():
         else:
             self.masodikszin = 'white'
         self.zaszlo = self.boss.get_empire_id_by_capital_coordinates(self.sajatkikoto)
-        debug(self.nev + "zászlaja:" + self.zaszlo)
+        debug("{} joined to the {} empire.".format(self.nev, self.zaszlo.capitalize()))
         self.hajo = hajo
         self.legenyseg = IntVar()
         self.legenyseg.set(legenyseg)

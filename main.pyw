@@ -281,14 +281,14 @@ class Application(Tk):
         for data in game_state.player_data:
             self.players[data] = Jatekos(self, self.game_board, *game_state.player_data[data])
         self._prepare_new_ui()
-        self.game_board.change_wind_direction(game_state.wind_index)
         while self.player_order[0] != game_state.next_player:
             self.player_order.append(self.player_order.pop(0))
+        self.engine = Vezerlo(self, game_state.taverns)
+        self.game_board.change_wind_direction(game_state.wind_index)
         if game_state.is_lieutenant_found:
             self.engine.set_hadnagyElokerult()
         if game_state.is_grog_lord_defeated:
             self.engine.set_grogbaroLegyozve()
-        self.engine = Vezerlo(self, game_state.taverns)
         self.menu.ful3_var()
         self.engine.set_paklik(game_state.card_decks)
         self.status_bar.log(self.ui_texts["loading_done"])
@@ -309,14 +309,14 @@ class Application(Tk):
         self.game_board.render_board()
         self.menu.release_new_game_button()
         self.menu.select(self.menu.tabs[1])
-        self.engine = Vezerlo(self)
-        self.menu.ful3_var()
 
     def start_game(self, player_data):
         self._reset_for_game_start()
         for adat in player_data:
             self.players['player' + str(player_data.index(adat))] = Jatekos(self, self.game_board, *adat)
         self._prepare_new_ui()
+        self.engine = Vezerlo(self)
+        self.menu.ful3_var()
         self.status_bar.log(self.ui_texts["start_game_done"])
         self.engine.szakasz_0()
 
