@@ -1,14 +1,14 @@
 from models import GameState
 from tkinter.filedialog import askopenfilename, asksaveasfilename
 from xml.dom.minidom import parseString
-from xml.etree.ElementTree import Element, ElementTree, parse, SubElement, tostring
+from xml.etree.ElementTree import Element, parse, SubElement, tostring
 
 
 class SaveHandler(object):
     def __init__(self, master):
         self._master = master
         self.extension = '.savx'
-        self.type = [('XML mentés', '.savx')]
+        self.type = [('XML save', '.savx')]
         
     def load_saved_state(self):
         current_state = GameState()
@@ -73,80 +73,59 @@ class SaveHandler(object):
                 decks[decks.index(deck)] = []
         return decks
 
-    def set_adatok_fileba(self, jatekosAdatok = {}, kovetkezoJatekos = '', szelindex = 6, varosadatok = {}, kartyak = [], grogbaroLegyozve = False, hadnagyElokerult = False):
-        "Kimenti az aktuális adatokat egy fájlba."
-        helyzetek = jatekosAdatok
-        kovetkezoJatekos = kovetkezoJatekos
-        szelindex = szelindex
-        varosadatok = varosadatok
-        empire = [self._master.empires.keys()]
-        eventdeck, eventstack, kincspakli, treasurestack = kartyak
-        grogbaroLegyozve = grogbaroLegyozve
-        hadnagyElokerult = hadnagyElokerult
-        # A paklik stringgé alakítása
-        paklik = [eventdeck, eventstack, kincspakli, treasurestack]
-        for pakli in paklik:
-            a = ''
-            for i in pakli:
-                a = a + ', ' + i
-            paklik[paklik.index(pakli)] = a[2:]
-        # Elkészítjük az XML-struktúra gyökerét
-        allomany = asksaveasfilename(defaultextension=self.extension, filetypes=self.type, initialdir='saved')
-        if allomany == '':
-            return False
-        save = Element('save')
-        file = ElementTree(save)
-        # Tényleges mentés
-        jatekosok = sorted(list(helyzetek.keys()))
-        parameterek = ['name', 'color', 'empire', 'ship', 'sailors', 'money', 'status', 'lastRoll', 'turnsToMiss', 'treasureHuntFinished']
-        for jatekos in jatekosok:
-            player = SubElement(save, 'player')
-            player.set('id', jatekos)
-            # Kivesszük a paraméterlistából a speciális paramétereket.
-            statusz = helyzetek[jatekos][7]
-            statusz = str(statusz).strip("[]'") # A statuszt vissza is tesszük.
-            helyzetek[jatekos][7] = statusz
-            kiraboltHajok = helyzetek[jatekos].pop(10)
-            koordinatak = helyzetek[jatekos].pop(5)
-            for i in range(len(parameterek)):
-                tag = SubElement(player, parameterek[i])
-                tag.text = str(helyzetek[jatekos][i])
-            # Mentjük a kirabolt hajók mennyiségét.
-            kiraboltHajokTag = SubElement(player, 'shipsLooted')
-            for kiraboltHajo in kiraboltHajok:
-                pontok = SubElement(kiraboltHajokTag, 'score')
-                pontok.set('empire', kiraboltHajo[0])
-                pontok.set('ships', str(kiraboltHajo[1]))
-            # Lementjük a koordinátákat is.
-            coords = SubElement(player, 'coordinates')
-            coords.set('x', str(koordinatak[0]))
-            coords.set('y', str(koordinatak[1]))
-        kovetkezo = SubElement(save, 'currentPlayer')
-        kovetkezo.text = kovetkezoJatekos
-        szel = SubElement(save, 'windDirection')
-        szel.text = str(szelindex)
-        hadnagy = SubElement(save, 'firstMateFound')
-        hadnagy.text = str(hadnagyElokerult)
-        grogbaro = SubElement(save, 'grogLordDefeated')
-        grogbaro.text = str(grogbaroLegyozve)
-        fogadok = SubElement(save, 'taverns')
-        for aktualisFogado in list(varosadatok.keys()):
-            fogado = SubElement(fogadok, 'tavern')
-            fogado.set('port', aktualisFogado)
-            fogado.set('sailors', str(varosadatok[aktualisFogado]))
-        # Kártyák mentése
-        kartyak = SubElement(save, 'cards')
-        cardsEp = SubElement(kartyak, 'eventDeck')
-        cardsEp.text = paklik[0]
-        cardsEt = SubElement(kartyak, 'eventStack')
-        cardsEt.text = paklik[1]
-        cardsKp = SubElement(kartyak, 'treasureDeck')
-        cardsKp.text = paklik[2]
-        cardsKt = SubElement(kartyak, 'treasureStack')
-        cardsKt.text = paklik[3]
-        rough_xml = tostring(save, encoding='utf-8', method='xml')
+    def set_adatok_fileba(self, game_state):
+        assert isinstance(game_state, GameState)
+        file_name = asksaveasfilename(defaultextension=self.extension, filetypes=self.type, initialdir='saved')
+        if not file_name:
+            return
+        save_root = Element('save')
+        serialized_decks = []
+        for deck in game_state.card_decks:
+            serialized_decks.append(", ".join(deck))
+        parameters = ['name', 'color', 'empire', 'ship', 'sailors', 'money', 'status', 'lastRoll', 'turnsToMiss',
+                      'treasureHuntFinished']
+        for player in sorted(game_state.player_data):
+            player_tag = SubElement(save_root, 'player')
+            player_tag.set('id', player)
+            game_state.player_data[player][7] = ", ".join(game_state.player_data[player][7])
+            looted_ships = game_state.player_data[player].pop(10)
+            coordinates = game_state.player_data[player].pop(5)
+            for index, parameter in enumerate(parameters):  # TODO let's structure player state!
+                tag = SubElement(player_tag, parameter)
+                tag.text = str(game_state.player_data[player][index])
+            looted_ships_tag = SubElement(player_tag, 'shipsLooted')
+            for looted_ship in looted_ships:
+                scores_tag = SubElement(looted_ships_tag, 'score')
+                scores_tag.set('empire', looted_ship[0])
+                scores_tag.set('ships', str(looted_ship[1]))
+            coordinates_tag = SubElement(player_tag, 'coordinates')
+            coordinates_tag.set('x', str(coordinates[0]))
+            coordinates_tag.set('y', str(coordinates[1]))
+        current_player_tag = SubElement(save_root, 'currentPlayer')
+        current_player_tag.text = game_state.next_player
+        wind_direction_tag = SubElement(save_root, 'windDirection')
+        wind_direction_tag.text = str(game_state.wind_index)
+        lieutenant_tag = SubElement(save_root, 'firstMateFound')
+        lieutenant_tag.text = str(game_state.is_lieutenant_found)
+        grog_lord_defeated_tag = SubElement(save_root, 'grogLordDefeated')
+        grog_lord_defeated_tag.text = str(game_state.is_grog_lord_defeated)
+        taverns_tag = SubElement(save_root, 'taverns')
+        for tavern_name, men_count in sorted(game_state.taverns.items()):
+            fogado = SubElement(taverns_tag, 'tavern')
+            fogado.set('port', tavern_name)
+            fogado.set('sailors', str(men_count))
+        card_tag = SubElement(save_root, 'cards')
+        event_deck_tag = SubElement(card_tag, 'eventDeck')
+        event_deck_tag.text = serialized_decks[0]
+        event_stack_tag = SubElement(card_tag, 'eventStack')
+        event_stack_tag.text = serialized_decks[1]
+        treasure_deck_tag = SubElement(card_tag, 'treasureDeck')
+        treasure_deck_tag.text = serialized_decks[2]
+        treasure_stack_tag = SubElement(card_tag, 'treasureStack')
+        treasure_stack_tag.text = serialized_decks[3]
+        rough_xml = tostring(save_root, encoding='utf-8', method='xml')
         minidom_xml = parseString(rough_xml)
         pretty_xml = minidom_xml.toprettyxml('    ', encoding='utf-8')
-        with open(allomany, 'wb') as xml_file:
+        with open(file_name, 'wb') as xml_file:
             xml_file.write(pretty_xml)
         return True

@@ -6,10 +6,10 @@ from datareader import DataReader
 from game import *
 from logging import DEBUG, WARNING, basicConfig, getLogger
 from logframe import LogFrame
-from models import BRITISH, DUTCH, FRENCH, PIRATE, SPANISH, Empire
+from models import BRITISH, DUTCH, FRENCH, PIRATE, SPANISH, Empire, GameState
 from savehandler import *
 from tabs import Tabs
-from tkinter import E, FLAT, N,S, SUNKEN, W, Checkbutton, Entry, Tk
+from tkinter import E, N,S, SUNKEN, W, Checkbutton, Entry, Tk
 from tkinter import colorchooser
 from tkinter.messagebox import askokcancel
 from tkinter.ttk import Combobox
@@ -253,17 +253,28 @@ class Application(Tk):
         self.is_game_setup_in_progress.set(0)
         self.game_board.destroy()
         self._render_game_board_placeholder()
-        self.menu.ujjatekgomb.config(overrelief=RAISED, relief=FLAT)
+        self.menu.release_new_game_button()
 
     def _prepare_game_setup(self):
         self.is_game_setup_in_progress.set(1)
-        self.menu.ujjatekgomb.config(relief=SUNKEN, overrelief=SUNKEN)
+        self.menu.push_new_game_button()
         self.game_board.destroy()
         self._render_game_board_placeholder()
         self.game_board = UjJatekAdatok(self, self.board_width)
         self.game_board.columnconfigure('all', weight=1)
         self.game_board.rowconfigure('all', weight=1)
         self.game_board.grid(row=0, column=1, rowspan=2, sticky=N + E + W + S, padx=5, pady=5)
+
+    def select_file_to_load(self):
+        if self.is_game_in_progress.get():
+            if not askokcancel(self.ui_text_variables['new_game'].get(), self.ui_texts['discard_game-b']):
+                return
+        game_state = self.save_handler.load_saved_state()
+        if not game_state.check():
+            return
+        self.status_bar.log(self.ui_texts['loading_game'])
+        self.update_idletasks()
+        self.load_game(game_state)
 
     def load_game(self, game_state):
         self._reset_for_game_start()
@@ -287,7 +298,6 @@ class Application(Tk):
         self.is_game_setup_in_progress.set(0)
         self.card_texts = self.data_reader.load_cards_text()
         self.players = {}
-        self.menu.ujjatekgomb.config(overrelief=RAISED, relief=FLAT)
         self.update_idletasks()
         self.is_game_in_progress.set(1)
         self.game_board.destroy()
@@ -297,6 +307,7 @@ class Application(Tk):
     def _prepare_new_ui(self):
         self.player_order = sorted(self.players.keys())
         self.game_board.render_board()
+        self.menu.release_new_game_button()
         self.menu.select(self.menu.tabs[1])
         self.engine = Vezerlo(self)
         self.menu.ful3_var()
@@ -317,20 +328,18 @@ class Application(Tk):
 
     def _follow_turn_progress_change(self, *args, **kwargs):
         if not self.is_turn_in_progress.get():
-            self.menu.mentgomb.config(state=NORMAL)
-            self.menu.mentEsKilepgomb.config(state=NORMAL)
+            self.menu.enable_save_buttons()
             self.menu.tab(0, state=NORMAL)
             self.menu.tab(2, state=NORMAL)
         else:
-            self.menu.mentgomb.config(state=DISABLED)
-            self.menu.mentEsKilepgomb.config(state=DISABLED)
+            self.menu.disable_save_buttons()
             self.menu.tab(0, state=DISABLED)
             self.menu.tab(2, state=DISABLED)
 
     def shutdown_ttk_repeat_fix(self):
         self.eval('::ttk::CancelRepeat')
         self.exit_in_progress = True
-        self.menu.kilep()
+        self.exit()
 
     def get_window_position(self):
         info = self.winfo_geometry()
@@ -339,6 +348,32 @@ class Application(Tk):
         x = int(info[xpos:ypos])
         y = int(info[ypos:])
         return x, y
+
+    def save_game(self):
+        game_state = GameState()
+        game_state.next_player = self.player_order[0]
+        game_state.wind_index = self.game_board.szelirany.index(0)
+        for player in sorted(list(self.players)):
+            game_state.player_data[player] = self.players[player].export()
+        for empire in self.empires.values():
+            game_state.taverns[empire.capital] = self.engine.varostar[empire.capital].export_matroz()
+        game_state.card_decks = [self.engine.eventdeck, self.engine.eventstack,
+                                 self.engine.kincspakli, self.engine.treasurestack]
+        game_state.is_grog_lord_defeated = self.engine.grogbaroLegyozve.get()
+        game_state.is_lieutenant_found = self.engine.hadnagyElokerult.get()
+        if game_state.check():
+            self.save_handler.set_adatok_fileba(game_state)
+        else:
+            raise RuntimeError('Invalid game state.')
+
+    def save_and_exit(self):
+        self.save_game()
+        self.shutdown_ttk_repeat_fix()
+
+    def exit(self):
+        if self.is_game_in_progress.get() and self.game_board.villogasaktiv:
+            self.boss.game_board.villogasaktiv = -1
+        self.destroy()
 
 
 class UjJatekos(Frame):

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<save>
+    <player id="player0">
+        <name>Bumm tengernagy</name>
+        <color>#80eb56</color>
+        <empire>pirate</empire>
+        <ship>frigate</ship>
+        <sailors>1</sailors>
+        <money>82</money>
+        <status/>
+        <lastRoll>1</lastRoll>
+        <turnsToMiss>0</turnsToMiss>
+        <treasureHuntFinished>True</treasureHuntFinished>
+        <shipsLooted>
+            <score empire="british" ships="0"/>
+            <score empire="dutch" ships="1"/>
+            <score empire="french" ships="0"/>
+            <score empire="pirate" ships="0"/>
+            <score empire="spanish" ships="0"/>
+        </shipsLooted>
+        <coordinates x="1" y="5"/>
+    </player>
+    <player id="player1">
+        <name>Ormányos kormányos</name>
+        <color>#5669eb</color>
+        <empire>french</empire>
+        <ship>frigate</ship>
+        <sailors>24</sailors>
+        <money>9</money>
+        <status>grog_riot</status>
+        <lastRoll>6</lastRoll>
+        <turnsToMiss>0</turnsToMiss>
+        <treasureHuntFinished>True</treasureHuntFinished>
+        <shipsLooted>
+            <score empire="british" ships="0"/>
+            <score empire="dutch" ships="0"/>
+            <score empire="french" ships="0"/>
+            <score empire="pirate" ships="0"/>
+            <score empire="spanish" ships="0"/>
+        </shipsLooted>
+        <coordinates x="1" y="3"/>
+    </player>
+    <player id="player2">
+        <name>Narancs parancsnok</name>
+        <color>#60d1e1</color>
+        <empire>spanish</empire>
+        <ship>frigate</ship>
+        <sailors>31</sailors>
+        <money>16</money>
+        <status>bobbydick</status>
+        <lastRoll>2</lastRoll>
+        <turnsToMiss>0</turnsToMiss>
+        <treasureHuntFinished>True</treasureHuntFinished>
+        <shipsLooted>
+            <score empire="british" ships="0"/>
+            <score empire="dutch" ships="0"/>
+            <score empire="french" ships="0"/>
+            <score empire="pirate" ships="1"/>
+            <score empire="spanish" ships="0"/>
+        </shipsLooted>
+        <coordinates x="5" y="3"/>
+    </player>
+    <currentPlayer>player0</currentPlayer>
+    <windDirection>2</windDirection>
+    <firstMateFound>False</firstMateFound>
+    <grogLordDefeated>False</grogLordDefeated>
+    <taverns>
+        <tavern port="curacao" sailors="9"/>
+        <tavern port="havanna" sailors="5"/>
+        <tavern port="martinique" sailors="5"/>
+        <tavern port="portroyal" sailors="10"/>
+        <tavern port="tortuga" sailors="5"/>
+    </taverns>
+    <cards>
+        <eventDeck>set_sail_to_curacao, set_sail_to_tortuga, set_sail_to_martinique, set_sail_to_havanna, set_sail_to_portroyal</eventDeck>
+        <eventStack>17, kraken, voodoo_curse, voodoo_wind_spell, 12, castaways, breath, tavern_brawl, majom3, kincses0, found_port, 0, 2, 4, 7, 9, 11, 15, sirens, scurvy, reefs, deserters, 19, 8, shipwreck, luck, 13, 16, 6, compass, competition, sail, kincses1, carousal, 1, 3, 5, 10, 14, 18, leviathan, mutiny, treacherous_mate, ghost_ship, freed_slaves</eventStack>
+        <treasureDeck>map, treasure20_4, treasure30_4, dog, treasure30_1, spare_sail, parrot, treasure10_8, treasure30_2, treasure10_5, treasure10_4, treasure10_7, treasure20_5, treasure10_13, treasure10_12, treasure20_6, treasure20_1, treasure20_2, treasure20_4, treasure20_7, treasure10_0, treasure20_8, rifle, grenade, monkey, sirenhorn, greek_fire, treasure30_0</treasureDeck>
+        <treasureStack>treasure10_3, gun, caltrop, treasure20_3, treasure10_6, treasure10_1, treasure10_10, treasure30_3, treasure10_2, treasure10_14, treasure10_11, treasure20_0, grapeshot</treasureStack>
+    </cards>
+</save>

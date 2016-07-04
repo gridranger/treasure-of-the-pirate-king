@@ -305,7 +305,7 @@ class KartyaAblak(Toplevel):
     def set_sail_to(self, celKikoto):
         self.bezar = self.irany_bezar
         celkocka = self.master.game_board.locations[celKikoto][0] # Kiolvassuk, hol van az adott város.
-        debug("Set sail target city is at {}".format_map(celkocka))
+        debug("Set sail target city is at {}".format(celkocka))
         self.master.game_board.hajotathelyez(celkocka[0], celkocka[1]) # Áttesszük oda a játékost.
         Button(self, text = self.master.ui_texts['done'], command = self.irany_bezar).pack(pady = 5, side = BOTTOM)
         

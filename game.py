@@ -290,10 +290,10 @@ class Vezerlo(Frame):
         self.kincspakli = kp
         self.treasurestack = kt
         debug("Loaded decks:")
-        debug("Event deck: {}").format(self.eventdeck)
-        debug("Event stack: {}").format(self.eventstack)
-        debug("Treasure deck: {}").format(self.kincspakli)
-        debug("Treasure stack: {}").format(self.treasurestack)
+        debug("Event deck: {}".format(self.eventdeck))
+        debug("Event stack: {}".format(self.eventstack))
+        debug("Treasure deck: {}".format(self.kincspakli))
+        debug("Treasure stack: {}".format(self.treasurestack))
 
     def set_dobasMegtortent(self):
         "Híváskor érvényteleníti a kockát."

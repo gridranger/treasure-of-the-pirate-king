@@ -15,12 +15,11 @@ class Tabs(Notebook):
         self.boss = boss
         self.width = width
         self.may_use_land_land_roll = False
-        self.tabs = [Frame(self), Frame(self), Frame(self), Frame(self)]
+        self.tabs = [MainTab(self, boss), Frame(self), Frame(self), Frame(self)]
         for tab in self.tabs:
             self._position_tab(tab)
         self._enable_hotkeys()
         self.grid(row=0, column=0)
-        self.ful0()
         self.ful1()
         self.ful2()
         self.ful3()
@@ -33,25 +32,17 @@ class Tabs(Notebook):
     def _enable_hotkeys(self):
         self.enable_traversal()
 
-    def ful0(self):
-        "A főmenü elemeinek betöltése."
-        keret = Frame(self.tabs[0])
-        keret.grid(row=0, column=0, pady=10)
-        self.ujjatekgomb = Button(keret, textvariable=self.boss.ui_text_variables['new_game'], command=self.ujjatek, width=20,
-                                  overrelief=RAISED, relief=FLAT)
-        self.ujjatekgomb.grid(row=0, column=0)
-        self.betoltgomb = Button(keret, textvariable=self.boss.ui_text_variables['load_saved_game'], command=self.betolt, width=20,
-                                 overrelief=RAISED, relief=FLAT)
-        self.betoltgomb.grid(row=1, column=0)
-        self.mentgomb = Button(keret, textvariable=self.boss.ui_text_variables['save'], command=self.ment, width=20,
-                               overrelief=RAISED, relief=FLAT, state=DISABLED)
-        self.mentgomb.grid(row=2, column=0)
-        self.mentEsKilepgomb = Button(keret, textvariable=self.boss.ui_text_variables['save_and_exit'], command=self.mentEsKilep,
-                                      width=20, overrelief=RAISED, relief=FLAT, state=DISABLED)
-        self.mentEsKilepgomb.grid(row=3, column=0)
-        self.kilepgomb = Button(keret, textvariable=self.boss.ui_text_variables['exit'], command=self.kilep, width=20,
-                                overrelief=RAISED, relief=FLAT)
-        self.kilepgomb.grid(row=4, column=0)
+    def push_new_game_button(self):
+        self.tabs[0].push_new_game_button()
+
+    def release_new_game_button(self):
+        self.tabs[0].release_new_game_button()
+
+    def enable_save_buttons(self):
+        self.tabs[0].enable_save_buttons()
+
+    def disable_save_buttons(self):
+        self.tabs[0].disable_save_buttons()
 
     def ful1(self):
         "A játék menü elemeinek betöltése."
@@ -167,54 +158,42 @@ class Tabs(Notebook):
         ujnyelv = self.nyelvlista[self.nyelvvalaszto.get()]  # kinyerjük a választott nyelvet
         self.boss.set_new_language(ujnyelv)
 
-    def ujjatek(self):
-        self.boss.start_game_setup()
-
-    def ment(self):
-        "Kimenti az aktuális adatokat"
-        soronkovetkezoJatekos = self.boss.player_order[0]
-        szelindex = self.boss.game_board.szelirany.index(0)
-        fogadoszotar = {}
-        exportszotar = {}
-        for jatekos in sorted(list(self.boss.players.keys())):
-            exportszotar[jatekos] = self.boss.players[jatekos].export()
-        for empire in self.boss.empires.values():
-            fogadoszotar[empire.capital] = self.boss.engine.varostar[empire.capital].export_matroz()
-        eventdeck = self.boss.engine.eventdeck
-        eventstack = self.boss.engine.eventstack
-        kincspakli = self.boss.engine.kincspakli
-        treasurestack = self.boss.engine.treasurestack
-        kartyak = [eventdeck, eventstack, kincspakli, treasurestack]
-        mentesSikerult = self.boss.save_handler.set_adatok_fileba(exportszotar, soronkovetkezoJatekos, szelindex,
-                                                               fogadoszotar, kartyak)
-        return mentesSikerult
-
-    def betolt(self):
-        if self.boss.is_game_in_progress.get():
-            if not askokcancel(self.boss.ui_text_variables['new_game'].get(), self.boss.ui_texts['discard_game-b']):
-                return
-        game_state = self.boss.save_handler.load_saved_state()
-        if not game_state.check():
-            return
-        self.boss.status_bar.log(self.boss.ui_texts['loading_game'])
-        self.update_idletasks()
-        self.boss.load_game(game_state)
-
-    def kilep(self):
-        "Kilép a játékból."
-        if self.boss.is_game_in_progress.get():
-            if self.boss.game_board.villogasaktiv:
-                self.boss.game_board.villogasaktiv = -1
-        self.boss.destroy()
-
-    def mentEsKilep(self):
-        "Menti a játékot, és kilép."
-        mentesSikerult = self.ment()
-        if mentesSikerult:
-            self.boss.shutdown_ttk_repeat_fix()
 
 
 class MainTab(Frame):
-    def __init__(self, parent):
+    def __init__(self, parent, master):
         Frame.__init__(self, parent)
-        
+        self._new_game_button = Button(self, textvariable=master.ui_text_variables['new_game'],
+                                       command=master.start_game_setup, width=20, overrelief=RAISED, relief=FLAT)
+        self._load_button = Button(self, textvariable=master.ui_text_variables['load_saved_game'],
+                                   command=master.select_file_to_load, width=20, overrelief=RAISED, relief=FLAT)
+        self._save_button = Button(self, textvariable=master.ui_text_variables['save'], command=master.save_game,
+                                   width=20, overrelief=RAISED, relief=FLAT, state=DISABLED)
+        self._save_and_exit_button = Button(self, textvariable=master.ui_text_variables['save_and_exit'],
+                                            command=master.save_and_exit, width=20, overrelief=RAISED, relief=FLAT,
+                                            state=DISABLED)
+        self._exit_button = Button(self, textvariable=master.ui_text_variables['exit'], command=master.exit, width=20,
+                                   overrelief=RAISED, relief=FLAT)
+        self._position_elements()
+
+    def _position_elements(self):
+        self.grid(row=0, column=0, pady=10)
+        self._new_game_button.grid(row=0, column=0)
+        self._load_button.grid(row=1, column=0)
+        self._save_button.grid(row=2, column=0)
+        self._save_and_exit_button.grid(row=3, column=0)
+        self._exit_button.grid(row=4, column=0)
+
+    def push_new_game_button(self):
+        self._new_game_button.config(relief=SUNKEN, overrelief=SUNKEN)
+
+    def release_new_game_button(self):
+        self._new_game_button.config(overrelief=RAISED, relief=FLAT)
+
+    def enable_save_buttons(self):
+        self._save_button.config(state=NORMAL)
+        self._save_and_exit_button.config(state=NORMAL)
+
+    def disable_save_buttons(self):
+        self._save_button.config(state=DISABLED)
+        self._save_and_exit_button.config(state=DISABLED)
