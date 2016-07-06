@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from tkinter import Frame, DISABLED, Label, N, E, W, S, ALL, HORIZONTAL, Button, RAISED
+from tkinter import ALL, E, HORIZONTAL, N, NORMAL, RAISED, S, W, Frame, Label, Button
 from tkinter.ttk import LabelFrame, Separator
 from game import Dobokocka
 
@@ -7,144 +7,147 @@ __author__ = 'Bárdos Dávid'
 
 
 class GameTab(Frame):
-    """A játékos menü osztálya."""
+    def __init__(self, parent):
+        Frame.__init__(self, parent)
+        self._boss = parent
+        self._master = self._boss.master
+        self._heading = Frame(self)
+        self._inventory_display = Frame(self)
+        self._die_field = Frame(self)
+        self._score_field = LabelFrame(self)
+        self._turn_order = Frame(self)
+        self.die = None
+        if self._master.is_game_in_progress.get():
+            self._load_content()
 
-    def __init__(self, boss, notepad):
-        Frame.__init__(self, notepad)
-        self.boss = boss
-        self.master = self.boss.boss
-        self.aktivjatekos = None
-        if self.master.is_game_in_progress.get():
-            self.aktivjatekos = self.master.engine.aktivjatekos
-            self.feltolt()
+    @property
+    def _current_player(self):
+        return self._master.engine.aktivjatekos
+
+    def reset_content(self):
+        self._heading.destroy()
+        self._heading = Frame(self)
+        self._inventory_display.destroy()
+        self._inventory_display = Frame(self)
+        self._die_field.destroy()
+        self._die_field = Frame(self)
+        self._score_field.destroy()
+        self._score_field = LabelFrame(self)
+        self._turn_order.destroy()
+        self._turn_order = Frame(self)
+        if self.die:
+            self.die.destroy()
+        self.die = None
+        self._load_content()
+
+    def _load_content(self):
+        self._boss.tab(1, state=NORMAL)
+        self._build_heading(0)
+        self._build_inventory_display(1)
+        self._build_score_field(2)
+        self._build_state_display(3)
+        self._horizontal_line(4)
+        self._build_die_field(5)
+        self._horizontal_line(6)
+        self._build_turn_order(7)
+
+    def _build_heading(self, position):
+        flag = self._master.game_board.gallery['flag_' + self._current_player.empire]
+        Label(self._heading, text=self._current_player.nev).grid(row=0, column=0)
+        Label(self._heading, image=flag).grid(row=1, column=0)
+        self._heading.grid(row=position, column=0, pady=5)
+
+    def _build_inventory_display(self, position):
+        gold_frame = LabelFrame(self._inventory_display, text=self._master.ui_texts['treasure'])
+        Label(gold_frame, image=self._master.game_board.gallery['penz-d2']).grid(row=0, column=0)
+        Label(gold_frame, textvariable=self._current_player.kincs).grid(row=0, column=1)
+        gold_frame.grid(row=0, column=0, sticky=N + E + W + S, padx=5)
+        crew_frame = LabelFrame(self._inventory_display, text=self._master.ui_texts['crew'])
+        Label(crew_frame, image=self._master.game_board.gallery['matrozok']).grid(row=0, column=0)
+        Label(crew_frame, textvariable=self._current_player.legenyseg).grid(row=0, column=1)
+        crew_frame.grid(row=0, column=1, sticky=N + E + W + S, padx=5)
+        self._inventory_display.grid(row=position, column=0)
+        self._inventory_display.columnconfigure(ALL, minsize=(self._boss.width - 20) / 2)
+
+    def _horizontal_line(self, position):
+        Separator(self, orient=HORIZONTAL).grid(row=position, column=0, sticky=E + W, padx=5, pady=5)
+
+    def _build_score_field(self, position):
+        self._score_field.config(text=self._master.ui_texts['scores'])
+        score_fields = {}
+        target_empires = list(sorted(self._master.empires.keys()))
+        target_empires.remove(self._current_player.empire)
+        for index, empire in enumerate(target_empires):
+            score_fields[empire] = Frame(self._score_field)
+            flag = self._master.game_board.gallery['flag_' + empire]
+            Label(score_fields[empire], image=flag).grid(row=0, column=0)
+            Label(score_fields[empire], text=':').grid(row=0, column=1)
+            Label(score_fields[empire], textvariable=self._current_player.hajotar[empire]).grid(row=0, column=2)
+            score_fields[empire].grid(row=int((index / 2) % 2), column=index % 2, sticky=E + W)
+        self._score_field.grid(row=position, column=0)
+        self._score_field.columnconfigure(ALL, minsize=(self._boss.width - 34) / 2)
+
+    def _build_die_field(self, position):
+        self._die_field.columnconfigure(0, weight=1)
+        self._die_field.rowconfigure(0, weight=1)
+        self._die_field.grid(row=position, column=0, ipady=5, ipadx=5)
+        should_miss_turn = self._current_player.kimarad.get()
+        if should_miss_turn > 0:
+            self._build_miss_turn_button(should_miss_turn)
         else:
-            self.boss.tab(1, state=DISABLED)
-            self.fejlec = Frame()
-            self.kincseslada = Frame(self)
-            self.kockamezo = Frame(self)
-            self.pontmezo = Frame(self)
-            self.jateksor = Frame(self)
+            self._build_die()
 
-    def feltolt(self):
-        "Megjeleníti a fül tényleges tartalmát."
-        self.fejlec_epito(0)
-        self.kincseslada_epito(1)
-        # self.vonal(2)
-        self.pontszamok_epito(2)
-        self.statusz_epito(3)
-        self.vonal(4)
-        self.kockamezo_epito(5)
-        self.vonal(6)
-        self.sorrend_epito(7)
-
-    def fejlec_epito(self, pozicio):
-        "A fejléc."
-        self.fejlec = Frame(self)
-        Label(self.fejlec, text=self.aktivjatekos.nev).grid(row=0, column=0)
-        Label(self.fejlec, image=self.master.game_board.gallery['flag_' + self.aktivjatekos.empire]).grid(row=1, column=0)
-        self.fejlec.grid(row=pozicio, column=0, pady=5)
-
-    def kincseslada_epito(self, pozicio):
-        "Pénz- és legénységkijelző."
-        self.kincseslada = Frame(self)
-        rekesz0 = LabelFrame(self.kincseslada, text=self.master.ui_texts['treasure'])
-        Label(rekesz0, image=self.master.game_board.gallery['penz-d2']).grid(row=0, column=0)
-        Label(rekesz0, textvariable=self.aktivjatekos.kincs).grid(row=0, column=1)
-        rekesz0.grid(row=0, column=0, sticky=N + E + W + S, padx=5)
-        rekesz1 = LabelFrame(self.kincseslada, text=self.master.ui_texts['crew'])
-        Label(rekesz1, image=self.master.game_board.gallery['matrozok']).grid(row=0, column=0)
-        Label(rekesz1, textvariable=self.aktivjatekos.legenyseg).grid(row=0, column=1)
-        rekesz1.grid(row=0, column=1, sticky=N + E + W + S, padx=5)
-        self.kincseslada.grid(row=pozicio, column=0)
-        self.kincseslada.columnconfigure(ALL, minsize=(self.boss.width - 20) / 2)
-
-    def vonal(self, pozicio):
-        "Vonal."
-        Separator(self, orient=HORIZONTAL).grid(row=pozicio, column=0, sticky=E + W, padx=5, pady=5)
-
-    def pontszamok_epito(self, pozicio):
-        "Pontozótábla."
-        pontmezo = LabelFrame(self, text=self.master.ui_texts['scores'])
-        ponthelyszamlalo = 0
-        pontkeretszotar = {}
-        for birodalom in sorted(self.master.empires.keys()):
-            if birodalom != self.aktivjatekos.empire:
-                pontkeretszotar[birodalom] = Frame(pontmezo)
-                Label(pontkeretszotar[birodalom], image=self.master.game_board.gallery['flag_' + birodalom]).grid(row=0,
-                                                                                                              column=0)
-                Label(pontkeretszotar[birodalom], text=':').grid(row=0, column=1)
-                Label(pontkeretszotar[birodalom], textvariable=self.aktivjatekos.hajotar[birodalom]).grid(row=0,
-                                                                                                          column=2)
-                pontkeretszotar[birodalom].grid(row=int((ponthelyszamlalo / 2) % 2), column=ponthelyszamlalo % 2,
-                                                sticky=E + W)
-                ponthelyszamlalo += 1
-        pontmezo.grid(row=pozicio, column=0)
-        pontmezo.columnconfigure(ALL, minsize=(self.boss.width - 34) / 2)
-
-    def kockamezo_epito(self, pozicio):
-        "A dobókocka megjelenítőfelülete."
-        self.kockamezo = Frame(self)
-        self.kockamezo.columnconfigure(0, weight=1)
-        self.kockamezo.rowconfigure(0, weight=1)
-        self.kockamezo.grid(row=pozicio, column=0, ipady=5, ipadx=5)
-        kimaradas = self.aktivjatekos.kimarad.get()
-        if kimaradas > 0:
-            if kimaradas > 1:
-                uzenet = self.master.ui_texts["miss_turn"] % kimaradas
-            else:
-                uzenet = self.master.ui_texts["miss_turn_last_time"]
-            Button(self.kockamezo, text=uzenet, command=self.master.engine.kimaradas).pack()
-            if "leviathan" in self.master.engine.aktivjatekos.statuszlista:
-                Button(self.kockamezo, text=self.master.ui_texts["play_leviathan"],
-                       command=self.master.engine.leviathan_kijatszasa).pack()
+    def _build_miss_turn_button(self, should_miss_turn):
+        if should_miss_turn > 1:
+            message = self._master.ui_texts["miss_turn"] % should_miss_turn
         else:
-            self.kockamezo.config(relief=RAISED, bd=2)
-            self.kocka = Dobokocka(self.kockamezo, self.boss.width / 4, self.aktivjatekos.szin,
-                                   self.aktivjatekos.masodikszin, self.aktivjatekos.utolsodobas)
-            if self.master.engine.aktivjatekos.pozicio in self.master.game_board.locations[
-                "szamuzottek"] and not self.master.engine.aktivjatekos.legenyseg.get():
-                self.kocka.bind('<Button-1>', self.master.engine.szamuzottek)
-            else:
-                self.kocka.bind('<Button-1>', self.boss.dobas)
-            self.kocka.grid(row=0, column=0)
+            message = self._master.ui_texts["miss_turn_last_time"]
+        Button(self._die_field, text=message, command=self._master.engine.kimaradas).pack()
+        if "leviathan" in self._current_player.statuszlista:
+            command = self._master.engine.leviathan_kijatszasa
+            Button(self._die_field, text=self._master.ui_texts["play_leviathan"], command=command).pack()
 
-    def sorrend_epito(self, pozicio):
-        "A sorrend megjelenítője."
-        self.jateksor = Frame(self)
-        self.jateksorszotar = {}
-        sor = self.master.player_order
-        self.jateksorCimke = Label(self.jateksor, text=self.master.ui_texts['turn_order'])
-        self.jateksorCimke.grid(row=0, column=0, sticky=W)
-        for sorszam in range(len(self.master.player_order)):
-            self.jateksorszotar['label' + str(sorszam)] = Label(self.jateksor,
-                                                                text=str(sorszam + 1) + '. ' + self.master.players[
-                                                                    sor[sorszam]].nev,
-                                                                bg=self.master.players[sor[sorszam]].szin,
-                                                                fg=self.master.players[sor[sorszam]].masodikszin)
-            self.jateksorszotar['label' + str(sorszam)].grid(row=sorszam + 1, column=0, sticky=W, padx=10)
-        self.jateksor.grid(row=pozicio, column=0, sticky=W, padx=5)
+    def _build_die(self):
+        self._die_field.config(relief=RAISED, bd=2)
+        self.die = Dobokocka(self._die_field, self._boss.width / 4, self._current_player.szin,
+                             self._current_player.masodikszin, self._current_player.utolsodobas)
+        castaway_tiles = self._master.game_board.locations["szamuzottek"]
+        player_is_on_castaway_island = self._current_player.pozicio in castaway_tiles
+        player_has_no_crew = not self._current_player.legenyseg.get()
+        if player_is_on_castaway_island and player_has_no_crew:
+            self.die.bind('<Button-1>', self._master.engine.szamuzottek)
+        else:
+            self.die.bind('<Button-1>', self._boss.dobas)
+        self.die.grid(row=0, column=0)
 
-    def statusz_epito(self, pozicio):
-        "A játékos státuszainak megjelenítője."
-        statuszmezo = LabelFrame(self, text=self.master.ui_texts['cards'], relief=RAISED, width=self.boss.width - 31)
-        maxStatuszEgySorban = int((self.boss.width - 31) / 32)
-        if len(self.master.engine.aktivjatekos.statuszlista):
-            i = 0
-            for statusz in self.master.engine.aktivjatekos.statuszlista:
-                if statusz in self.master.engine.nemKartyaStatusz:
-                    pass
-                else:
-                    if statusz in self.master.engine.eventszotar.keys():
-                        hely = self.master.engine.eventszotar
+    def _build_turn_order(self, position):
+        players = []
+        turn_order_label = Label(self._turn_order, text=self._master.ui_texts['turn_order'])
+        turn_order_label.grid(row=0, column=0, sticky=W)
+        for index, player_name in enumerate(self._master.player_order):
+            player = self._master.players[player_name]
+            players.append(Label(self._turn_order, text=str(index + 1) + '. ' + player.nev, bg=player.szin,
+                                 fg=player.masodikszin))
+            players[-1].grid(row=index + 1, column=0, sticky=W, padx=10)
+        self._turn_order.grid(row=position, column=0, sticky=W, padx=5)
+
+    def _build_state_display(self, position):
+        state_field = LabelFrame(self, text=self._master.ui_texts['cards'], relief=RAISED, width=self._boss.width - 31)
+        state_slots_per_row = int((self._boss.width - 31) / 32)
+        state_slot_height = 24 + ((int(len(self._current_player.statuszlista) / state_slots_per_row) + 1) * 32)
+        if self._current_player.statuszlista:
+            for index, state in enumerate(self._current_player.statuszlista):
+                if state not in self._master.engine.nemKartyaStatusz:
+                    if state in self._master.engine.eventszotar.keys():
+                        origin = self._master.engine.eventszotar
                     else:
-                        hely = self.master.engine.kincsszotar
-                    leendoKep = self.master.engine.eventszotar[statusz].kep + '_i'
-                    leendoKep = leendoKep[(leendoKep.find('_') + 1):]
-                    Button(statuszmezo, image=self.master.game_board.gallery[leendoKep],
-                           command=lambda statusz=statusz: hely[statusz].megjelenik(1)).grid(
-                        row=int(i / maxStatuszEgySorban), column=i % maxStatuszEgySorban)
-                    i += 1
-            statuszmezo.config(height=24 + ((int(i / maxStatuszEgySorban) + 1) * 32))
-            if statuszmezo.winfo_children():
-                statuszmezo.grid(row=pozicio, column=0)
-            statuszmezo.grid_propagate(False)
+                        origin = self._master.engine.kincsszotar
+                    icon = self._master.engine.eventszotar[state].kep + '_i'
+                    icon = icon[(icon.find('_') + 1):]
+                    button = Button(state_field, image=self._master.game_board.gallery[icon],
+                                    command=lambda s=state: origin[s].megjelenik(1))
+                    button.grid(row=int(index / state_slots_per_row), column=index % state_slots_per_row)
+            state_field.config(height=state_slot_height)
+            if state_field.winfo_children():
+                state_field.grid(row=position, column=0)
+            state_field.grid_propagate(False)

@@ -14,7 +14,7 @@ class Tabs(Notebook):
         self.boss = boss
         self.width = width
         self.may_use_land_land_roll = False
-        self.tabs = [MainTab(self, boss), Frame(self), Frame(self), Frame(self)]
+        self.tabs = [MainTab(self, boss), GameTab(self), Frame(self), Frame(self)]
         for tab in self.tabs:
             self._position_tab(tab)
         self._enable_hotkeys()
@@ -22,6 +22,11 @@ class Tabs(Notebook):
         self.ful1()
         self.ful2()
         self.ful3()
+        self.tab(1, state=DISABLED)
+
+    @property
+    def ful1tartalom(self):
+        return self.tabs[1]
 
     def _position_tab(self, tab):
         tab.columnconfigure(0, weight=1)
@@ -44,8 +49,6 @@ class Tabs(Notebook):
         self.tabs[0].disable_save_buttons()
 
     def ful1(self):
-        "A játék menü elemeinek betöltése."
-        self.ful1tartalom = Frame()
         if self.boss.is_game_in_progress.get():
             self.ful1feltolt()
         else:
@@ -109,9 +112,7 @@ class Tabs(Notebook):
         valtozok.grid(row=2)
 
     def ful1feltolt(self, aktivjatekos=None):
-        self.ful1tartalom.destroy()
-        self.ful1tartalom = GameTab(self, self.tabs[1])
-        self.ful1tartalom.grid(pady=5)
+        self.tabs[1].reset_content()
 
     def dobas(self, event):
         "Dob a kockával."
@@ -119,7 +120,7 @@ class Tabs(Notebook):
             self.boss.game_board.villogaski()
             self.boss.engine.dobasMegtortent.set(False)
         if not self.boss.engine.dobasMegtortent.get():
-            dobas = self.ful1tartalom.kocka.dob()
+            dobas = self.ful1tartalom.die.dob()
             if "fold_fold" in self.boss.engine.aktivjatekos.statuszlista:
                 debug("New roll is possible because of Land, land! bonus.")
                 self.boss.status_bar.log(self.boss.ui_texts['land_log'])
@@ -127,7 +128,7 @@ class Tabs(Notebook):
                 self.may_use_land_land_roll = True
             else:
                 self.boss.status_bar.log('')
-                self.ful1tartalom.kockamezo.config(relief=SUNKEN)
+                self.ful1tartalom._die_field.config(relief=SUNKEN)
             self.boss.engine.set_dobasMegtortent()
             self.boss.is_turn_in_progress.set(1)
             self.boss.engine.aktivjatekos.set_utolsodobas(dobas)
