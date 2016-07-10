@@ -214,7 +214,6 @@ class Vezerlo(Frame):
     def szakasz_0(self):
         "A lépés előtti rész, szünet két játékos lépése között. Adminisztráljuk a váltást."
         id = self.methodeNo_get()
-        #debug("**MetódusID = " + str(id) + " - szakasz_0")
         if self.kincsKiasva:
             debug('Vége a játéknak. A győztes:',self.aktivjatekos)
         if self.dobasMegtortent.get():
@@ -223,7 +222,7 @@ class Vezerlo(Frame):
         debug("\n{0}\nIt's {1}'s turn.\n{0}\n".format('-' * 20, self.aktivjatekos.nev))
         self.master.status_bar.log(self.master.ui_texts["new_turn"] % self.aktivjatekos.nev)
         self.dobasMegtortent.set(False)
-        self.boss.menu.ful1feltolt(self.aktivjatekos)
+        self.boss.menu.reset_game_tab()
         if "scurvy" in self.aktivjatekos.statuszlista:
             self.aktivjatekos.set_legenyseg(-1)
         self.boss.is_turn_in_progress.set(0)

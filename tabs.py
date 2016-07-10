@@ -3,7 +3,7 @@ from logging import debug
 from gametab import GameTab
 from tkinter import DISABLED, E, FLAT, HORIZONTAL, NORMAL, RAISED, SUNKEN, N, W
 from tkinter import Checkbutton, Button, Entry, Frame, IntVar, Label, Scale
-from tkinter.ttk import Combobox, LabelFrame, Notebook
+from tkinter.ttk import LabelFrame, Notebook
 
 __author__ = 'Bárdos Dávid'
 
@@ -19,10 +19,10 @@ class Tabs(Notebook):
             self._position_tab(tab)
         self._enable_hotkeys()
         self.grid(row=0, column=0)
-        self.ful1()
+        if not self.boss.is_game_in_progress.get():
+            self.tab(1, state=DISABLED)
         self.ful2()
         self.ful3()
-        self.tab(1, state=DISABLED)
 
     @property
     def ful1tartalom(self):
@@ -47,12 +47,6 @@ class Tabs(Notebook):
 
     def disable_save_buttons(self):
         self.tabs[0].disable_save_buttons()
-
-    def ful1(self):
-        if self.boss.is_game_in_progress.get():
-            self.ful1feltolt()
-        else:
-            self.tab(1, state=DISABLED)
 
     def ful2(self):
         self.felbontasmezo = LabelFrame(self.tabs[2], text='')
@@ -111,7 +105,7 @@ class Tabs(Notebook):
         Label(valtozok, textvar=self.boss.engine.grogbaroLegyozve).grid(column=1, row=1)
         valtozok.grid(row=2)
 
-    def ful1feltolt(self, aktivjatekos=None):
+    def reset_game_tab(self):
         self.tabs[1].reset_content()
 
     def dobas(self, event):
@@ -133,30 +127,6 @@ class Tabs(Notebook):
             self.boss.is_turn_in_progress.set(1)
             self.boss.engine.aktivjatekos.set_utolsodobas(dobas)
             self.boss.engine.mozgas(dobas, 1)
-
-    def felbontassav(self, ertek):
-        "A felbontáscsúszka betöltése"
-        self.felbontaskijelzo.config(
-            text=(str(self.felbontaslista[int(ertek)][0]), '×', str(self.felbontaslista[int(ertek)][1])))
-        if (self.boss.width, self.boss.height) == (
-        self.felbontaslista[int(ertek)][0], self.felbontaslista[int(ertek)][1]):
-            self.felbontasvalto.config(state=DISABLED)
-        else:
-            self.felbontasvalto.config(state=NORMAL)
-
-    def nyelvmodul(self):
-        "Leképezi a nyelvi modult"
-        self.nyelvlista = self.boss.data_reader.load_language_list()
-        self.nyelvlistaR = {v: k for k, v in self.nyelvlista.items()}
-        self.nyelvvalaszto = Combobox(self.nyelvMezo, value=sorted(list(self.nyelvlista)), takefocus=0)
-        self.nyelvvalaszto.set(self.nyelvlistaR[self.boss.language])
-        self.nyelvvalaszto.bind("<<ComboboxSelected>>", self.ujnyelv)
-        self.nyelvvalaszto.grid(row=0, column=0, padx=5, pady=5)
-
-    def ujnyelv(self, event):
-        "Meghívja főfolyamat nyelvváltó eseményét."
-        ujnyelv = self.nyelvlista[self.nyelvvalaszto.get()]  # kinyerjük a választott nyelvet
-        self.boss.set_new_language(ujnyelv)
 
 
 class MainTab(Frame):

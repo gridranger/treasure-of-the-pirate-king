@@ -111,7 +111,7 @@ class Application(Tk):
         if self.is_game_setup_in_progress.get():
             self._reload_game_setup_state(picked_nations)
         if self.is_game_in_progress.get():
-            self.menu.ful1feltolt()
+            self.menu.reset_game_tab()
 
     def _save_game_setup_state(self):
         picked_nations = []
