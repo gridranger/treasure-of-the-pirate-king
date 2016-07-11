@@ -200,7 +200,7 @@ class Varos(object):
 
     def ujMatrozok(self):
         "A mezőre lépéskor módosítja a helyben elérhető matrózok számát."
-        self.matrozokszama.set(self.matrozokszama.get() + self.boss.boss.menu.ful1tartalom.die.export_ertek())
+        self.matrozokszama.set(self.matrozokszama.get() + self.boss.boss.menu.game_tab.die.export_ertek())
 
     def matrozFelberelese(self):
         "Lebonyolítja a metrózok felbérelésével járó tranzakciót"

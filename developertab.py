@@ -2,9 +2,9 @@ from tkinter import Button, Entry, Frame, Label
 
 
 class DeveloperTab(Frame):
-    def __init__(self, master, main_window):
+    def __init__(self, master):
         Frame.__init__(self, master)
-        self._main_window = main_window
+        self._main_window = self.master.master
         tools = Frame(self)
         Button(tools, text='Draw treasure card', command=self._draw_treasure_card).grid()
         tools.grid(row=0)

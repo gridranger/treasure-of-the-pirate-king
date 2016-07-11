@@ -1,5 +1,4 @@
-from logging import debug
-from tkinter import BOTTOM, BooleanVar, Button, Canvas, DISABLED, Frame, GROOVE, HORIZONTAL, IntVar, Label, LEFT, NORMAL, RAISED, RIDGE, RIGHT, Scale, StringVar, TOP, Toplevel, X, Y
+from tkinter import BooleanVar, Canvas, IntVar, RIDGE
 from tkinter.messagebox import showinfo, askyesno
 from math import sqrt
 from time import sleep
@@ -344,7 +343,7 @@ class Vezerlo(Frame):
 
     def vihar(self):
         "A vihar mező függvénye."
-        viharEreje = self.boss.menu.ful1tartalom.die.dob() # Dobunk, ez adja meg a vihar erejét.
+        viharEreje = self.boss.menu.game_tab.die.dob() # Dobunk, ez adja meg a vihar erejét.
         self.aktivjatekos.set_utolsodobas(viharEreje) # Mentjük a kocka állapotát.
         if "levasseur" in self.aktivjatekos.statuszlista: # Ha a játékos hajóján ott utazik Jacques Levasseur, több esélye van sikeresen navigálni.
             maxSiker = 4
@@ -369,7 +368,7 @@ class Vezerlo(Frame):
 
     def uszadek(self):
         "Vajon sikerül kincsre bukkanni?"
-        dobas = self.boss.menu.ful1tartalom.die.dob() # Szerencsét próbálunk.
+        dobas = self.boss.menu.game_tab.die.dob() # Szerencsét próbálunk.
         self.aktivjatekos.set_utolsodobas(dobas) # Mentjük a kocka állapotát.
         if dobas == 6:
             self.aktivjatekos.set_kincs(1)
@@ -388,7 +387,7 @@ class Vezerlo(Frame):
         "Bennszülöttek csatlakoznak a legénységhez."
         maxFelvehetoBennszulott = self.aktivjatekos.legenyseg_max.get() - self.aktivjatekos.legenyseg.get()
         if maxFelvehetoBennszulott:
-            dobas = self.boss.menu.ful1tartalom.die.dob() # Szerencsét próbálunk.
+            dobas = self.boss.menu.game_tab.die.dob() # Szerencsét próbálunk.
             self.aktivjatekos.set_utolsodobas(dobas) # Mentjük a kocka állapotát.
             if dobas >= maxFelvehetoBennszulott:
                 self.aktivjatekos.set_legenyseg(maxFelvehetoBennszulott)
@@ -413,7 +412,7 @@ class Vezerlo(Frame):
         "A teendők, ha már kincses szigeten áll az ember."
         self.boss.is_turn_in_progress.set(1)
         self.dobasMegtortent.set(True)
-        dobas = self.boss.menu.ful1tartalom.die.dob() # Szerencsét próbálunk.
+        dobas = self.boss.menu.game_tab.die.dob() # Szerencsét próbálunk.
         self.aktivjatekos.set_utolsodobas(dobas) # Mentjük a kocka állapotát.
         if dobas == 6:
             self.aktivjatekos.set_kincskereses(True)
@@ -424,7 +423,7 @@ class Vezerlo(Frame):
     
     def aramlat(self):
         "Az áramlat függvénye"
-        dobas = self.boss.menu.ful1tartalom.die.dob()
+        dobas = self.boss.menu.game_tab.die.dob()
         self.aktivjatekos.set_utolsodobas(dobas)
         self.mozgas(dobas, 0)
         return True
@@ -433,7 +432,7 @@ class Vezerlo(Frame):
         "Ez történik, ha valaki legénység nélkül van a száműzöttek szigetén."
         self.boss.is_turn_in_progress.set(1)
         self.dobasMegtortent.set(True)
-        dobas = self.boss.menu.ful1tartalom.die.dob() # Szerencsét próbálunk.
+        dobas = self.boss.menu.game_tab.die.dob() # Szerencsét próbálunk.
         self.aktivjatekos.set_utolsodobas(dobas) # Mentjük a kocka állapotát.
         celokSzotar = dict([(1, "martinique"),
                             (2, "curacao"),

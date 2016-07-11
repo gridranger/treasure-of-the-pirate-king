@@ -6,7 +6,7 @@ from datareader import DataReader
 from game import *
 from logging import DEBUG, WARNING, basicConfig, getLogger
 from logframe import LogFrame
-from models import BRITISH, DUTCH, FRENCH, PIRATE, SPANISH, Empire, GameState
+from models import BRITISH, DUTCH, FRENCH, PIRATE, SPANISH, Empire
 from savehandler import *
 from tabs import Tabs
 from tkinter import E, N,S, SUNKEN, W, Checkbutton, Entry, Tk
@@ -203,7 +203,7 @@ class Application(Tk):
         if self.is_game_setup_in_progress.get():
             self._load_game_setup_before_resize(player_data)
         self._text_placer()
-        self.menu.select(self.menu.tabs[2])
+        self.menu.select(self.menu.settings_tab)
         self.status_bar.log('%s %i×%i' % (self.ui_texts['new_resolution'], self.width, self.height))
 
     def _save_game_setup_before_resize(self):
@@ -308,7 +308,7 @@ class Application(Tk):
         self.player_order = sorted(self.players.keys())
         self.game_board.render_board()
         self.menu.release_new_game_button()
-        self.menu.select(self.menu.tabs[1])
+        self.menu.select(self.menu.game_tab)
 
     def start_game(self, player_data):
         self._reset_for_game_start()

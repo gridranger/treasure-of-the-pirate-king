@@ -6,9 +6,9 @@ __author__ = 'Bárdos Dávid'
 
 
 class SettingsTab(Frame):
-    def __init__(self, master, main_window):
+    def __init__(self, master):
         Frame.__init__(self, master=master)
-        self._main_window = main_window
+        self._main_window = self.master.master
         self._resolution_field = LabelFrame(self, text='')
         self._language_field = LabelFrame(self, text='')
         self._is_full_screen = IntVar()

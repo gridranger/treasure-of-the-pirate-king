@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-from tkinter import ALL, E, HORIZONTAL, N, NORMAL, RAISED, S, W, Frame, Label, Button
+from logging import debug
+from tkinter import ALL, E, HORIZONTAL, N, NORMAL, RAISED, S, SUNKEN, W, Frame, Label, Button
 from tkinter.ttk import LabelFrame, Separator
 from game import Dobokocka
 
@@ -10,6 +11,7 @@ class GameTab(Frame):
     def __init__(self, master):
         Frame.__init__(self, master)
         self._main_window = self.master.master
+        self._land_land_roll = False
         self._heading = Frame(self)
         self._inventory_display = Frame(self)
         self._die_field = Frame(self)
@@ -116,7 +118,7 @@ class GameTab(Frame):
         if player_is_on_castaway_island and player_has_no_crew:
             self.die.bind('<Button-1>', self._main_window.engine.szamuzottek)
         else:
-            self.die.bind('<Button-1>', self.master.dobas)
+            self.die.bind('<Button-1>', self._roll_die)
         self.die.grid(row=0, column=0)
 
     def _build_turn_order(self, position):
@@ -151,3 +153,28 @@ class GameTab(Frame):
             if state_field.winfo_children():
                 state_field.grid(row=position, column=0)
             state_field.grid_propagate(False)
+
+    def _roll_die(self):
+        if self._land_land_roll:
+            self._main_window.game_board.villogaski()
+            self._main_window.engine.dobasMegtortent.set(False)
+        if not self._main_window.engine.dobasMegtortent.get():
+            dobas = self.die.dob()
+            if "fold_fold" in self._current_player.statuszlista:
+                debug("New roll is possible because of Land, land! bonus.")
+                self._main_window.status_bar.log(self._main_window.ui_texts['land_log'])
+                self._current_player.set_statusz("fold_fold", 0)
+                self._land_land_roll = True
+            else:
+                self._main_window.status_bar.log('')
+                self._die_field.config(relief=SUNKEN)
+            self._main_window.engine.set_dobasMegtortent()
+            self._main_window.is_turn_in_progress.set(1)
+            self._main_window.engine.aktivjatekos.set_utolsodobas(dobas)
+            self._main_window.engine.mozgas(dobas, 1)
+
+    def disable_additional_roll(self):
+        if self._land_land_roll is False:
+            self._main_window.status_bar.log('')
+            self._die_field.config(relief=SUNKEN)
+            self._land_land_roll = False

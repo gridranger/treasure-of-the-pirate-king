@@ -291,10 +291,7 @@ class Board(Frame):
         "A mezőválasztást kezelő függvény."
         if not self.boss.engine.dobasMegtortent.get():
             return
-        if self.boss.menu.may_use_land_land_roll:
-            self.boss.status_bar.log('')
-            self.boss.menu.ful1tartalom._die_field.config(relief="sunken")
-            self.boss.menu.may_use_land_land_roll = False
+        self.master.menu.disable_additional_roll()
         klikkx,klikky = int(event.x / self.tile_size) + 1, int(event.y / self.tile_size) + 1
         if (klikkx,klikky) not in self.celok:
             return
