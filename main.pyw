@@ -1,18 +1,15 @@
-from PIL.Image import ANTIALIAS
-from PIL.ImageTk import PhotoImage
-from board import Board
-from colorize import *
-from datareader import DataReader
-from game import *
 from logging import DEBUG, WARNING, basicConfig, getLogger
-from logframe import LogFrame
-from models import BRITISH, DUTCH, FRENCH, PIRATE, SPANISH, Empire
-from savehandler import *
-from tabs import Tabs
-from tkinter import E, N,S, SUNKEN, W, Checkbutton, Entry, Tk
-from tkinter import colorchooser
+from tkinter import DISABLED, E, N, NORMAL, S, W, Frame, IntVar, StringVar, Tk
 from tkinter.messagebox import askokcancel
-from tkinter.ttk import Combobox
+
+from board import Board
+from datareader import DataReader
+from game import Jatekos, Vezerlo
+from logframe import LogFrame
+from models import BRITISH, DUTCH, FRENCH, PIRATE, SPANISH, Empire, GameState
+from newgamepanel import NewGamePanel
+from savehandler import SaveHandler
+from tabs import Tabs
 
 
 class Application(Tk):
@@ -209,9 +206,9 @@ class Application(Tk):
     def _save_game_setup_before_resize(self):
         player_data = []
         for i in range(6):
-            if self.game_board.player_setups[i].aktiv.get():
+            if self.game_board.player_setups[i].active.get():
                 player_data.append([self.game_board.player_setups[i].nev.get(),
-                                    self.game_board.player_setups[i].valasztottSzin.get(),
+                                    self.game_board.player_setups[i].picked_color.get(),
                                     self.game_board.player_setups[i].nation_picker.get()])
         return player_data
 
@@ -260,7 +257,7 @@ class Application(Tk):
         self.menu.push_new_game_button()
         self.game_board.destroy()
         self._render_game_board_placeholder()
-        self.game_board = UjJatekAdatok(self, self.board_width)
+        self.game_board = NewGamePanel(self)
         self.game_board.columnconfigure('all', weight=1)
         self.game_board.rowconfigure('all', weight=1)
         self.game_board.grid(row=0, column=1, rowspan=2, sticky=N + E + W + S, padx=5, pady=5)
@@ -270,7 +267,7 @@ class Application(Tk):
             if not askokcancel(self.ui_text_variables['new_game'].get(), self.ui_texts['discard_game-b']):
                 return
         game_state = self.save_handler.load_saved_state()
-        if not game_state.check():
+        if game_state is None or not game_state.check():
             return
         self.status_bar.log(self.ui_texts['loading_game'])
         self.update_idletasks()
@@ -316,7 +313,7 @@ class Application(Tk):
             self.players['player' + str(index)] = Jatekos(self, self.game_board, *data)
         self._prepare_new_ui()
         self.engine = Vezerlo(self)
-        self.menu.ful3_var()
+        self.menu.update_developer_tab()
         self.status_bar.log(self.ui_texts["start_game_done"])
         self.engine.szakasz_0()
 
@@ -374,140 +371,6 @@ class Application(Tk):
         if self.is_game_in_progress.get() and self.game_board.villogasaktiv:
             self.game_board.villogasaktiv = -1
         self.destroy()
-
-
-class UjJatekos(Frame):
-    def __init__(self, boss):
-        Frame.__init__(self, master=boss, relief=RAISED, bd=2)
-        self.boss = boss
-        self.aktiv = IntVar()
-        self.aktiv.set(0)
-        self.aktiv.trace('w', self.aktival)
-        self.valasztottSzin = StringVar()
-        self.valasztottSzin.trace('w', self.hajoepito)
-        self.valasztottSzin.set('')
-        self.hajoepito()
-        self.aktiv.trace('w', self.aktival)
-        self.config(height=self.boss.meret / 5, width=(self.boss.meret - (3 * self.boss.meret / 10)) / 2)
-        self.columnconfigure('all', weight=1)
-        self.rowconfigure('all', weight=1)
-        self.nevfelirat = Label(self, textvariable=self.boss.boss.ui_text_variables['name_label'])
-        self.nevfelirat.grid(row=0, column=0, sticky=E)
-        self.nev = Entry(self, width=15)
-        self.nev.grid(row=0, column=1, sticky=E)
-        self.szinfelirat = Label(self, textvariable=self.boss.boss.ui_text_variables['color_label'])
-        self.szinfelirat.grid(row=1, column=0, sticky=E)
-        self.szin = Button(self, width=12, bd=2, relief=SUNKEN, command=self.szinvalaszto)
-        self.szin.grid(row=1, column=1)
-        self.zaszlofelirat = Label(self, textvariable=self.boss.boss.ui_text_variables['flag_label'])
-        self.zaszlofelirat.grid(row=2, column=0, sticky=E)
-        self.nation_picker = Combobox(self, value=self.boss.boss.list_empire_names(), takefocus=0, width=12, state='readonly')
-        self.nation_picker.bind("<<ComboboxSelected>>", self.zaszlovalasztas)
-        self.nation_picker.grid(row=2, column=1)
-        for elem in [self.nev, self.szin, self.nation_picker]:
-            elem.config(state=DISABLED)
-        self.hajo = Label(self, image=self.boss.hajokepszurke)
-        self.hajo.grid(row=0, column=2, rowspan=3)
-
-    def szinvalaszto(self):
-        "Megnyit egy színválasztóablakot, és kiválasztja a hajó színét."
-        (rgb, hex) = colorchooser.askcolor()
-        if hex == None:
-            return
-        self.valasztottSzin.set(hex)
-        self.szin.config(bg=self.valasztottSzin.get())
-
-    def hajoepito(self, a=None, b=None, c=None):
-        "Kiszínezi a hajó vitorlázatát."
-        self.hajokep = open('img/schooner-h.png')
-        szelesseg, magassag = self.hajokep.size
-        self.hajokep = self.hajokep.resize((int(self.boss.meret / 5), int(self.boss.meret / 5 * magassag / szelesseg)),
-                                           ANTIALIAS)
-        self.vitorlakep = (image_tint('img/schooner-v.png', self.valasztottSzin.get()).resize(
-            (int(self.boss.meret / 5), int(self.boss.meret / 5 * magassag / szelesseg)), ANTIALIAS))
-        self.hajokep.paste(self.vitorlakep, (0, 0), self.vitorlakep)
-        self.hajokep = PhotoImage(self.hajokep)
-        self.hajo = Label(self, image=self.hajokep)
-        self.hajo.grid(row=0, column=2, rowspan=3)
-
-    def aktival(self, a=None, b=None, c=None):
-        "Hozzáadható vagy kikapcsolható vele egy játékos."
-        if self.aktiv.get():
-            for elem in [self.nev, self.szin, self.nation_picker]:
-                elem.config(state=NORMAL)
-            self.hajo.config(image=self.hajokep)
-        else:
-            for elem in [self.nev, self.szin, self.nation_picker]:
-                elem.config(state=DISABLED)
-            self.hajo.config(image=self.boss.hajokepszurke)
-
-    def zaszlovalasztas(self, event):
-        "A legkördülőmenüre kattintáskor végrehajtandó függvény."
-        self.zaszlo = self.nation_picker.get()
-
-    def visszatolt(self, nev='', szin='', zaszlo=''):
-        'Fogadja a felbontásváltás után visszatöltendő adatokat.'
-        if not self.aktiv.get():
-            self.aktiv.set(1)
-        if nev != '':
-            self.nev.insert(0, nev)
-        if szin != '':
-            self.valasztottSzin.set(szin)
-            self.szin.config(bg=self.valasztottSzin.get())
-        if zaszlo != '':
-            self.nation_picker.set(zaszlo)
-
-
-class UjJatekAdatok(Frame):
-    """Az új játék beállításai."""
-
-    def __init__(self, boss, meret):
-        Frame.__init__(self, master=boss, height=meret, width=meret)
-        self.boss = boss
-        self.meret = meret
-        self.columnconfigure('all', weight=1)
-        self.rowconfigure('all', weight=1)
-        self.player_setups = {}
-        self.hajokepszurke = image_tint('img/schooner.png', '#ffffff')
-        hajokepszurkew, hajokepszurkeh = self.hajokepszurke.size
-        self.hajokepszurke = PhotoImage(
-            self.hajokepszurke.resize((int(self.meret / 5), int(self.meret / 5 * hajokepszurkeh / hajokepszurkew)),
-                                      ANTIALIAS))
-        for i in range(6):
-            self.player_setups[i] = UjJatekos(self)
-            self.jatekosAktiv = Checkbutton(self, takefocus=0, variable=self.player_setups[i].aktiv)
-            if i == 0:
-                self.player_setups[i].aktiv.set(1)
-                self.jatekosAktiv.config(state=DISABLED)
-            self.jatekosAktiv.grid(row=i % 6, column=0, padx=5, pady=5, sticky=E)
-            self.player_setups[i].grid(row=i % 6, column=1, sticky=W)
-        self.startgomb = Button(self, textvariable=self.boss.ui_text_variables['start_button'],
-                                command=self.jatekosokBeallitasaKesz)
-        self.startgomb.grid(row=0, column=2, rowspan=6, sticky=W)
-
-    def jatekosokBeallitasaKesz(self):
-        empire_names = [empire.name for empire in self.boss.empires.values()]
-        jatekosadatok = []
-        for i in range(6):
-            if self.player_setups[i].aktiv.get():
-                if self.player_setups[i].nev.get() == '':
-                    self.boss.status_bar.log(self.boss.ui_texts['name_missing'] % (i + 1))
-                    return
-                elif self.player_setups[i].valasztottSzin.get() == '':
-                    self.boss.status_bar.log(self.boss.ui_texts['color_missing'] % (self.player_setups[i].nev.get()))
-                    return
-                elif self.player_setups[i].nation_picker.get() == '':
-                    self.boss.status_bar.log(self.boss.ui_texts['flag_missing'] % (self.player_setups[i].nev.get()))
-                    return
-                elif self.player_setups[i].nation_picker.get() not in empire_names:
-                    self.boss.status_bar.log(self.boss.ui_texts['flag_invalid'] % (self.player_setups[i].nev.get()))
-                    return
-                self.boss.status_bar.log(self.boss.ui_texts['start_game'])
-                self.update_idletasks()
-                jatekosadatok.append([self.player_setups[i].nev.get(),
-                                      self.player_setups[i].valasztottSzin.get(),
-                                      self.boss.get_empire_id_by_name(self.player_setups[i].nation_picker.get())])
-        self.boss.start_game(jatekosadatok)
 
 
 if __name__ == '__main__':

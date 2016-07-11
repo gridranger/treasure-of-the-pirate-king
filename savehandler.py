@@ -14,7 +14,7 @@ class SaveHandler(object):
         current_state = GameState()
         file_name = askopenfilename(defaultextension=self.extension, filetypes=self.type, initialdir='saved')
         if file_name == '':
-            return False
+            return None
         xml_content = parse(file_name)
         save = xml_content.getroot()
         for player in save.findall('player'):

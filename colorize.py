@@ -1,10 +1,10 @@
-import PIL
-from PIL.Image import open
+from PIL.Image import open as pillow_open
+
 
 def image_tint(src, hex=''):
     if hex == '':
-        return open(src)
-    src = open(src)
+        return pillow_open(src)
+    src = pillow_open(src)
     width,height = src.size
     pixel = src.load()
     rgb = (int(hex[1:3], 16), int(hex[3:5], 16), int(hex[5:], 16))

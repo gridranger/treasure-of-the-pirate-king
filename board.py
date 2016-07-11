@@ -1,4 +1,4 @@
-﻿from PIL.ImageTk import PhotoImage
+﻿from PIL.ImageTk import PhotoImage  # TODO pillow_open!
 from PIL.Image import ANTIALIAS, BICUBIC
 from colorize import *
 from logging import debug
