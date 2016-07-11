@@ -22,8 +22,8 @@ class SaveHandler(object):
             current_state.player_data[player_id] = self._load_player(player)
         current_state.next_player = save.find('currentPlayer').text
         current_state.wind_index = int(save.find('windDirection').text)
-        current_state.is_lieutenant_found = bool(save.find('firstMateFound').text)
-        current_state.is_grog_lord_defeated = bool(save.find('grogLordDefeated').text)
+        current_state.is_lieutenant_found = True if save.find('firstMateFound').text == 'True' else False
+        current_state.is_grog_lord_defeated = True if save.find('firstMateFound').text == 'True' else False
         tavern_tag = save.find('taverns')
         for tavern in tavern_tag.findall('tavern'):
             current_state.taverns[tavern.get('port')] = int(tavern.get('sailors'))

@@ -289,7 +289,7 @@ class Application(Tk):
             self.engine.set_hadnagyElokerult()
         if game_state.is_grog_lord_defeated:
             self.engine.set_grogbaroLegyozve()
-        self.menu.ful3_var()
+        self.menu.update_developer_tab()
         self.engine.set_paklik(game_state.card_decks)
         self.status_bar.log(self.ui_texts["loading_done"])
         self.engine.szakasz_0()
@@ -312,8 +312,8 @@ class Application(Tk):
 
     def start_game(self, player_data):
         self._reset_for_game_start()
-        for adat in player_data:
-            self.players['player' + str(player_data.index(adat))] = Jatekos(self, self.game_board, *adat)
+        for index, data in enumerate(player_data):
+            self.players['player' + str(index)] = Jatekos(self, self.game_board, *data)
         self._prepare_new_ui()
         self.engine = Vezerlo(self)
         self.menu.ful3_var()
