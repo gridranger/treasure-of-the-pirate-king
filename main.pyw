@@ -372,7 +372,7 @@ class Application(Tk):
 
     def exit(self):
         if self.is_game_in_progress.get() and self.game_board.villogasaktiv:
-            self.boss.game_board.villogasaktiv = -1
+            self.game_board.villogasaktiv = -1
         self.destroy()
 
 

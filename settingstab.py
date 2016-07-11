@@ -9,56 +9,64 @@ class SettingsTab(Frame):
     def __init__(self, master, main_window):
         Frame.__init__(self, master=master)
         self._main_window = main_window
-        self.resolution_field = LabelFrame(self, text='')
-        self.language_field = LabelFrame(self, text='')
-        self.is_full_screen = IntVar()
-        self.is_full_screen.set(main_window.is_full_screen.get())
-        for index, field in enumerate((self.resolution_field, self.language_field)):
+        self._resolution_field = LabelFrame(self, text='')
+        self._language_field = LabelFrame(self, text='')
+        self._is_full_screen = IntVar()
+        self._is_full_screen.set(self._main_window.is_full_screen.get())
+        self._position_fields()
+        self._resolutions = sorted(self._main_window.resolution_list)
+        self._resolution_scale = Scale(self._resolution_field, from_=0, to=len(self._resolutions) - 1,
+                                       orient=HORIZONTAL, resolution=1, takefocus=0, showvalue=0,
+                                       length=self._main_window.width, command=self._update_resolution_button)
+        self._resolution_scale.set(self._compose_scale())
+        self._resolution_display = Label(self._resolution_field, text=(self._main_window.width, '×',
+                                                                       self._main_window.height))
+        self._resolution_changer = Button(self._resolution_field,
+                                          textvariable=self._main_window.ui_text_variables['apply'],
+                                          command=self._change_resolution, state=DISABLED)
+        self._full_screen_label = Label(self._resolution_field,
+                                        textvariable=self._main_window.ui_text_variables['full_screen'])
+        self._full_screen_checkbox = Checkbutton(self._resolution_field, takefocus=0, variable=self._is_full_screen,
+                                                 command=lambda: self._resolution_changer.config(state=NORMAL))
+        self._languages = self._main_window.data_reader.load_language_list()
+        self._language_picker = Combobox(self._language_field, value=sorted(list(self._languages)), takefocus=0)
+        self._language_picker.set(self._languages_reversed[self._main_window.language])
+        self._language_picker.bind("<<ComboboxSelected>>", self._pick_language)
+        self._position_elements()
+
+    def _position_fields(self):
+        for index, field in enumerate((self._resolution_field, self._language_field)):
             field.columnconfigure(0, weight=1)
             field.grid(row=index, column=0, sticky=E + W, padx=5, pady=5)
-        self.resolutions = sorted(main_window.resolution_list)
-        self.resolution_scale = Scale(self.resolution_field, from_=0, to=len(self.resolutions) - 1, orient=HORIZONTAL,
-                                      resolution=1, takefocus=0, showvalue=0, length=self.master.width,
-                                      command=self.felbontassav)
-        self.resolution_scale.set(self._compose_scale())
-        self.resolution_scale.grid(row=0, column=0, columnspan=2, sticky=E + W)
-        self.resolution_display = Label(self.resolution_field, text=(main_window.width, '×', main_window.height))
-        self.resolution_display.grid(row=1, column=0, padx=5, pady=5, sticky=W)
-        self.resolution_changer = Button(self.resolution_field, textvariable=main_window.ui_text_variables['apply'],
-                                         command=self._change_resolution, state=DISABLED)
-        self.resolution_changer.grid(row=1, column=1, padx=5, pady=5, sticky=E)
-        self.full_screen_label = Label(self.resolution_field,
-                                       textvariable=main_window.ui_text_variables['full_screen'])
-        self.full_screen_label.grid(row=2, column=0, padx=5, pady=5, sticky=W)
-        self.full_screen_checkbox = Checkbutton(self.resolution_field, takefocus=0, variable=self.is_full_screen,
-                                                command=lambda: self.resolution_changer.config(state=NORMAL))
-        self.full_screen_checkbox.grid(row=2, column=1, padx=5, pady=5, sticky=E)
-        self._language_picker()
 
-    def felbontassav(self, ertek):
-        self.resolution_display.config(
-            text=(str(self.resolutions[int(ertek)][0]), '×', str(self.resolutions[int(ertek)][1])))
-        if (self.master.width, self.master.height) == (
-                self.resolutions[int(ertek)][0], self.resolutions[int(ertek)][1]):
-            self.resolution_changer.config(state=DISABLED)
+    @property
+    def _languages_reversed(self):
+        return dict(zip(self._languages.values(), self._languages.keys()))
+
+    def _update_resolution_button(self, ertek):
+        self._resolution_display.config(
+            text=(str(self._resolutions[int(ertek)][0]), '×', str(self._resolutions[int(ertek)][1])))
+        if (self._main_window.width, self._main_window.height) == (
+                self._resolutions[int(ertek)][0], self._resolutions[int(ertek)][1]):
+            self._resolution_changer.config(state=DISABLED)
         else:
-            self.resolution_changer.config(state=NORMAL)
+            self._resolution_changer.config(state=NORMAL)
 
     def _compose_scale(self):
         resolution_code = self._main_window.resolution_code
-        return self.resolutions.index([item for item in self.resolutions if item[2] == resolution_code][0])
+        return self._resolutions.index([item for item in self._resolutions if item[2] == resolution_code][0])
 
     def _change_resolution(self):
-        self._main_window.resize(self.resolutions[self.resolution_scale.get()], self.is_full_screen.get())
-
-    def _language_picker(self):
-        self.nyelvlista = self._main_window.data_reader.load_language_list()
-        self.nyelvlistaR = {v: k for k, v in self.nyelvlista.items()}
-        self.nyelvvalaszto = Combobox(self.language_field, value=sorted(list(self.nyelvlista)), takefocus=0)
-        self.nyelvvalaszto.set(self.nyelvlistaR[self.master.language])
-        self.nyelvvalaszto.bind("<<ComboboxSelected>>", self._pick_language)
-        self.nyelvvalaszto.grid(row=0, column=0, padx=5, pady=5)
+        self._main_window.resize(self._resolutions[self._resolution_scale.get()], self._is_full_screen.get())
 
     def _pick_language(self, event):
-        new_language = self.nyelvlista[self.nyelvvalaszto.get()]
+        new_language = self._languages[self._language_picker.get()]
         self._main_window.set_new_language(new_language)
+
+    def _position_elements(self):
+        self._resolution_scale.grid(row=0, column=0, columnspan=2, sticky=E + W)
+        self._resolution_display.grid(row=1, column=0, padx=5, pady=5, sticky=W)
+        self._resolution_changer.grid(row=1, column=1, padx=5, pady=5, sticky=E)
+        self._full_screen_label.grid(row=2, column=0, padx=5, pady=5, sticky=W)
+        self._full_screen_checkbox.grid(row=2, column=1, padx=5, pady=5, sticky=E)
+        self._language_picker.grid(row=0, column=0, padx=5, pady=5)
