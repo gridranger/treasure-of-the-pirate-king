@@ -119,28 +119,28 @@ class Vezerlo(Frame):
         self.korokSzama = 0
         self.nemKartyaStatusz = ["fold_fold"]
         # Hol mi történik
-        self.teendotar = dict([('csata_francia',   lambda : self.csata("b0")),
-                               ('csata_angol',     lambda : self.csata("b3")),
-                               ('csata_holland',   lambda : self.csata("b1")),
-                               ('csata_spanyol',   lambda : self.csata("b2")),
+        self.teendotar = dict([('battle_french',   lambda : self.csata("b0")),
+                               ('battle_british',     lambda : self.csata("b3")),
+                               ('battle_dutch',   lambda : self.csata("b1")),
+                               ('battle_spanish',   lambda : self.csata("b2")),
                                ('portroyal',       lambda : self.varos('portroyal')),
                                ('curacao',         lambda : self.varos('curacao')),
                                ('tortuga',         lambda : self.varos('tortuga')),
                                ('havanna',         lambda : self.varos('havanna')),
                                ('martinique',      lambda : self.varos('martinique')),
-                               ('szelplusz90',     lambda : self.boss.game_board.szel_valtoztat(90)),
-                               ('szelminusz90',    lambda : self.boss.game_board.szel_valtoztat(-90)),
-                               ('szelplusz45',     lambda : self.boss.game_board.szel_valtoztat(45)),
-                               ('szelminusz45',    lambda : self.boss.game_board.szel_valtoztat(-45)),
+                               ('windplus90',     lambda : self.boss.game_board.szel_valtoztat(90)),
+                               ('windminus90',    lambda : self.boss.game_board.szel_valtoztat(-90)),
+                               ('windplus45',     lambda : self.boss.game_board.szel_valtoztat(45)),
+                               ('windminus45',    lambda : self.boss.game_board.szel_valtoztat(-45)),
                                ('bermuda',         self.bermuda),
-                               ('foldfold',        self.foldfold),
-                               ('vihar',           self.vihar),
-                               ('uszadek',         self.uszadek),
+                               ('landland',        self.landland),
+                               ('storm',           self.vihar),
+                               ('driftwood',         self.driftwood),
                                ('szelcsend',       self.szelcsend),
                                ('taino',           self.taino),
-                               ('kincsessziget',   self.kincsessziget),
-                               ('aramlat',         self.aramlat),
-                               ('szamuzottek',     self.szamuzottekKozvetlen)
+                               ('treasureisland',   self.treasureisland),
+                               ('stream',         self.stream),
+                               ("castaways",     self.szamuzottekKozvetlen)
                                ])
         #A paklik előkészítése
         self.eventszotar = {}
@@ -227,7 +227,7 @@ class Vezerlo(Frame):
         self.boss.is_turn_in_progress.set(0)
         if not self.aktivjatekos.kincskeresesKesz:
             if askyesno(self.boss.ui_texts["dig_for_treasure_label"], self.boss.ui_texts["dig_for_treasure_question"]):
-                self.kincsesszigetAsas()
+                self.dig_on_treasureisland()
             else:
                 self.aktivjatekos.set_kincskereses(True)
         #debug("**MetódusID = " + str(id)+ " - szakasz_0 lezárva")
@@ -333,7 +333,7 @@ class Vezerlo(Frame):
         harc = Utkozet(self, self.boss, self.csataszotar[csataId])
         return True
 
-    def foldfold(self):
+    def landland(self):
         "A játékos újra dobhat a következő körben, ha az eredeti dobás kedvezőtlen."
         showinfo(self.boss.ui_texts['info'], self.boss.ui_texts['land'])
         self.aktivjatekos.set_statusz("fold_fold")
@@ -366,7 +366,7 @@ class Vezerlo(Frame):
             self.szakasz_mezoevent()
             return True
 
-    def uszadek(self):
+    def driftwood(self):
         "Vajon sikerül kincsre bukkanni?"
         dobas = self.boss.menu.game_tab.die.dob() # Szerencsét próbálunk.
         self.aktivjatekos.set_utolsodobas(dobas) # Mentjük a kocka állapotát.
@@ -403,12 +403,12 @@ class Vezerlo(Frame):
             self.boss.status_bar.log(self.boss.ui_texts["taino_none"])
         return
 
-    def kincsessziget(self):
+    def treasureisland(self):
         "Egy mező, ahol kincset lehet ásni."
         self.aktivjatekos.set_kincskereses(False)
         self.boss.status_bar.log(self.boss.ui_texts["dig_for_treasure"])
         
-    def kincsesszigetAsas(self):
+    def dig_on_treasureisland(self):
         "A teendők, ha már kincses szigeten áll az ember."
         self.boss.is_turn_in_progress.set(1)
         self.dobasMegtortent.set(True)
@@ -421,7 +421,7 @@ class Vezerlo(Frame):
             showinfo(self.boss.ui_texts["dig_for_treasure_label"], self.boss.ui_texts["dig_for_treasure_nothing"])
         self.szakasz_0()
     
-    def aramlat(self):
+    def stream(self):
         "Az áramlat függvénye"
         dobas = self.boss.menu.game_tab.die.dob()
         self.aktivjatekos.set_utolsodobas(dobas)

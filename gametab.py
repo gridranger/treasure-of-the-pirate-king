@@ -112,7 +112,7 @@ class GameTab(Frame):
         self._die_field.config(relief=RAISED, bd=2)
         self.die = Dobokocka(self._die_field, self.master.width / 4, self._current_player.szin,
                              self._current_player.masodikszin, self._current_player.utolsodobas)
-        castaway_tiles = self._main_window.game_board.locations["szamuzottek"]
+        castaway_tiles = self._main_window.game_board.locations["castaways"]
         player_is_on_castaway_island = self._current_player.pozicio in castaway_tiles
         player_has_no_crew = not self._current_player.legenyseg.get()
         if player_is_on_castaway_island and player_has_no_crew:
@@ -160,10 +160,10 @@ class GameTab(Frame):
             self._main_window.engine.dobasMegtortent.set(False)
         if not self._main_window.engine.dobasMegtortent.get():
             dobas = self.die.dob()
-            if "fold_fold" in self._current_player.statuszlista:
+            if "landland" in self._current_player.statuszlista:
                 debug("New roll is possible because of Land, land! bonus.")
                 self._main_window.status_bar.log(self._main_window.ui_texts['land_log'])
-                self._current_player.set_statusz("fold_fold", 0)
+                self._current_player.set_statusz("landland", 0)
                 self._land_land_roll = True
             else:
                 self._main_window.status_bar.log('')

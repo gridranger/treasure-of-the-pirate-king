@@ -316,8 +316,8 @@ class Utkozet(Toplevel):
         "Ez történik, ha a játékost veszít vagy kilép."
         self.matroztVisszair() # mentjük a megmaradt matrózok számát a játékos profiljába
         self.master.game_board.hajotathelyez(5,2) # irány a hajótöröttek szigete
-        if "foldfold" in self.master.engine.aktivjatekos.statuszlista:
-            self.master.engine.aktivjatekos.set_statusz("foldfold", 0)
+        if "landland" in self.master.engine.aktivjatekos.statuszlista:
+            self.master.engine.aktivjatekos.set_statusz("landland", 0)
         self.master.engine.aktivjatekos.set_kincskereses(True)
             
     def ablakBezarasa(self):

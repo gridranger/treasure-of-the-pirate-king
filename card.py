@@ -145,8 +145,8 @@ class KartyaAblak(Toplevel):
         if matrozokHusege < 6:
             if self.master.engine.aktivjatekos.kincs.get() < 6 - matrozokHusege:
                 self.master.engine.aktivjatekos.legenyseg.set(0)
-                if "foldfold" in self.master.engine.aktivjatekos.statuszlista:
-                    self.master.engine.aktivjatekos.set_statusz("foldfold", 0)
+                if "landland" in self.master.engine.aktivjatekos.statuszlista:
+                    self.master.engine.aktivjatekos.set_statusz("landland", 0)
                 self.master.engine.aktivjatekos.set_kincskereses(True)
                 self.master.game_board.hajotathelyez(5,2)
                 uzenet = self.master.ui_texts["mutiny_succeeded"]
@@ -220,8 +220,8 @@ class KartyaAblak(Toplevel):
         else: # Ha elfogyott az összes matróz...
             self.master.engine.aktivjatekos.set_legenyseg(self.master.engine.aktivjatekos.legenyseg.get() * -1) # ... elvesszük az összeset,
             self.master.game_board.hajotathelyez(5,2) # irány a hajótöröttek szigete,
-            if "foldfold" in self.master.engine.aktivjatekos.statuszlista: # elvesszük a föld, föld bónuszt is, ha volt,
-                self.master.engine.aktivjatekos.set_statusz("foldfold", 0)
+            if "landland" in self.master.engine.aktivjatekos.statuszlista: # elvesszük a föld, föld bónuszt is, ha volt,
+                self.master.engine.aktivjatekos.set_statusz("landland", 0)
             self.master.engine.aktivjatekos.set_kincskereses(True) # és persze leállítjuk a kincskeresést, ha épp aktív volt.
             Label(frame_kraken, text = self.master.ui_texts['defeated_by_kraken'], wraplength = 216).pack(pady = 5, side = TOP) # Kiírjuk, hogy vesztett.
         self.protocol("WM_DELETE_WINDOW", self.lapotEldob) # Most már bezárható a lap, és talonba kerül.
@@ -286,8 +286,8 @@ class KartyaAblak(Toplevel):
             if delta > self.master.engine.aktivjatekos.legenyseg.get(): # Ha több matróz tűnne el, mint amennyi van,
                 delta = self.master.engine.aktivjatekos.legenyseg.get() # ...akkor csak annyi fog eltűnni, amennyi van.
                 self.master.game_board.hajotathelyez(5,2) # A játékos a hajótöröttek szigetére kerül,
-                if "foldfold" in self.master.engine.aktivjatekos.statuszlista: # ...ha volt föld, föld bónusz,
-                    self.master.engine.aktivjatekos.set_statusz("foldfold", 0) # ...elvesszük,
+                if "landland" in self.master.engine.aktivjatekos.statuszlista: # ...ha volt föld, föld bónusz,
+                    self.master.engine.aktivjatekos.set_statusz("landland", 0) # ...elvesszük,
                 self.master.engine.aktivjatekos.set_kincskereses(True) # ...és persze leállítjuk a kincskeresést, ha épp aktív volt.
             delta = - delta # Hogy kivonjuk a matrózokat, deltát negatívvá alakítjuk.
         self.master.engine.aktivjatekos.set_legenyseg(delta) # Lekönyveljük a változást.

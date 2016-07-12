@@ -1,51 +1,46 @@
-﻿from PIL.ImageTk import PhotoImage  # TODO pillow_open!
-from PIL.Image import ANTIALIAS, BICUBIC
-from colorize import *
+﻿from PIL.ImageTk import PhotoImage
+from PIL.Image import ANTIALIAS, BICUBIC, open as pillow_open
+from colorize import image_tint
 from logging import debug
 from time import sleep
 from tkinter import BooleanVar, Canvas, CENTER, Frame, NW
 
 
 class Board(Frame):
-    def __init__(self, master, width=768):  # TODO replace wind index to game instance variables
+    def __init__(self, master, width=768):
         Frame.__init__(self, master=master)
         self.player_setups = []
-        self.boss = master
         self.size = width - width % 9
         self.board_canvas = self._add_board_canvas()
         self.tile_size = int(width / 9)
         self.tiles = self._generate_tiles()
         self.gallery = {}
-        self.locations = dict([('csata_francia',   [(5, 9)]),
-                               ('csata_angol',     [(9, 5)]),
-                               ('csata_holland',   [(1, 5)]),
-                               ('csata_spanyol',   [(5, 1)]),
-                               ('portroyal',       [(5, 5)]),
-                               ('curacao',         [(1, 9)]),
-                               ('tortuga',         [(9, 1)]),
-                               ('havanna',         [(1, 1)]),
-                               ('martinique',      [(9, 9)]),
-                               ('szelplusz90',     [(7, 1), (9, 7)]),
-                               ('szelminusz90',    [(1, 7), (3, 5)]),
-                               ('szelplusz45',     [(1, 3), (5, 7), (7, 9), (9, 3)]),
-                               ('szelminusz45',    [(3, 1), (5, 3), (7, 5), (3, 9)]),
-                               ('bermuda',         [(9, 4)]),
-                               ('foldfold',        [(1, 6), (2, 9), (5, 4), (9, 2)]),
-                               ('vihar',           [(2, 5), (5, 6), (9, 6)]),
-                               ('uszadek',         [(1, 8), (2, 1), (6, 5), (9, 8)]),
-                               ('szelcsend',       [(4, 5), (8, 9)]),
-                               ('taino',           [(4, 1), (6, 9)]),
-                               ('kincsessziget',   [(1, 2), (4, 9), (8, 1), (8, 5)]),
-                               ('aramlat',         [(1, 4), (5, 8), (6, 1)]),
-                               ('szamuzottek',     [(5, 2)])])
-        self.locationsR = {}
-        for empire in self.boss.empires.values():
-            empire.coordinates = self.locations[empire.capital][0]
-        for hely in self.locations.keys():
-            for ertek in self.locations[hely]:
-                self.locationsR[ertek] = hely
+        self.locations = {"battle_french": [(5, 9)],
+                          "battle_british": [(9, 5)],
+                          "battle_dutch": [(1, 5)],
+                          "battle_spanish": [(5, 1)],
+                          "portroyal": [(5, 5)],
+                          "curacao": [(1, 9)],
+                          "tortuga": [(9, 1)],
+                          "havanna": [(1, 1)],
+                          "martinique": [(9, 9)],
+                          "windplus90": [(7, 1), (9, 7)],
+                          "windminus90": [(1, 7), (3, 5)],
+                          "windplus45": [(1, 3), (5, 7), (7, 9), (9, 3)],
+                          "windminus45": [(3, 1), (5, 3), (7, 5), (3, 9)],
+                          "bermuda": [(9, 4)],
+                          "landland": [(1, 6), (2, 9), (5, 4), (9, 2)],
+                          "storm": [(2, 5), (5, 6), (9, 6)],
+                          "driftwood": [(1, 8), (2, 1), (6, 5), (9, 8)],
+                          "szelcsend": [(4, 5), (8, 9)],
+                          "taino": [(4, 1), (6, 9)],
+                          "treasureisland": [(1, 2), (4, 9), (8, 1), (8, 5)],
+                          "stream": [(1, 4), (5, 8), (6, 1)],
+                          "castaways": [(5, 2)]}
+        self.locationsR = self._reverse_locations()
+        # TODO Purge the newt two lines
         self.kikototarR = {}  # A városok koordináta alapú meghatározására szolgál.
-        self.kikotok = self.kikotokfeltolt()
+        self.kikotok = self._collect_ports()
         self.hajotar = {}
         self.figuraszotar = {}
         self.villogasaktiv = 0
@@ -53,10 +48,6 @@ class Board(Frame):
         self.xlatszik.set(0)
         #                 e  ek   k  dk  d  dny  ny  eny
         self.szelirany = [2,  1, -3,  1, 2,   1,  0,   1]
-
-    def change_wind_direction(self, wind_index):
-        while self.szelirany[wind_index] != 0:
-            self.szelirany.append(self.szelirany.pop(0))
 
     def _add_board_canvas(self):
         canvas = Canvas(self, width=self.size, height=self.size, bd=0, highlightthickness=0, relief='ridge')
@@ -70,6 +61,24 @@ class Board(Frame):
         tiles += self._generate_other_lines()
         tiles.sort()
         return tiles
+
+    def _reverse_locations(self):
+        result = {}
+        for location, tiles in self.locations.items():
+            for coordinates in tiles:
+                result[coordinates] = location
+        return result
+
+    def _collect_ports(self):
+        ports = []
+        for empire in self.master.empires.values():
+            ports.append(self.locations[empire.capital][0])
+            self.kikototarR[self.locations[empire.capital][0]] = empire.capital
+        return sorted(ports)
+
+    def change_wind_direction(self, wind_index):
+        while self.szelirany[wind_index] != 0:
+            self.szelirany.append(self.szelirany.pop(0))
 
     def _generate_whole_lines(self):
         return self._generate_lines((1, 5, 9), tuple(range(1, 10)))
@@ -87,35 +96,35 @@ class Board(Frame):
     def render_board(self):
         debug('Board rendering started.')
         # A háttér betöltése
-        self.gallery['hatter'] = PhotoImage(open('img/map.png').resize((self.size, self.size), ANTIALIAS))
+        self.gallery['hatter'] = PhotoImage(pillow_open('img/map.png').resize((self.size, self.size), ANTIALIAS))
         self.board_canvas.create_image(0, 0, image = self.gallery['hatter'], anchor = NW)
         # A félig áttetsző mezőhátterek leképezése
-        self.gallery['mezohatter'] = PhotoImage((open('img/mezo.png').resize((self.tile_size, self.tile_size), ANTIALIAS)).convert("RGBA"))
+        self.gallery['mezohatter'] = PhotoImage((pillow_open('img/mezo.png').resize((self.tile_size, self.tile_size), ANTIALIAS)).convert("RGBA"))
         for (mezox,mezoy) in self.tiles:
             self.board_canvas.create_image(int((mezox - 0.5) * self.tile_size), int((mezoy - 0.5) * self.tile_size), image = self.gallery['mezohatter'], anchor = CENTER)
         # A mezőiconok betöltése
         for elem in self.locations:
-            aktualis = open('img/'+elem+'.png')
+            aktualis = pillow_open('img/'+elem+'.png')
             aktualis = aktualis.resize((int(self.tile_size * 0.9), int(self.tile_size * 0.9)), ANTIALIAS)
             aktualis = PhotoImage(image=aktualis)
             self.gallery[elem]=aktualis
         self.mezoszotar = {} # ebben tároljuk a mezőket
         for elem in self.locations.keys():
             self.mezoszotar[elem] = Mezo(self, self.locations[elem], elem)
-        for jatekos in self.boss.players.keys():
-            self.figuratLetrehoz(self.boss.players[jatekos].nev,
-                                 self.boss.players[jatekos].pozicio[0],
-                                 self.boss.players[jatekos].pozicio[1],
-                                 self.boss.players[jatekos].hajo,
-                                 self.boss.players[jatekos].szin)
+        for jatekos in self.master.players.keys():
+            self.figuratLetrehoz(self.master.players[jatekos].nev,
+                                 self.master.players[jatekos].pozicio[0],
+                                 self.master.players[jatekos].pozicio[1],
+                                 self.master.players[jatekos].hajo,
+                                 self.master.players[jatekos].szin)
         # Az úticéljelölő betöltése
-        self.xkep = open('img/X.png')
+        self.xkep = pillow_open('img/X.png')
         magassagszorzo = self.xkep.size[1]/self.xkep.size[0]
         self.gallery['x'] = PhotoImage(image=self.xkep.resize((self.tile_size, int(self.tile_size * magassagszorzo)), ANTIALIAS))
         # A szélrózsa betöltése
-        self.gallery['compass'] = PhotoImage((open('img/compass.png').resize((self.tile_size * 3 - 10, self.tile_size * 3 - 10), ANTIALIAS)).convert("RGBA"))
+        self.gallery['compass'] = PhotoImage((pillow_open('img/compass.png').resize((self.tile_size * 3 - 10, self.tile_size * 3 - 10), ANTIALIAS)).convert("RGBA"))
         self.board_canvas.create_image(int(6.5 * self.tile_size), int(2.5 * self.tile_size), image = self.gallery['compass'], anchor = CENTER)
-        self.szeliranykep = open('img/szelirany.png')
+        self.szeliranykep = pillow_open('img/szelirany.png')
         szeliranySzelessegszorzo = self.szeliranykep.size[0]/self.szeliranykep.size[1]
         self.szeliranykep = self.szeliranykep.resize((int(self.tile_size * 2 * szeliranySzelessegszorzo), int(self.tile_size * 2)), ANTIALIAS).convert("RGBA")
         for i in range(8):
@@ -123,54 +132,54 @@ class Board(Frame):
         self.szelmutato = self.board_canvas.create_image(0, 0, image = None)
         self.szel_megjelenit()
         # A pénzek betöltése
-        a = open('img/penz-1.png')
+        a = pillow_open('img/penz-1.png')
         penzszorzo = a.size[1]/a.size[0]
         self.gallery['penz-1'] = PhotoImage((a.resize((int(self.size / 40), int(self.size / 40 * penzszorzo)), ANTIALIAS)).convert("RGBA"))
         a = int(self.size / 20)
         for penzfajta in ['8','d','d2']:
-            self.gallery['penz-'+penzfajta] = PhotoImage((open('img/penz-'+penzfajta+'.png').resize((a,a), ANTIALIAS)).convert("RGBA"))
+            self.gallery['penz-'+penzfajta] = PhotoImage((pillow_open('img/penz-'+penzfajta+'.png').resize((a,a), ANTIALIAS)).convert("RGBA"))
         # A kikötőképek betöltése
-        for empire in self.boss.empires:
-            capital = self.boss.empires[empire].capital
-            self.gallery[capital + 'full'] = PhotoImage(open('img/' + capital + '.png').convert("RGBA"))
+        for empire in self.master.empires:
+            capital = self.master.empires[empire].capital
+            self.gallery[capital + 'full'] = PhotoImage(pillow_open('img/' + capital + '.png').convert("RGBA"))
         # A matrózok betöltése
-        self.gallery['matrozok'] = PhotoImage((open('img/matrozok.png').resize((a,a), ANTIALIAS)).convert("RGBA"))
+        self.gallery['matrozok'] = PhotoImage((pillow_open('img/matrozok.png').resize((a,a), ANTIALIAS)).convert("RGBA"))
         # Hajók betöltése a hajóács gombjaihoz, és az ellenfelekhez.
         for hajotipus in ['brigantine', 'frigate', 'schooner', 'galleon']:
-            hajokep = open('img/'+hajotipus+'.png')
+            hajokep = pillow_open('img/'+hajotipus+'.png')
             magassagszorzo = hajokep.size[1]/hajokep.size[0]
             hajokep = hajokep.resize((self.tile_size, int(self.tile_size * magassagszorzo)), ANTIALIAS)
             self.gallery[hajotipus] = PhotoImage(hajokep)
         # A zászlók betöltése.
-        for birodalom in self.boss.empires.keys():
+        for birodalom in self.master.empires.keys():
             zNev = 'flag_'+birodalom
-            zKep = open(('img/'+zNev+'.png'))
+            zKep = pillow_open(('img/'+zNev+'.png'))
             magassagszorzo = zKep.size[0]/zKep.size[1]
             self.gallery[zNev] = PhotoImage(zKep.resize((int(self.size / 20 * magassagszorzo), int(self.size / 20)), ANTIALIAS))
         # Matrózok betöltése.
-        self.gallery['matroz1'] = open('img/matroz1.png')
-        self.gallery['matroz0'] = PhotoImage((open('img/transparent.png')).resize((self.gallery['matroz1'].size[0], self.gallery['matroz1'].size[1]), ANTIALIAS))
+        self.gallery['matroz1'] = pillow_open('img/matroz1.png')
+        self.gallery['matroz0'] = PhotoImage((pillow_open('img/transparent.png')).resize((self.gallery['matroz1'].size[0], self.gallery['matroz1'].size[1]), ANTIALIAS))
         self.gallery['matroz1'] = PhotoImage(self.gallery['matroz1'])
-        self.gallery['matroz2'] = PhotoImage(open('img/matroz2.png'))
+        self.gallery['matroz2'] = PhotoImage(pillow_open('img/matroz2.png'))
         # Csatagombok betöltése.
         for i in ['gun', 'rifle', 'caltrop', 'grenade', 'grapeshot', 'greek_fire', 'monkey', 'sirenhorn', 'sirens', "alvarez"]:
-            self.gallery['icon_'+i] = PhotoImage(open('img/icon_'+i+'.png'))
+            self.gallery['icon_'+i] = PhotoImage(pillow_open('img/icon_'+i+'.png'))
         debug('Board rendering finished.')
     
     def kartyakep(self, pakli, prefix):
         "Leképezi a kártyákhoz szükséges képeket."
         for elem in pakli:
-            self.gallery[elem] = PhotoImage(open('img/'+prefix+elem+'.png'))
+            self.gallery[elem] = PhotoImage(pillow_open('img/'+prefix+elem+'.png'))
 
     def kartyakep2(self, kep):
         "Leképezi a kártyákhoz szükséges képeket. A Kartya3-mal kompatibilis."
-        self.gallery[kep] = open('img/'+kep+'.png')
+        self.gallery[kep] = pillow_open('img/'+kep+'.png')
         self.gallery[kep[kep.rfind('_')+1:]+'_i'] = PhotoImage(self.gallery[kep].resize((30,30),ANTIALIAS))
         self.gallery[kep] = PhotoImage(self.gallery[kep])
         
     def figuratLetrehoz(self, username, x, y, hajotipus, szin, korabbiTorlese = 0):
         "Leképezi a felhasználó figuráját a táblán."
-        hajokep = open('img/'+hajotipus+'-h.png')
+        hajokep = pillow_open('img/'+hajotipus+'-h.png')
         magassagszorzo = hajokep.size[1]/hajokep.size[0]
         hajokep = hajokep.resize((self.tile_size, int(self.tile_size * magassagszorzo)), ANTIALIAS)
         vitorlakep = (image_tint('img/'+hajotipus+'-v.png',szin).resize((self.tile_size, int(self.tile_size * magassagszorzo)), ANTIALIAS))
@@ -267,14 +276,6 @@ class Board(Frame):
         ujszeliranyindex = (self.szelirany.index(0) + int(szog/45))%8
         self.change_wind_direction(ujszeliranyindex)
         self.szel_megjelenit()
-        
-    def kikotokfeltolt(self):
-        "Városlistázó függvény."
-        ports = []
-        for empire in self.boss.empires.values():
-            ports.append(self.locations[empire.capital][0])
-            self.kikototarR[self.locations[empire.capital][0]] = empire.capital
-        return sorted(ports)
     
     def celkereso(self, tiles):
         "Megmutatja a játékosnak azokat a négyzeteket, ahová majd lépni lehet."
@@ -289,7 +290,7 @@ class Board(Frame):
           
     def klikk(self,event):
         "A mezőválasztást kezelő függvény."
-        if not self.boss.engine.dobasMegtortent.get():
+        if not self.master.engine.dobasMegtortent.get():
             return
         self.master.menu.disable_additional_roll()
         klikkx,klikky = int(event.x / self.tile_size) + 1, int(event.y / self.tile_size) + 1
@@ -298,11 +299,11 @@ class Board(Frame):
         else:
             self.villogaski()
             self.hajotathelyez(klikkx,klikky)
-            self.boss.engine.szakasz_mezoevent()
+            self.master.engine.szakasz_mezoevent()
             
     def villogaski(self):
         "Kikapcsolja a célnégyzetek villogását."
-        self.boss.game_board.villogasaktiv = 0
+        self.master.game_board.villogasaktiv = 0
         if self.xlatszik.get():
             for x in self.xlista:
                 self.board_canvas.itemconfigure(x, state='hidden')
@@ -311,8 +312,8 @@ class Board(Frame):
             
     def hajotathelyez(self, celx, cely):
         "Végrehajtja a kijelölt lépést."
-        self.board_canvas.coords(self.figuraszotar[self.boss.engine.aktivjatekos.nev], (celx - 0.5) * self.tile_size, (cely - 0.5) * self.tile_size)
-        self.boss.engine.aktivjatekos.pozicio = (celx, cely)
+        self.board_canvas.coords(self.figuraszotar[self.master.engine.aktivjatekos.nev], (celx - 0.5) * self.tile_size, (cely - 0.5) * self.tile_size)
+        self.master.engine.aktivjatekos.pozicio = (celx, cely)
         
 class Mutatrejt():
     """A villogást irányító osztály."""
