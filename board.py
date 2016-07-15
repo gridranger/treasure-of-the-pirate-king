@@ -38,9 +38,7 @@ class Board(Frame):
                           "stream": [(1, 4), (5, 8), (6, 1)],
                           "castaways": [(5, 2)]}
         self.locationsR = self._reverse_locations()
-        # TODO Purge the newt two lines
-        self.kikototarR = {}  # A városok koordináta alapú meghatározására szolgál.
-        self.kikotok = self._collect_ports()
+        self.ports = self._collect_ports()
         self.hajotar = {}
         self.figuraszotar = {}
         self.villogasaktiv = 0
@@ -48,6 +46,10 @@ class Board(Frame):
         self.xlatszik.set(0)
         #                 e  ek   k  dk  d  dny  ny  eny
         self.szelirany = [2,  1, -3,  1, 2,   1,  0,   1]
+
+    @property
+    def port_coordinates(self):
+        return list(self.ports.values())
 
     def _add_board_canvas(self):
         canvas = Canvas(self, width=self.size, height=self.size, bd=0, highlightthickness=0, relief='ridge')
@@ -70,11 +72,11 @@ class Board(Frame):
         return result
 
     def _collect_ports(self):
-        ports = []
-        for empire in self.master.empires.values():
-            ports.append(self.locations[empire.capital][0])
-            self.kikototarR[self.locations[empire.capital][0]] = empire.capital
-        return sorted(ports)
+        ports = {}
+        capitals = [empire.capital for empire in self.master.empires.values()]
+        for capital in capitals:
+            ports[capital] = self.locations[capital][0]
+        return ports
 
     def change_wind_direction(self, wind_index):
         while self.szelirany[wind_index] != 0:
@@ -216,7 +218,7 @@ class Board(Frame):
                             lehetsegesUtak[lehetsegesUtak.index(lehetsegesUt)] = 0 # ha a mező nincs rajta a táblán, megjelöljük
                         else: # megnézzük, a maradék mező nincs-e már rajta az útlistán
                             for ut in utak:
-                                if (lehetsegesUt[0],lehetsegesUt[1]) == (ut[0],ut[1]) and lehetsegesUt[2] >= ut[2] and (lehetsegesUt[0],lehetsegesUt[1]) not in self.kikotok:
+                                if (lehetsegesUt[0],lehetsegesUt[1]) == (ut[0],ut[1]) and lehetsegesUt[2] >= ut[2] and (lehetsegesUt[0],lehetsegesUt[1]) not in self.port_coordinates:
                                     lehetsegesUtak[lehetsegesUtak.index(lehetsegesUt)] = 0 # ha a mező már szerepel a listán, megjelöljük             
                     # ezzel kinyertük a utak listában tárolt mezők használható szomszédos mezőit
                 for lehetsegesUt in lehetsegesUtak:
@@ -227,17 +229,17 @@ class Board(Frame):
             for ut in utak:
                 if ut[2] == (dobas + self.szel(ut[3])):
                     celok.append((ut[0],ut[1]))
-                elif ((ut[0],ut[1]) in self.kikotok) and ut[2] < (dobas + self.szel(ut[3])):
+                elif ((ut[0],ut[1]) in self.port_coordinates) and ut[2] < (dobas + self.szel(ut[3])):
                     celok.append((ut[0],ut[1]))
         else:
             for ut in utak:
                 if ut[2] == dobas:
                     celok.append((ut[0],ut[1]))
-                elif ((ut[0],ut[1]) in self.kikotok) and ut[2] < dobas:
+                elif ((ut[0],ut[1]) in self.port_coordinates) and ut[2] < dobas:
                     celok.append((ut[0],ut[1]))
         if (mostanioszlop,mostanisor) in celok: # Ha kiindulómező cél lenne, töröljük.
             celok.remove((mostanioszlop,mostanisor))
-        if (mostanioszlop,mostanisor) in self.kikotok and szellel: # Ha kikötőből indulunk, visszatesszük / hozzáadjuk.
+        if (mostanioszlop,mostanisor) in self.port_coordinates and szellel: # Ha kikötőből indulunk, visszatesszük / hozzáadjuk.
             celok.append((mostanioszlop,mostanisor))
         for cel in celok:
             if celok.count(cel) > 1:
