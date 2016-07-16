@@ -349,7 +349,7 @@ class Application(Tk):
     def save_game(self):
         game_state = GameState()
         game_state.next_player = self.player_order[0]
-        game_state.wind_index = self.game_board.szelirany.index(0)
+        game_state.wind_index = self.game_board.wind_direction.index(0)
         for player in sorted(list(self.players)):
             game_state.player_data[player] = self.players[player].export()
         for empire in self.empires.values():
@@ -368,8 +368,8 @@ class Application(Tk):
         self.shutdown_ttk_repeat_fix()
 
     def exit(self):
-        if self.is_game_in_progress.get() and self.game_board.villogasaktiv:
-            self.game_board.villogasaktiv = -1
+        if self.is_game_in_progress.get() and self.game_board.is_field_select_blinking:
+            self.game_board.is_field_select_blinking = False
         self.destroy()
 
 

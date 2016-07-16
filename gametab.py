@@ -154,7 +154,7 @@ class GameTab(Frame):
                 state_field.grid(row=position, column=0)
             state_field.grid_propagate(False)
 
-    def _roll_die(self):
+    def _roll_die(self, event):
         if self._land_land_roll:
             self._main_window.game_board.villogaski()
             self._main_window.engine.dobasMegtortent.set(False)

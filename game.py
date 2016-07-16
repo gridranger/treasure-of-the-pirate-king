@@ -52,7 +52,7 @@ class Jatekos():
     def set_hajo(self, tipus):
         "A megadott típusúra állítja be a játékos hajóját."
         self.hajo = tipus
-        self.boss.game_board.figuratLetrehoz(self.nev, self.pozicio[0], self.pozicio[1], self.hajo, self.szin, 1)
+        self.boss.game_board._render_ship_figure(self)
         
     def set_legenyseg(self, modosito):
         "Módosítja a legénység létszámát"

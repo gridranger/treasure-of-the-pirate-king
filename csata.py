@@ -428,7 +428,7 @@ class Hajoablak(Frame):
         kepkeret = Frame(self, height = self.master.game_board.tile_size, width = self.master.game_board.tile_size)
         kepkeret.pack_propagate(0)
         if user:
-            kep = self.master.game_board.hajotar[self.master.engine.aktivjatekos.nev]
+            kep = self.master.game_board.ship_figure_images[self.master.engine.aktivjatekos.nev]
         else:
             kep = self.master.game_board.gallery[self.boss.ellensegesHajoTipusa]
         Label(kepkeret, image = kep).pack(side = BOTTOM)

@@ -39,13 +39,12 @@ class Board(Frame):
                           "castaways": [(5, 2)]}
         self.locationsR = self._reverse_locations()
         self.ports = self._collect_ports()
-        self.hajotar = {}
-        self.figuraszotar = {}
-        self.villogasaktiv = 0
-        self.xlatszik = BooleanVar()
-        self.xlatszik.set(0)
-        #                 e  ek   k  dk  d  dny  ny  eny
-        self.szelirany = [2,  1, -3,  1, 2,   1,  0,   1]
+        self.ship_figure_images = {}
+        self.figures = {}
+        self.is_field_select_blinking = False
+        self.is_field_select_visible = BooleanVar(value=False)
+        #                      N, NE, E, SE,S, SW,W, NW
+        self.wind_direction = [2, 1, -3, 1, 2, 1, 0, 1]
 
     @property
     def port_coordinates(self):
@@ -79,8 +78,8 @@ class Board(Frame):
         return ports
 
     def change_wind_direction(self, wind_index):
-        while self.szelirany[wind_index] != 0:
-            self.szelirany.append(self.szelirany.pop(0))
+        while self.wind_direction[wind_index] != 0:
+            self.wind_direction.append(self.wind_direction.pop(0))
 
     def _generate_whole_lines(self):
         return self._generate_lines((1, 5, 9), tuple(range(1, 10)))
@@ -88,7 +87,8 @@ class Board(Frame):
     def _generate_other_lines(self):
         return self._generate_lines((2, 3, 4, 6, 7, 8), (1, 5, 9))
 
-    def _generate_lines(self, rows, fields):
+    @staticmethod
+    def _generate_lines(rows, fields):
         tiles = []
         for row in rows:
             for field in fields:
@@ -97,32 +97,11 @@ class Board(Frame):
 
     def render_board(self):
         debug('Board rendering started.')
-        # A háttér betöltése
-        self.gallery['hatter'] = PhotoImage(pillow_open('img/map.png').resize((self.size, self.size), ANTIALIAS))
-        self.board_canvas.create_image(0, 0, image = self.gallery['hatter'], anchor = NW)
-        # A félig áttetsző mezőhátterek leképezése
-        self.gallery['mezohatter'] = PhotoImage((pillow_open('img/mezo.png').resize((self.tile_size, self.tile_size), ANTIALIAS)).convert("RGBA"))
-        for (mezox,mezoy) in self.tiles:
-            self.board_canvas.create_image(int((mezox - 0.5) * self.tile_size), int((mezoy - 0.5) * self.tile_size), image = self.gallery['mezohatter'], anchor = CENTER)
-        # A mezőiconok betöltése
-        for elem in self.locations:
-            aktualis = pillow_open('img/'+elem+'.png')
-            aktualis = aktualis.resize((int(self.tile_size * 0.9), int(self.tile_size * 0.9)), ANTIALIAS)
-            aktualis = PhotoImage(image=aktualis)
-            self.gallery[elem]=aktualis
-        self.mezoszotar = {} # ebben tároljuk a mezőket
-        for elem in self.locations.keys():
-            self.mezoszotar[elem] = Mezo(self, self.locations[elem], elem)
-        for jatekos in self.master.players.keys():
-            self.figuratLetrehoz(self.master.players[jatekos].nev,
-                                 self.master.players[jatekos].pozicio[0],
-                                 self.master.players[jatekos].pozicio[1],
-                                 self.master.players[jatekos].hajo,
-                                 self.master.players[jatekos].szin)
-        # Az úticéljelölő betöltése
-        self.xkep = pillow_open('img/X.png')
-        magassagszorzo = self.xkep.size[1]/self.xkep.size[0]
-        self.gallery['x'] = PhotoImage(image=self.xkep.resize((self.tile_size, int(self.tile_size * magassagszorzo)), ANTIALIAS))
+        self._render_background()
+        self._render_semi_transparent_tile_backgrounds()
+        self._render_tiles()
+        self._render_player_ship_figures()
+        self._load_tile_picker()
         # A szélrózsa betöltése
         self.gallery['compass'] = PhotoImage((pillow_open('img/compass.png').resize((self.tile_size * 3 - 10, self.tile_size * 3 - 10), ANTIALIAS)).convert("RGBA"))
         self.board_canvas.create_image(int(6.5 * self.tile_size), int(2.5 * self.tile_size), image = self.gallery['compass'], anchor = CENTER)
@@ -167,7 +146,64 @@ class Board(Frame):
         for i in ['gun', 'rifle', 'caltrop', 'grenade', 'grapeshot', 'greek_fire', 'monkey', 'sirenhorn', 'sirens', "alvarez"]:
             self.gallery['icon_'+i] = PhotoImage(pillow_open('img/icon_'+i+'.png'))
         debug('Board rendering finished.')
-    
+
+    def _render_background(self):
+        self.gallery['map_background'] = PhotoImage(pillow_open('img/map.png').resize((self.size, self.size),
+                                                                                      ANTIALIAS))
+        self.board_canvas.create_image(0, 0, image=self.gallery['map_background'], anchor=NW)
+
+    def _render_semi_transparent_tile_backgrounds(self):
+        i = 'img/tile.png'
+        s = (self.tile_size, self.tile_size)
+        self.gallery['tile_background'] = PhotoImage((pillow_open(i).resize(s, ANTIALIAS)).convert("RGBA"))
+        for (field_x, field_y) in self.tiles:
+            self.board_canvas.create_image(int((field_x - 0.5) * self.tile_size),
+                                           int((field_y - 0.5) * self.tile_size),
+                                           image=self.gallery['tile_background'], anchor=CENTER)
+
+    def _render_tiles(self):
+        for location in self.locations:
+            current = pillow_open('img/' + location + '.png')
+            current = current.resize((int(self.tile_size * 0.9), int(self.tile_size * 0.9)), ANTIALIAS)
+            current = PhotoImage(image=current)
+            self.gallery[location] = current
+            for x, y in self.locations[location]:
+                self.board_canvas.create_image(int((x - 0.5) * self.tile_size), int((y - 0.5) * self.tile_size),
+                                               image=self.gallery[location], anchor=CENTER)
+
+    def _render_player_ship_figures(self):
+        for player_object in self.master.players.values():
+            self._render_ship_figure(player_object)
+
+    def _render_ship_figure(self, player):
+        ship_image = self._render_assembled_ship_image_for_player(player)
+        self.ship_figure_images[player.nev] = PhotoImage(ship_image)
+        if player.nev in self.figures:
+            self.board_canvas.delete(self.figures[player.nev])
+        x, y = player.pozicio
+        self.figures[player.nev] = self.board_canvas.create_image((x - 0.5) * self.tile_size,
+                                                                  (y - 0.5) * self.tile_size,
+                                                                  image=self.ship_figure_images[player.nev],
+                                                                  anchor=CENTER)
+
+    def _render_assembled_ship_image_for_player(self, player):
+        ship_image = pillow_open('img/{}-h.png'.format(player.hajo))
+        height_multiplier = ship_image.size[1] / ship_image.size[0]
+        ship_image = self._scale_ship_part(ship_image, height_multiplier)
+        sail_image = image_tint('img/{}-v.png'.format(player.hajo), player.szin)
+        sail_image = self._scale_ship_part(sail_image, height_multiplier)
+        ship_image.paste(sail_image, (0, 0), sail_image)
+        return ship_image
+
+    def _scale_ship_part(self, ship_part, height_multiplier):
+        return ship_part.resize((self.tile_size, int(self.tile_size * height_multiplier)), ANTIALIAS)
+
+    def _load_tile_picker(self):
+        picker = pillow_open('img/X.png')
+        height_multiplier = picker.size[1] / picker.size[0]
+        self.gallery['x'] = PhotoImage(image=picker.resize((self.tile_size, int(self.tile_size * height_multiplier)),
+                                                           ANTIALIAS))
+
     def kartyakep(self, pakli, prefix):
         "Leképezi a kártyákhoz szükséges képeket."
         for elem in pakli:
@@ -178,18 +214,6 @@ class Board(Frame):
         self.gallery[kep] = pillow_open('img/'+kep+'.png')
         self.gallery[kep[kep.rfind('_')+1:]+'_i'] = PhotoImage(self.gallery[kep].resize((30,30),ANTIALIAS))
         self.gallery[kep] = PhotoImage(self.gallery[kep])
-        
-    def figuratLetrehoz(self, username, x, y, hajotipus, szin, korabbiTorlese = 0):
-        "Leképezi a felhasználó figuráját a táblán."
-        hajokep = pillow_open('img/'+hajotipus+'-h.png')
-        magassagszorzo = hajokep.size[1]/hajokep.size[0]
-        hajokep = hajokep.resize((self.tile_size, int(self.tile_size * magassagszorzo)), ANTIALIAS)
-        vitorlakep = (image_tint('img/'+hajotipus+'-v.png',szin).resize((self.tile_size, int(self.tile_size * magassagszorzo)), ANTIALIAS))
-        hajokep.paste(vitorlakep, (0,0), vitorlakep)
-        self.hajotar[username] = PhotoImage(hajokep)
-        if korabbiTorlese == 1:
-            self.board_canvas.delete(self.figuraszotar[username])
-        self.figuraszotar[username] = self.board_canvas.create_image((x - 0.5) * self.tile_size, (y - 0.5) * self.tile_size, image = self.hajotar[username], anchor = CENTER)
 
     def kormanyos(self,mostanioszlop,mostanisor,dobas,szellel = 1):
         "Meghatározza a lépések lehetséges kimenetelét."
@@ -256,26 +280,26 @@ class Board(Frame):
 
     def szel(self,irany="x"):
         "A szél erejét visszaadó függvény"
-        szeliranyszotar = {"e":   self.szelirany[0],
-                           "ek":  self.szelirany[1],
-                           "k":   self.szelirany[2],
-                           "dk":  self.szelirany[3],
-                           "d":   self.szelirany[4],
-                           "dny": self.szelirany[5],
-                           "ny":  self.szelirany[6],
-                           "eny": self.szelirany[7],
+        szeliranyszotar = {"e":   self.wind_direction[0],
+                           "ek":  self.wind_direction[1],
+                           "k":   self.wind_direction[2],
+                           "dk":  self.wind_direction[3],
+                           "d":   self.wind_direction[4],
+                           "dny": self.wind_direction[5],
+                           "ny":  self.wind_direction[6],
+                           "eny": self.wind_direction[7],
                            "x":   0}
         return szeliranyszotar[irany]
         
     def szel_megjelenit(self):
         "Megjeleníti a szélirányt jelző mutatót."
-        mutatoirany = str(self.szelirany.index(0))
+        mutatoirany = str(self.wind_direction.index(0))
         self.board_canvas.delete(self.szelmutato)
         self.szelmutato = self.board_canvas.create_image(int(6.5 * self.tile_size), int(2.5 * self.tile_size), image = self.gallery['szelirany' + mutatoirany], anchor = CENTER)
         
     def szel_valtoztat(self, szog = 0):
         "Megváltoztatja a szél irányát."
-        ujszeliranyindex = (self.szelirany.index(0) + int(szog/45))%8
+        ujszeliranyindex = (self.wind_direction.index(0) + int(szog / 45)) % 8
         self.change_wind_direction(ujszeliranyindex)
         self.szel_megjelenit()
     
@@ -284,8 +308,8 @@ class Board(Frame):
         self.xlista = []
         for mezox,mezoy in tiles:
             self.xlista.append(self.board_canvas.create_image((mezox - 0.5) * self.tile_size, (mezoy - 0.5) * self.tile_size, image = self.gallery['x'], anchor = CENTER))
-            self.xlatszik.set(True)
-        self.villogasaktiv = 1
+            self.is_field_select_visible.set(True)
+        self.is_field_select_blinking = True
         self.villogas = None
         self.villogas = Mutatrejt(self)
         self.villogas.start()
@@ -305,16 +329,16 @@ class Board(Frame):
             
     def villogaski(self):
         "Kikapcsolja a célnégyzetek villogását."
-        self.master.game_board.villogasaktiv = 0
-        if self.xlatszik.get():
+        self.master.game_board.is_field_select_blinking = False
+        if self.is_field_select_visible.get():
             for x in self.xlista:
                 self.board_canvas.itemconfigure(x, state='hidden')
-            self.xlatszik.set(False)
+            self.is_field_select_visible.set(False)
             self.xlista = []
             
     def hajotathelyez(self, celx, cely):
         "Végrehajtja a kijelölt lépést."
-        self.board_canvas.coords(self.figuraszotar[self.master.engine.aktivjatekos.nev], (celx - 0.5) * self.tile_size, (cely - 0.5) * self.tile_size)
+        self.board_canvas.coords(self.figures[self.master.engine.aktivjatekos.nev], (celx - 0.5) * self.tile_size, (cely - 0.5) * self.tile_size)
         self.master.engine.aktivjatekos.pozicio = (celx, cely)
         
 class Mutatrejt():
@@ -322,56 +346,37 @@ class Mutatrejt():
     def __init__(self, parent):
         self.boss = parent
     def start(self):
-        while self.boss.villogasaktiv == 1:
+        while self.boss.is_field_select_blinking:
             self.fut()
-            self.boss.boss.update()
+            self.boss.master.update()
             sleep(0.25)
-        if self.boss.villogasaktiv == -1:
-            return
-        #elif self.boss.xlatszik.get():
-        #    for x in self.boss.xlista:
-        #        self.boss.board_canvas.itemconfigure(x,state='hidden')
-        #    self.boss.xlatszik.set(False)
-        #self.boss.xlista = []
     
     def fut(self):
-        if self.boss.xlatszik.get():
+        if self.boss.is_field_select_visible.get():
             for x in self.boss.xlista:
                 self.boss.board_canvas.itemconfigure(x,state='hidden')
-            self.boss.xlatszik.set(False)
+            self.boss.is_field_select_visible.set(False)
         else:
             for x in self.boss.xlista:
                 self.boss.board_canvas.itemconfigure(x,state='normal')
-            self.boss.xlatszik.set(True)
+            self.boss.is_field_select_visible.set(True)
     
     def start0(self):
-        if self.boss.xlatszik.get():
+        if self.boss.is_field_select_visible.get():
             for x in self.boss.xlista:
                 self.boss.board_canvas.itemconfigure(x,state='hidden')
-            self.boss.xlatszik.set(False)
+            self.boss.is_field_select_visible.set(False)
             self.boss.boss.update()
-            if self.boss.villogasaktiv != 1:
+            if not self.boss.is_field_select_blinking:
                 self.boss.xlista = []
                 return
         else:
-            if self.boss.villogasaktiv != 1:
+            if not self.boss.is_field_select_blinking:
                 self.boss.xlista = []
                 return
             for x in self.boss.xlista:
                 self.boss.board_canvas.itemconfigure(x,state='normal')
-            self.boss.xlatszik.set(True)
+            self.boss.is_field_select_visible.set(True)
             self.boss.boss.update()
         sleep(0.25)
         self.start()
-            
-class Mezo():
-    """Egy játékmező logikai megjelenése."""
-    def __init__(self, boss, koordinatlista, mezotipus):
-        self.boss = boss
-        self.koordinatlista = koordinatlista
-        self.mezotipus = mezotipus
-        self.lekepez()
-        
-    def lekepez(self):
-        for x,y in self.koordinatlista:
-            self.boss.board_canvas.create_image(int((x-0.5)*self.boss.tile_size),int((y-0.5)*self.boss.tile_size), image = self.boss.gallery[self.mezotipus], anchor = CENTER)
