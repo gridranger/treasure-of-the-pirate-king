@@ -80,7 +80,7 @@ class Vezerlo(Frame):
         self.hajotipustar = self.boss.data_reader.get_ship_types()
         for jatekos in self.boss.player_order:
             p = self.boss.players[jatekos]
-            p.set_legenyseg_max(self.hajotipustar[p.hajo].crew_limit)
+            p.set_crew_limit(self.hajotipustar[p.ship].crew_limit)
         self.vehetoHajok = []
         hajoarak = []
         for hajo in self.hajotipustar.keys():
@@ -126,8 +126,8 @@ class Vezerlo(Frame):
         if self.dobasMegtortent.get():
             self.boss.player_order.append(self.boss.player_order.pop(0)) # A legutóbb lépett játékost leghátra dobja, ha már lépett az aktív játékos
         self.aktivjatekos = self.boss.players[self.boss.player_order[0]]
-        debug("\n{0}\nIt's {1}'s turn.\n{0}\n".format('-' * 20, self.aktivjatekos.nev))
-        self.master.status_bar.log(self.master.ui_texts["new_turn"] % self.aktivjatekos.nev)
+        debug("\n{0}\nIt's {1}'s turn.\n{0}\n".format('-' * 20, self.aktivjatekos.name))
+        self.master.status_bar.log(self.master.ui_texts["new_turn"] % self.aktivjatekos.name)
         self.dobasMegtortent.set(False)
         self.boss.menu.reset_game_tab()
         if "scurvy" in self.aktivjatekos.statuszlista:
@@ -150,12 +150,12 @@ class Vezerlo(Frame):
             return
         port_list = [empire.capital for empire in self.master.empires.values()]
         if 'grog_riot' in self.aktivjatekos.statuszlista:
-            if self.boss.game_board.locationsR[self.aktivjatekos.pozicio] in port_list:
+            if self.boss.game_board.locationsR[self.aktivjatekos.coordinates] in port_list:
                 self.aktivjatekos.set_statusz("grog_riot", 0)
                 self.eventstack.append("grog_riot")
             else:
                 self.eventszotar['grog_riot'].megjelenik()
-        self.hivas = self.teendotar[self.boss.game_board.locationsR[self.aktivjatekos.pozicio]]()
+        self.hivas = self.teendotar[self.boss.game_board.locationsR[self.aktivjatekos.coordinates]]()
         if self.hivas == False:
             self.szakasz_0()
         elif self.hivas == None:
@@ -208,7 +208,7 @@ class Vezerlo(Frame):
             debug("HIBA - Beragadt metódus:", self.unfinishedMethodes)
     
     def mozgas(self, roll, add_wind_modifier=True):
-        target_tiles = self.boss.game_board.calculate_target_tiles(self.aktivjatekos.pozicio, roll, add_wind_modifier)
+        target_tiles = self.boss.game_board.calculate_target_tiles(self.aktivjatekos.coordinates, roll, add_wind_modifier)
         self.boss.game_board.mark_target_tiles(target_tiles)
         
     def kincsetHuz(self):
@@ -289,7 +289,7 @@ class Vezerlo(Frame):
 
     def taino(self):
         "Bennszülöttek csatlakoznak a legénységhez."
-        maxFelvehetoBennszulott = self.aktivjatekos.legenyseg_max.get() - self.aktivjatekos.legenyseg.get()
+        maxFelvehetoBennszulott = self.aktivjatekos.crew_limit.get() - self.aktivjatekos.crew.get()
         if maxFelvehetoBennszulott:
             dobas = self.boss.menu.game_tab.die.dob() # Szerencsét próbálunk.
             self.aktivjatekos.set_utolsodobas(dobas) # Mentjük a kocka állapotát.
@@ -381,7 +381,7 @@ class Dobokocka(Canvas):
         self.boss = master
         self.meret = meret
         self.szin = szin
-        self.masodikszin = masodikszin
+        self.secondary_color = masodikszin
         self.gomboclista = []
         self.helylista = [[(5,5)],
                           [(2,2), (8,8)],
@@ -406,7 +406,7 @@ class Dobokocka(Canvas):
     def rajzol(self):
         "kirajzolja a gombócokat"
         for gombocx,gombocy in self.helylista[self.ertek-1]:
-            self.gomboclista.append(self.create_oval((gombocx-1)*self.r + 2, (gombocy-1)*self.r + 2, (gombocx+1)*self.r + 2, (gombocy+1)*self.r + 2, fill = self.masodikszin))
+            self.gomboclista.append(self.create_oval((gombocx-1)*self.r + 2, (gombocy-1)*self.r + 2, (gombocx+1)*self.r + 2, (gombocy+1)*self.r + 2, fill = self.secondary_color))
             
     def dob(self):
         "elvégzi a dobást"  

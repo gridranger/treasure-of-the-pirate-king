@@ -152,20 +152,20 @@ class Board(Frame):
 
     def _render_ship_figure(self, player):
         ship_image = self._render_assembled_ship_image_for_player(player)
-        self.ship_figure_images[player.nev] = PhotoImage(ship_image)
-        if player.nev in self.figures:
-            self.board_canvas.delete(self.figures[player.nev])
-        x, y = player.pozicio
-        self.figures[player.nev] = self.board_canvas.create_image((x - 0.5) * self.tile_size,
+        self.ship_figure_images[player.name] = PhotoImage(ship_image)
+        if player.name in self.figures:
+            self.board_canvas.delete(self.figures[player.name])
+        x, y = player.coordinates
+        self.figures[player.name] = self.board_canvas.create_image((x - 0.5) * self.tile_size,
                                                                   (y - 0.5) * self.tile_size,
-                                                                  image=self.ship_figure_images[player.nev],
+                                                                  image=self.ship_figure_images[player.name],
                                                                   anchor=CENTER)
 
     def _render_assembled_ship_image_for_player(self, player):
-        ship_image = pillow_open('img/{}-h.png'.format(player.hajo))
+        ship_image = pillow_open('img/{}-h.png'.format(player.ship))
         height_multiplier = ship_image.size[1] / ship_image.size[0]
         ship_image = self._scale_ship_part(ship_image, height_multiplier)
-        sail_image = image_tint('img/{}-v.png'.format(player.hajo), player.szin)
+        sail_image = image_tint('img/{}-v.png'.format(player.ship), player.color)
         sail_image = self._scale_ship_part(sail_image, height_multiplier)
         ship_image.paste(sail_image, (0, 0), sail_image)
         return ship_image
@@ -291,9 +291,9 @@ class Board(Frame):
 
     def relocate_ship(self, coordinates):
         x, y = coordinates
-        self.board_canvas.coords(self.figures[self.master.engine.aktivjatekos.nev], (x - 0.5) * self.tile_size,
+        self.board_canvas.coords(self.figures[self.master.engine.aktivjatekos.name], (x - 0.5) * self.tile_size,
                                  (y - 0.5) * self.tile_size)
-        self.master.engine.aktivjatekos.pozicio = coordinates
+        self.master.engine.aktivjatekos.coordinates = coordinates
 
 
 class _Blinker(object):

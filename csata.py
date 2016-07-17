@@ -84,7 +84,7 @@ class Utkozet(Toplevel):
         
     def csatakezdet(self):
         "Ellátja a játékost a kezdeti információkkal."
-        if self.master.engine.aktivjatekos.zaszlo == 'pirate':
+        if self.master.engine.aktivjatekos.empire == 'pirate':
             tamad = randrange(2)
         elif self.ellensegesZaszlo == "pirate":
             tamad = 1
@@ -115,11 +115,11 @@ class Utkozet(Toplevel):
             
     def menekules(self):
         "Menekülési függvény, ha a játékos hajója kisebb, sikeres a menekülés."
-        if self.boss.hajotipustar[self.ellensegesHajoTipusa].price < self.boss.hajotipustar[self.master.engine.aktivjatekos.hajo].price:
+        if self.boss.hajotipustar[self.ellensegesHajoTipusa].price < self.boss.hajotipustar[self.master.engine.aktivjatekos.ship].price:
             self.megcsaklyazas()
             self.korOsszegzo.config(text = (self.master.ui_texts["ship_spotted_fleeing_unsuccesful"] + "\n" + self.master.ui_texts["ship_spotted_battle"]))
         else:
-            debug(self.master.engine.aktivjatekos.nev + " elmenekült.")
+            debug(self.master.engine.aktivjatekos.name + " elmenekült.")
             self.bezar()
         
     def megcsaklyazas(self):
@@ -160,10 +160,10 @@ class Utkozet(Toplevel):
             eredmeny += (self.master.ui_texts["ship_spotted_enemy_casualties"] % minusz)
         # Ellenfél lő a játékosra
         dobas2 = randrange(1,7)
-        lehetsegesCsapatok = self.master.engine.aktivjatekos.legenyseg.get() / 6
+        lehetsegesCsapatok = self.master.engine.aktivjatekos.crew.get() / 6
         if lehetsegesCsapatok > dobas2:
-            self.master.engine.aktivjatekos.legenyseg.set(self.master.engine.aktivjatekos.legenyseg.get()-2)
-            self.jatekos.maxLegenyseg = self.master.engine.aktivjatekos.legenyseg.get()
+            self.master.engine.aktivjatekos.crew.set(self.master.engine.aktivjatekos.crew.get()-2)
+            self.jatekos.maxLegenyseg = self.master.engine.aktivjatekos.crew.get()
             if eredmeny != "":
                 eredmeny += "\n"
             eredmeny += (self.master.ui_texts["ship_spotted_player_casualties"])
@@ -379,7 +379,7 @@ class Utkozet(Toplevel):
         for i in self.jatekos.skalaszotar.keys():
             visszairando += self.jatekos.skalaszotar[i].elo.get()
         debug("Életben maradt matrózok:" + str(visszairando))
-        self.master.engine.aktivjatekos.legenyseg.set(visszairando)
+        self.master.engine.aktivjatekos.crew.set(visszairando)
 
     def bezar(self):
         "Bezárja a csataképernyőt."
@@ -396,7 +396,7 @@ class Hajoablak(Frame):
         cimStilus = 'helvetica 14 bold'
         self.boss = boss
         self.master = master
-        self.maxLegenyseg = self.master.engine.aktivjatekos.legenyseg.get()
+        self.maxLegenyseg = self.master.engine.aktivjatekos.crew.get()
         self.kiosztottLegenyseg = IntVar()
         self.kiosztottLegenyseg.set(0)
         self.osszegzoFelirat = StringVar()
@@ -421,7 +421,7 @@ class Hajoablak(Frame):
         # Adatgenerálás
         if user:
             nev = self.master.ui_texts["ship_name_player"]
-            reszletek = '%s %s' % (self.master.ui_texts[self.master.engine.aktivjatekos.empire], self.master.ui_texts[self.master.engine.aktivjatekos.hajo])
+            reszletek = '%s %s' % (self.master.ui_texts[self.master.engine.aktivjatekos.empire], self.master.ui_texts[self.master.engine.aktivjatekos.ship])
         else:
             nev = boss.ellensegesHajoNeve
             reszletek = '%s %s' % (self.master.ui_texts[boss.ellensegesZaszlo], self.master.ui_texts[boss.ellensegesHajoTipusa])
@@ -429,7 +429,7 @@ class Hajoablak(Frame):
         kepkeret = Frame(self, height = self.master.game_board.tile_size, width = self.master.game_board.tile_size)
         kepkeret.pack_propagate(0)
         if user:
-            kep = self.master.game_board.ship_figure_images[self.master.engine.aktivjatekos.nev]
+            kep = self.master.game_board.ship_figure_images[self.master.engine.aktivjatekos.name]
         else:
             kep = self.master.game_board.gallery[self.boss.ellensegesHajoTipusa]
         Label(kepkeret, image = kep).pack(side = BOTTOM)
@@ -463,9 +463,9 @@ class Hajoablak(Frame):
     def autoElosztas(self):
         "Működteti az automatikus elosztást végző gombot"
         autoLista = [5, 3, 4, 2, 6] # statisztikailag ez kedvez legjobban a játékosnak
-        legenyseg = self.maxLegenyseg
-        alapletszam = int(legenyseg/6)
-        maradek = legenyseg%6
+        crew = self.maxLegenyseg
+        alapletszam = int(crew/6)
+        maradek = crew%6
         skalaAlapok = [alapletszam]*6
         if maradek > 0:
             for i in range(maradek):

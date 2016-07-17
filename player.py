@@ -12,23 +12,18 @@ class Player(object):
     def __init__(self, boss, tabla, state):
         self.game_board = tabla
         self.boss = boss
-        self.nev = state.name
-        self.szin = state.color
+        self.name = state.name
+        self.color = state.color
         self.empire = state.empire
-        self.masodikszin = [int(self.szin[1:3], 16), int(self.szin[3:5], 16), int(self.szin[5:], 16)] # a játékos színét rgbvé bontjuk
-        if sqrt(self.masodikszin[0]**2*0.241+self.masodikszin[1]**2*0.691+self.masodikszin[2]**2*0.068) > 127: # megállapítjuk hozzá az optimális gombócszínt
-            self.masodikszin = 'black'
-        else:
-            self.masodikszin = 'white'
-        self.zaszlo = self.boss.get_empire_id_by_capital_coordinates(self.sajatkikoto)
-        debug("{} joined to the {} empire.".format(self.nev, self.zaszlo.capitalize()))
-        self.hajo = state.ship
-        self.legenyseg = IntVar(value=state.crew)
-        self.legenyseg_max = IntVar()
+        self.secondary_color = self._pick_secondary_color()
+        debug("{} joined to the {} empire.".format(self.name, self.empire.capitalize()))
+        self.ship = state.ship
+        self.crew = IntVar(value=state.crew)
+        self.crew_limit = IntVar()
         if state.coordinates == (-1, -1):
-            self.pozicio = self.sajatkikoto
+            self.coordinates = self._home_port
         else:
-            self.pozicio = state.coordinates
+            self.coordinates = state.coordinates
         self.kincs = IntVar(value=state.gold)
         self.kincskeresesKesz = state.treasure_hunting_done
         self.statuszlista = state.states
@@ -43,22 +38,29 @@ class Player(object):
                 self.hajotar[elfogottHajo].set(elfogottHajok[elfogottHajo])
 
     @property
-    def sajatkikoto(self):
+    def _home_port(self):
         empire = self.boss.empires[self.empire]
         return self.boss.game_board.locations[empire.capital][0]
 
+    def _pick_secondary_color(self):
+        r, g, b = [int(self.color[1:3], 16), int(self.color[3:5], 16), int(self.color[5:], 16)]  # a játékos színét rgbvé bontjuk
+        if sqrt(r ** 2 * 0.241 + g ** 2 * 0.691 + b ** 2 * 0.068) > 127:  # megállapítjuk hozzá az optimális gombócszínt
+            return 'black'
+        else:
+            return 'white'
+
     def set_hajo(self, tipus):
         "A megadott típusúra állítja be a játékos hajóját."
-        self.hajo = tipus
+        self.ship = tipus
         self.boss.game_board._render_ship_figure(self)
 
     def set_legenyseg(self, modosito):
         "Módosítja a legénység létszámát"
-        self.legenyseg.set(self.legenyseg.get() + modosito)
+        self.crew.set(self.crew.get() + modosito)
 
-    def set_legenyseg_max(self, szam):
+    def set_crew_limit(self, szam):
         "Módosítja a legénység maximális létszámát"
-        self.legenyseg_max.set(szam)
+        self.crew_limit.set(szam)
 
     def set_kincs(self, modosito):
         "Módosítja a kincs mennyiségét."
@@ -90,10 +92,10 @@ class Player(object):
         self.kincskeresesKesz = ertek
 
     def export(self):
-        current_state = PlayerState(self.nev, self.szin, self.empire)
-        current_state.ship = self.hajo
-        current_state.crew = self.legenyseg.get()
-        current_state.coordinates = self.pozicio
+        current_state = PlayerState(self.name, self.color, self.empire)
+        current_state.ship = self.ship
+        current_state.crew = self.crew.get()
+        current_state.coordinates = self.coordinates
         current_state.gold = self.kincs.get()
         current_state.states = self.statuszlista
         current_state.last_roll = self.utolsodobas

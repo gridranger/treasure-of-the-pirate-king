@@ -49,11 +49,11 @@ class Varos(object):
         line1.pack(side=TOP, fill=X)
         line2 = Frame(self.fogado)  # legénység / hajó max. kapacitás
         Label(line2, text=(self.master.ui_texts['crew'] + ':')).pack(side=LEFT)
-        Label(line2, textvariable=self.boss.aktivjatekos.legenyseg_max).pack(side=RIGHT)
+        Label(line2, textvariable=self.boss.aktivjatekos.crew_limit).pack(side=RIGHT)
         Label(line2, text='/').pack(side=RIGHT)
-        Label(line2, textvariable=self.boss.aktivjatekos.legenyseg).pack(side=RIGHT)
+        Label(line2, textvariable=self.boss.aktivjatekos.crew).pack(side=RIGHT)
         line2.pack(side=TOP, fill=X)
-        berskalahossz = min(self.boss.aktivjatekos.legenyseg_max.get(), self.matrozokszama.get(),
+        berskalahossz = min(self.boss.aktivjatekos.crew_limit.get(), self.matrozokszama.get(),
                             self.boss.aktivjatekos.kincs.get())
         Separator(self.fogado, orient=HORIZONTAL).pack(side=TOP, fill=X, pady=5, padx=5)
         line3 = Frame(self.fogado)  # a skála címe
@@ -80,14 +80,14 @@ class Varos(object):
         for pontforras in self.boss.aktivjatekos.hajotar.keys():
             pontok += self.boss.aktivjatekos.hajotar[pontforras].get()
         self.kormanyzo = LabelFrame(self.tevekenysegek, text=self.master.ui_texts['governor'])
-        if self.zaszlo == 'pirate':
+        if self.empire == 'pirate':
             elsullyesztettHelyiHajok = 0  # A kalózok nem birodalom, nem büntetnek az elsüllyedt kalózhajókért
         else:
-            elsullyesztettHelyiHajok = self.boss.aktivjatekos.hajotar[self.zaszlo].get()
+            elsullyesztettHelyiHajok = self.boss.aktivjatekos.hajotar[self.empire.empire_id].get()
         if elsullyesztettHelyiHajok > 0:
             kormanyzo_mondja.set(self.master.ui_texts['governor_punish'] % elsullyesztettHelyiHajok)
             self.boss.aktivjatekos.set_kimarad(elsullyesztettHelyiHajok)
-            self.boss.aktivjatekos.set_hajoszam(self.zaszlo, -elsullyesztettHelyiHajok)
+            self.boss.aktivjatekos.set_hajoszam(self.empire, -elsullyesztettHelyiHajok)
         else:
             maxJutalom = self.jutalomszamolo() * 8
             kormanyzo_mondja.set(self.master.ui_texts['governor_reward'] % maxJutalom)
@@ -97,7 +97,7 @@ class Varos(object):
                 fizetve = self.boss.aktivjatekos.hajotar[birodalom].get()
                 self.boss.aktivjatekos.set_hajoszam(birodalom, -fizetve)
         Label(self.kormanyzo, wraplength=125, textvariable=kormanyzo_mondja).pack(side=LEFT)
-        if self.zaszlo != 'pirate' and pontok > 0:
+        if self.empire != 'pirate' and pontok > 0:
             self.kormanyzo.pack(side=LEFT, pady=5, padx=5, fill=Y)
         # Gombok
         Button(self.ablak, text=self.master.ui_texts['done'], command=self.ablak.destroy).pack(side=BOTTOM, pady=5)
@@ -117,9 +117,9 @@ class Varos(object):
             self.hajogombok[hajo] = Button(self.hajoframek[hajo], image=self.master.game_board.gallery[hajo],
                                            command=lambda hajo=hajo: self.ujHajo(hajo))
             self.hajogombok[hajo].pack(side=LEFT)
-            if self.boss.aktivjatekos.hajo in self.boss.vehetoHajok:
-                if self.boss.vehetoHajok.index(self.boss.aktivjatekos.hajo) < self.boss.vehetoHajok.index(hajo):
-                    ar = self.boss.hajotipustar[hajo].price - self.boss.hajotipustar[self.boss.aktivjatekos.hajo].price
+            if self.boss.aktivjatekos.ship in self.boss.vehetoHajok:
+                if self.boss.vehetoHajok.index(self.boss.aktivjatekos.ship) < self.boss.vehetoHajok.index(hajo):
+                    ar = self.boss.hajotipustar[hajo].price - self.boss.hajotipustar[self.boss.aktivjatekos.ship].price
                     Label(self.hajoframek[hajo],
                           text='%s: %i %s' % (self.master.ui_texts['price'], ar, self.master.ui_texts['gold'])).pack(
                         side=LEFT, fill=X)
@@ -150,14 +150,14 @@ class Varos(object):
 
     def penzszamolo(self):
         "A játékos anyagi lehetőségeinek fényében engedélyezi a hajók vásárlását."
-        if self.boss.aktivjatekos.hajo in self.boss.vehetoHajok:
+        if self.boss.aktivjatekos.ship in self.boss.vehetoHajok:
             for hajo in self.boss.vehetoHajok:
-                if hajo == self.boss.aktivjatekos.hajo:
+                if hajo == self.boss.aktivjatekos.ship:
                     self.hajogombok[hajo].config(state=DISABLED)
-                elif self.boss.hajotipustar[hajo].price < self.boss.hajotipustar[self.boss.aktivjatekos.hajo].price:
+                elif self.boss.hajotipustar[hajo].price < self.boss.hajotipustar[self.boss.aktivjatekos.ship].price:
                     self.hajogombok[hajo].config(state=DISABLED)
                 elif self.boss.hajotipustar[hajo].price - self.boss.hajotipustar[
-                    self.boss.aktivjatekos.hajo].price > self.boss.aktivjatekos.kincs.get():
+                    self.boss.aktivjatekos.ship].price > self.boss.aktivjatekos.kincs.get():
                     self.hajogombok[hajo].config(state=DISABLED)
                 else:
                     self.hajogombok[hajo].config(state=NORMAL)
@@ -172,13 +172,13 @@ class Varos(object):
     def berskalat_letrehoz(self):
         "Létrehozza a skálát, a felbérelendő matrózok számának kijelöléséhez."
         berskalahossz = min(
-            (self.boss.hajotipustar[self.boss.aktivjatekos.hajo].crew_limit - self.boss.aktivjatekos.legenyseg.get()),
+            (self.boss.hajotipustar[self.boss.aktivjatekos.ship].crew_limit - self.boss.aktivjatekos.crew.get()),
             self.matrozokszama.get(), self.boss.aktivjatekos.kincs.get())
         self.berskala.destroy()
         self.skalaCimke.destroy()
         if not berskalahossz:
             if self.boss.hajotipustar[
-                self.boss.aktivjatekos.hajo].crew_limit - self.boss.aktivjatekos.legenyseg.get() == 0:
+                self.boss.aktivjatekos.ship].crew_limit - self.boss.aktivjatekos.crew.get() == 0:
                 visszajelzes = self.master.ui_texts['crew_ship_full']
             elif self.matrozokszama.get() == 0:
                 visszajelzes = self.master.ui_texts['crew_port_empty']
@@ -218,10 +218,10 @@ class Varos(object):
 
     def ujHajo(self, tipus=''):
         "Lebonyolítja az új hajó vásárlásával járó tranzakciót"
-        ar = self.boss.hajotipustar[tipus].price - self.boss.hajotipustar[self.boss.aktivjatekos.hajo].price
+        ar = self.boss.hajotipustar[tipus].price - self.boss.hajotipustar[self.boss.aktivjatekos.ship].price
         self.boss.aktivjatekos.set_hajo(tipus)
         self.boss.aktivjatekos.set_kincs(-ar)
-        self.boss.aktivjatekos.set_legenyseg_max(self.boss.hajotipustar[tipus].crew_limit)
+        self.boss.aktivjatekos.set_crew_limit(self.boss.hajotipustar[tipus].crew_limit)
         for hajo in self.boss.vehetoHajok:
             self.hajoframek[hajo].destroy()
             self.hajogombok[hajo].destroy()

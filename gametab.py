@@ -54,7 +54,7 @@ class GameTab(Frame):
 
     def _build_heading(self, position):
         flag = self._main_window.game_board.gallery['flag_' + self._current_player.empire]
-        Label(self._heading, text=self._current_player.nev).grid(row=0, column=0)
+        Label(self._heading, text=self._current_player.name).grid(row=0, column=0)
         Label(self._heading, image=flag).grid(row=1, column=0)
         self._heading.grid(row=position, column=0, pady=5)
 
@@ -65,7 +65,7 @@ class GameTab(Frame):
         gold_frame.grid(row=0, column=0, sticky=N + E + W + S, padx=5)
         crew_frame = LabelFrame(self._inventory_display, text=self._main_window.ui_texts['crew'])
         Label(crew_frame, image=self._main_window.game_board.gallery['crew']).grid(row=0, column=0)
-        Label(crew_frame, textvariable=self._current_player.legenyseg).grid(row=0, column=1)
+        Label(crew_frame, textvariable=self._current_player.crew).grid(row=0, column=1)
         crew_frame.grid(row=0, column=1, sticky=N + E + W + S, padx=5)
         self._inventory_display.grid(row=position, column=0)
         self._inventory_display.columnconfigure(ALL, minsize=(self.master.width - 20) / 2)
@@ -110,11 +110,11 @@ class GameTab(Frame):
 
     def _build_die(self):
         self._die_field.config(relief=RAISED, bd=2)
-        self.die = Dobokocka(self._die_field, self.master.width / 4, self._current_player.szin,
-                             self._current_player.masodikszin, self._current_player.utolsodobas)
+        self.die = Dobokocka(self._die_field, self.master.width / 4, self._current_player.color,
+                             self._current_player.secondary_color, self._current_player.utolsodobas)
         castaway_tiles = self._main_window.game_board.locations["castaways"]
-        player_is_on_castaway_island = self._current_player.pozicio in castaway_tiles
-        player_has_no_crew = not self._current_player.legenyseg.get()
+        player_is_on_castaway_island = self._current_player.coordinates in castaway_tiles
+        player_has_no_crew = not self._current_player.crew.get()
         if player_is_on_castaway_island and player_has_no_crew:
             self.die.bind('<Button-1>', self._main_window.engine.szamuzottek)
         else:
@@ -127,8 +127,8 @@ class GameTab(Frame):
         turn_order_label.grid(row=0, column=0, sticky=W)
         for index, player_name in enumerate(self._main_window.player_order):
             player = self._main_window.players[player_name]
-            players.append(Label(self._turn_order, text=str(index + 1) + '. ' + player.nev, bg=player.szin,
-                                 fg=player.masodikszin))
+            players.append(Label(self._turn_order, text=str(index + 1) + '. ' + player.name, bg=player.color,
+                                 fg=player.secondary_color))
             players[-1].grid(row=index + 1, column=0, sticky=W, padx=10)
         self._turn_order.grid(row=position, column=0, sticky=W, padx=5)
 

@@ -108,12 +108,12 @@ class KartyaAblak(Toplevel):
             uzenet = self.master.ui_texts["sirens_skipped"]
             parancs = self.lapotMegtart
         else:
-            if self.master.engine.aktivjatekos.legenyseg.get() > 3:
+            if self.master.engine.aktivjatekos.crew.get() > 3:
                 self.master.engine.aktivjatekos.set_legenyseg(-3)
                 uzenet = self.master.ui_texts["sirens"] % 3
             else:
                 self.master.engine.aktivjatekos.set_legenyseg(-self.master.engine.aktivjatekos.get())
-                uzenet = self.master.ui_texts["sirens"] % self.master.engine.aktivjatekos.legenyseg.get()
+                uzenet = self.master.ui_texts["sirens"] % self.master.engine.aktivjatekos.crew.get()
                 self.master.game_board.relocate_ship((5, 2))  # TODO replace this and other occurrences to dynamic coorinate
             parancs = self.lapotEldob
         self.bezar = parancs
@@ -145,7 +145,7 @@ class KartyaAblak(Toplevel):
                 matrozokHusege -= 2
         if matrozokHusege < 6:
             if self.master.engine.aktivjatekos.kincs.get() < 6 - matrozokHusege:
-                self.master.engine.aktivjatekos.legenyseg.set(0)
+                self.master.engine.aktivjatekos.crew.set(0)
                 if "landland" in self.master.engine.aktivjatekos.statuszlista:
                     self.master.engine.aktivjatekos.set_statusz("landland", 0)
                 self.master.engine.aktivjatekos.set_kincskereses(True)
@@ -215,11 +215,11 @@ class KartyaAblak(Toplevel):
                 i += 1 # Egyébként felírjuk, hogy veszített egy matrózt.
         self.btn_kraken_dob.pack_forget() # Eltüntetjük a ciklust indító gombot.
         frame_kraken = Frame(self)
-        if i < self.master.engine.aktivjatekos.legenyseg.get(): # Ha nem fogyott el az összes matróz...
+        if i < self.master.engine.aktivjatekos.crew.get(): # Ha nem fogyott el az összes matróz...
             self.master.engine.aktivjatekos.set_legenyseg(-i) # ...akkor levonjuk az elesetteket,
             Label(frame_kraken, text = (self.master.ui_texts['casualties_of_kraken'] % i), wraplength = 216).pack(pady = 5, side = TOP) # és kiírjuk, mennyit vesztett.
         else: # Ha elfogyott az összes matróz...
-            self.master.engine.aktivjatekos.set_legenyseg(self.master.engine.aktivjatekos.legenyseg.get() * -1) # ... elvesszük az összeset,
+            self.master.engine.aktivjatekos.set_legenyseg(self.master.engine.aktivjatekos.crew.get() * -1) # ... elvesszük az összeset,
             self.master.game_board.relocate_ship((5, 2)) # irány a hajótöröttek szigete,
             if "landland" in self.master.engine.aktivjatekos.statuszlista: # elvesszük a föld, föld bónuszt is, ha volt,
                 self.master.engine.aktivjatekos.set_statusz("landland", 0)
@@ -280,12 +280,12 @@ class KartyaAblak(Toplevel):
         delta = randrange(1,7) # A létszámváltozás megállapításához dobunk egy kockával.
         delta_str = str(delta)
         if csatlakozik: # Ha csatlakoznak a matrózok, 
-            delta_max = self.master.engine.aktivjatekos.legenyseg_max.get() - self.master.engine.aktivjatekos.legenyseg.get() # ...megnézzük, mennyien férnek el még a hajón.
+            delta_max = self.master.engine.aktivjatekos.crew_limit.get() - self.master.engine.aktivjatekos.crew.get() # ...megnézzük, mennyien férnek el még a hajón.
             if delta > delta_max: # Ha többen jönnének,
                 delta = delta_max # ...akkor csak annyian jönnek, amennyien elférnek.
         else: # Ha a játékos matrózokat veszít,
-            if delta > self.master.engine.aktivjatekos.legenyseg.get(): # Ha több matróz tűnne el, mint amennyi van,
-                delta = self.master.engine.aktivjatekos.legenyseg.get() # ...akkor csak annyi fog eltűnni, amennyi van.
+            if delta > self.master.engine.aktivjatekos.crew.get(): # Ha több matróz tűnne el, mint amennyi van,
+                delta = self.master.engine.aktivjatekos.crew.get() # ...akkor csak annyi fog eltűnni, amennyi van.
                 self.master.game_board.relocate_ship((5, 2)) # A játékos a hajótöröttek szigetére kerül,
                 if "landland" in self.master.engine.aktivjatekos.statuszlista: # ...ha volt föld, föld bónusz,
                     self.master.engine.aktivjatekos.set_statusz("landland", 0) # ...elvesszük,
@@ -313,6 +313,6 @@ class KartyaAblak(Toplevel):
     def irany_bezar(self):
         self.master.engine.eventstack.append(self.nev)
         self.destroy()
-        debug("Arrived at: {}".format(self.master.engine.aktivjatekos.pozicio))
-        self.master.engine.teendotar[self.master.game_board.locationsR[self.master.engine.aktivjatekos.pozicio]]()
+        debug("Arrived at: {}".format(self.master.engine.aktivjatekos.coordinates))
+        self.master.engine.teendotar[self.master.game_board.locationsR[self.master.engine.aktivjatekos.coordinates]]()
         self.master.engine.szakasz_0()
