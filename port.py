@@ -199,8 +199,10 @@ class Varos(object):
         self.skalaCimke.config(text=str(self.berskala.get()))
 
     def ujMatrozok(self):
-        "A mezőre lépéskor módosítja a helyben elérhető matrózok számát."
-        self.matrozokszama.set(self.matrozokszama.get() + self.boss.boss.menu.game_tab.die.export_ertek())
+        try:
+            self.matrozokszama.set(self.matrozokszama.get() + self.boss.boss.menu.game_tab.die.export_ertek())
+        except AttributeError:
+            a = 1
 
     def matrozFelberelese(self):
         "Lebonyolítja a metrózok felbérelésével járó tranzakciót"

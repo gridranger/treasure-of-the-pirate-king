@@ -136,7 +136,7 @@ class Vezerlo(Frame):
                                ('landland',        self.landland),
                                ('storm',           self.vihar),
                                ('driftwood',         self.driftwood),
-                               ('szelcsend',       self.szelcsend),
+                               ('calm',       self.calm),
                                ('taino',           self.taino),
                                ('treasureisland',   self.treasureisland),
                                ('stream',         self.stream),
@@ -377,7 +377,7 @@ class Vezerlo(Frame):
             self.boss.status_bar.log(self.boss.ui_texts["driftwood"])
         return
 
-    def szelcsend(self):
+    def calm(self):
         "Egy körből kimarad a játékos."
         self.aktivjatekos.set_kimarad(1) # Beállítjuk, hogy kimarad egy körből.
         showinfo(self.boss.ui_texts["info"], self.boss.ui_texts["calm"])

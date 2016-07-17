@@ -64,7 +64,7 @@ class GameTab(Frame):
         Label(gold_frame, textvariable=self._current_player.kincs).grid(row=0, column=1)
         gold_frame.grid(row=0, column=0, sticky=N + E + W + S, padx=5)
         crew_frame = LabelFrame(self._inventory_display, text=self._main_window.ui_texts['crew'])
-        Label(crew_frame, image=self._main_window.game_board.gallery['matrozok']).grid(row=0, column=0)
+        Label(crew_frame, image=self._main_window.game_board.gallery['crew']).grid(row=0, column=0)
         Label(crew_frame, textvariable=self._current_player.legenyseg).grid(row=0, column=1)
         crew_frame.grid(row=0, column=1, sticky=N + E + W + S, padx=5)
         self._inventory_display.grid(row=position, column=0)

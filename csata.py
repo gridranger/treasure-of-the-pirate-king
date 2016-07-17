@@ -226,7 +226,8 @@ class Utkozet(Toplevel):
                 self.valosCelpontKockak.append(celpontKockak[celpontok.index(celpont)])
             else:
                 debug('Csapat üres, célpont kizárva.')
-        debug(self.valosCelpontok, self.valosCelpontKockak)
+        debug("Valid targets: {}".format(self.valosCelpontok))
+        debug("Valid target dies: {}".format(self.valosCelpontKockak))
         if self.valosCelpontok:
             if len(self.valosCelpontok) == 1:
                 debug("AutoExtra")
@@ -349,7 +350,7 @@ class Utkozet(Toplevel):
         for elem in self.valosCelpontKockak[idx]:
             self.szabadKockaLista.remove(elem)
             debug("A szabad kockák közül törölve:",elem)
-        debug("Megmaradt szabad kockák:",self.szabadKockaLista)
+        debug("Megmaradt szabad kockák: {}".format(self.szabadKockaLista))
         if len(self.szabadKockaLista) > 1:
             debug('További extra lövésre van lehetőség.')
             self.extra_talalatok()
@@ -377,7 +378,7 @@ class Utkozet(Toplevel):
         visszairando = 0
         for i in self.jatekos.skalaszotar.keys():
             visszairando += self.jatekos.skalaszotar[i].elo.get()
-        debug("Életben maradt matrózok:",visszairando)
+        debug("Életben maradt matrózok:" + str(visszairando))
         self.master.engine.aktivjatekos.legenyseg.set(visszairando)
 
     def bezar(self):
@@ -420,7 +421,7 @@ class Hajoablak(Frame):
         # Adatgenerálás
         if user:
             nev = self.master.ui_texts["ship_name_player"]
-            reszletek = '%s %s' % (self.master.ui_texts[self.master.engine.aktivjatekos.zaszlo], self.master.ui_texts[self.master.engine.aktivjatekos.hajo])
+            reszletek = '%s %s' % (self.master.ui_texts[self.master.engine.aktivjatekos.empire], self.master.ui_texts[self.master.engine.aktivjatekos.hajo])
         else:
             nev = boss.ellensegesHajoNeve
             reszletek = '%s %s' % (self.master.ui_texts[boss.ellensegesZaszlo], self.master.ui_texts[boss.ellensegesHajoTipusa])
@@ -570,9 +571,9 @@ class MatrozSkala(Frame):
             ellensegesLegenyseg = 0
         self.boss = boss
         self.root = master
-        self.ures = self.root.game_board.gallery['matroz0']
-        self.teli = self.root.game_board.gallery['matroz1']
-        self.serult = self.root.game_board.gallery['matroz2']
+        self.ures = self.root.game_board.gallery['crewman0']
+        self.teli = self.root.game_board.gallery['crewman1']
+        self.serult = self.root.game_board.gallery['crewman2']
         self.value = IntVar()
         self.elo = IntVar()
         if user:
