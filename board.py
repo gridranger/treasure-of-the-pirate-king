@@ -148,18 +148,18 @@ class Board(Frame):
 
     def _render_player_ship_figures(self):
         for player_object in self.master.players.values():
-            self._render_ship_figure(player_object)
+            self.render_ship_figure(player_object)
 
-    def _render_ship_figure(self, player):
+    def render_ship_figure(self, player):
         ship_image = self._render_assembled_ship_image_for_player(player)
         self.ship_figure_images[player.name] = PhotoImage(ship_image)
         if player.name in self.figures:
             self.board_canvas.delete(self.figures[player.name])
         x, y = player.coordinates
         self.figures[player.name] = self.board_canvas.create_image((x - 0.5) * self.tile_size,
-                                                                  (y - 0.5) * self.tile_size,
-                                                                  image=self.ship_figure_images[player.name],
-                                                                  anchor=CENTER)
+                                                                   (y - 0.5) * self.tile_size,
+                                                                   image=self.ship_figure_images[player.name],
+                                                                   anchor=CENTER)
 
     def _render_assembled_ship_image_for_player(self, player):
         ship_image = pillow_open('img/{}-h.png'.format(player.ship))

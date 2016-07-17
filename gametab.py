@@ -61,7 +61,7 @@ class GameTab(Frame):
     def _build_inventory_display(self, position):
         gold_frame = LabelFrame(self._inventory_display, text=self._main_window.ui_texts['treasure'])
         Label(gold_frame, image=self._main_window.game_board.gallery['penz-d2']).grid(row=0, column=0)
-        Label(gold_frame, textvariable=self._current_player.kincs).grid(row=0, column=1)
+        Label(gold_frame, textvariable=self._current_player.gold).grid(row=0, column=1)
         gold_frame.grid(row=0, column=0, sticky=N + E + W + S, padx=5)
         crew_frame = LabelFrame(self._inventory_display, text=self._main_window.ui_texts['crew'])
         Label(crew_frame, image=self._main_window.game_board.gallery['crew']).grid(row=0, column=0)
@@ -83,7 +83,7 @@ class GameTab(Frame):
             flag = self._main_window.game_board.gallery['flag_' + empire]
             Label(score_fields[empire], image=flag).grid(row=0, column=0)
             Label(score_fields[empire], text=':').grid(row=0, column=1)
-            Label(score_fields[empire], textvariable=self._current_player.hajotar[empire]).grid(row=0, column=2)
+            Label(score_fields[empire], textvariable=self._current_player.scores[empire]).grid(row=0, column=2)
             score_fields[empire].grid(row=int((index / 2) % 2), column=index % 2, sticky=E + W)
         self._score_field.grid(row=position, column=0)
         self._score_field.columnconfigure(ALL, minsize=(self.master.width - 34) / 2)
@@ -92,7 +92,7 @@ class GameTab(Frame):
         self._die_field.columnconfigure(0, weight=1)
         self._die_field.rowconfigure(0, weight=1)
         self._die_field.grid(row=position, column=0, ipady=5, ipadx=5)
-        should_miss_turn = self._current_player.kimarad.get()
+        should_miss_turn = self._current_player.turns_to_miss.get()
         if should_miss_turn > 0:
             self._build_miss_turn_button(should_miss_turn)
         else:
@@ -104,14 +104,14 @@ class GameTab(Frame):
         else:
             message = self._main_window.ui_texts["miss_turn_last_time"]
         Button(self._die_field, text=message, command=self._main_window.engine.kimaradas).pack()
-        if "leviathan" in self._current_player.statuszlista:
+        if "leviathan" in self._current_player.states:
             command = self._main_window.engine.leviathan_kijatszasa
             Button(self._die_field, text=self._main_window.ui_texts["play_leviathan"], command=command).pack()
 
     def _build_die(self):
         self._die_field.config(relief=RAISED, bd=2)
         self.die = Dobokocka(self._die_field, self.master.width / 4, self._current_player.color,
-                             self._current_player.secondary_color, self._current_player.utolsodobas)
+                             self._current_player.secondary_color, self._current_player.last_roll)
         castaway_tiles = self._main_window.game_board.locations["castaways"]
         player_is_on_castaway_island = self._current_player.coordinates in castaway_tiles
         player_has_no_crew = not self._current_player.crew.get()
@@ -136,9 +136,9 @@ class GameTab(Frame):
         state_field = LabelFrame(self, text=self._main_window.ui_texts['cards'], relief=RAISED,
                                  width=self.master.width - 31)
         state_slots_per_row = int((self.master.width - 31) / 32)
-        state_slot_height = 24 + ((int(len(self._current_player.statuszlista) / state_slots_per_row) + 1) * 32)
-        if self._current_player.statuszlista:
-            for index, state in enumerate(self._current_player.statuszlista):
+        state_slot_height = 24 + ((int(len(self._current_player.states) / state_slots_per_row) + 1) * 32)
+        if self._current_player.states:
+            for index, state in enumerate(self._current_player.states):
                 if state not in self._main_window.engine.nemKartyaStatusz:
                     if state in self._main_window.engine.eventszotar.keys():
                         origin = self._main_window.engine.eventszotar
@@ -160,17 +160,17 @@ class GameTab(Frame):
             self._main_window.engine.dobasMegtortent.set(False)
         if not self._main_window.engine.dobasMegtortent.get():
             dobas = self.die.dob()
-            if "landland" in self._current_player.statuszlista:
+            if "landland" in self._current_player.states:
                 debug("New roll is possible because of Land, land! bonus.")
                 self._main_window.status_bar.log(self._main_window.ui_texts['land_log'])
-                self._current_player.set_statusz("landland", 0)
+                self._current_player.remove_state("landland")
                 self._land_land_roll = True
             else:
                 self._main_window.status_bar.log('')
                 self._die_field.config(relief=SUNKEN)
             self._main_window.engine.set_dobasMegtortent()
             self._main_window.is_turn_in_progress.set(1)
-            self._main_window.engine.aktivjatekos.set_utolsodobas(dobas)
+            self._main_window.engine.aktivjatekos.last_roll = dobas
             self._main_window.engine.mozgas(dobas, 1)
 
     def disable_additional_roll(self):

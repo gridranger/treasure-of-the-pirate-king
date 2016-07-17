@@ -9,9 +9,9 @@ __author__ = 'Bárdos Dávid'
 
 
 class Player(object):
-    def __init__(self, boss, tabla, state):
-        self.game_board = tabla
-        self.boss = boss
+    def __init__(self, empires, game_board, state):
+        self._game_board = game_board
+        self._empires = empires
         self.name = state.name
         self.color = state.color
         self.empire = state.empire
@@ -24,83 +24,56 @@ class Player(object):
             self.coordinates = self._home_port
         else:
             self.coordinates = state.coordinates
-        self.kincs = IntVar(value=state.gold)
-        self.kincskeresesKesz = state.treasure_hunting_done
-        self.statuszlista = state.states
-        self.utolsodobas = state.last_roll
-        self.kimarad = IntVar(value=state.turns_to_miss)
-        self.hajotar = {}
-        for empire in self.boss.empires:
-            self.hajotar[empire] = IntVar()
-        elfogottHajok = state.looted_ships
-        if elfogottHajok != {}:
-            for elfogottHajo in elfogottHajok.keys():
-                self.hajotar[elfogottHajo].set(elfogottHajok[elfogottHajo])
+        self.gold = IntVar(value=state.gold)
+        self.treasure_hunting_done = state.treasure_hunting_done
+        self.states = state.states
+        self.last_roll = state.last_roll
+        self.turns_to_miss = IntVar(value=state.turns_to_miss)
+        self.scores = {}
+        for empire in self._empires:
+            self.scores[empire] = IntVar(value=state.looted_ships.get(empire, 0))
 
     @property
     def _home_port(self):
-        empire = self.boss.empires[self.empire]
-        return self.boss.game_board.locations[empire.capital][0]
+        empire = self._empires[self.empire]
+        return self._game_board.locations[empire.capital][0]
 
     def _pick_secondary_color(self):
-        r, g, b = [int(self.color[1:3], 16), int(self.color[3:5], 16), int(self.color[5:], 16)]  # a játékos színét rgbvé bontjuk
-        if sqrt(r ** 2 * 0.241 + g ** 2 * 0.691 + b ** 2 * 0.068) > 127:  # megállapítjuk hozzá az optimális gombócszínt
+        r, g, b = [int(self.color[1:3], 16), int(self.color[3:5], 16), int(self.color[5:], 16)]
+        if sqrt(r ** 2 * 0.241 + g ** 2 * 0.691 + b ** 2 * 0.068) > 127:
             return 'black'
         else:
             return 'white'
 
-    def set_hajo(self, tipus):
-        "A megadott típusúra állítja be a játékos hajóját."
-        self.ship = tipus
-        self.boss.game_board._render_ship_figure(self)
+    def update_ship(self, new_ship_type):
+        self.ship = new_ship_type
+        self._game_board.render_ship_figure(self)
 
-    def set_legenyseg(self, modosito):
-        "Módosítja a legénység létszámát"
-        self.crew.set(self.crew.get() + modosito)
+    def update_crew(self, modifier):
+        self.crew.set(self.crew.get() + modifier)
 
-    def set_crew_limit(self, szam):
-        "Módosítja a legénység maximális létszámát"
-        self.crew_limit.set(szam)
+    def update_gold(self, modifier):
+        self.gold.set(self.gold.get() + modifier)
 
-    def set_kincs(self, modosito):
-        "Módosítja a kincs mennyiségét."
-        self.kincs.set(self.kincs.get() + modosito)
+    def add_state(self, state):
+        self.states.append(state)
 
-    def set_statusz(self, statusz, ertek = 1):
-        "Ad vagy megvon egy adott státuszt."
-        #debug(self.nev,"státusza módosítás előtt:", self.statuszlista)
-        if ertek:
-            self.statuszlista.append(statusz)
-        else:
-            self.statuszlista.remove(statusz)
-        #debug(self.nev,"státusza módosítás után:", self.statuszlista)
+    def remove_state(self, state):
+        self.states.remove(state)
 
-    def set_utolsodobas(self, ertek):
-        "Megadja az utoljára dobott értéket."
-        self.utolsodobas = ertek
-
-    def set_kimarad(self, ertek = -1):
-        "Beállítja, hány körből marad ki a játékos. Argumentum nélkül hívva levon egy kört."
-        self.kimarad.set(self.kimarad.get()+ertek)
-
-    def set_hajoszam(self, birodalom, szam):
-        "Jóváírja a hajópontok változását."
-        self.hajotar[birodalom].set(self.hajotar[birodalom].get()+szam)
-
-    def set_kincskereses(self, ertek):
-        "Kívülről hívható függvény, amely megváltoztatja a kincskeresesKesz paraméter értékét."
-        self.kincskeresesKesz = ertek
+    def update_turns_to_miss(self, modifier=-1):
+        self.turns_to_miss.set(self.turns_to_miss.get() + modifier)
 
     def export(self):
         current_state = PlayerState(self.name, self.color, self.empire)
         current_state.ship = self.ship
         current_state.crew = self.crew.get()
         current_state.coordinates = self.coordinates
-        current_state.gold = self.kincs.get()
-        current_state.states = self.statuszlista
-        current_state.last_roll = self.utolsodobas
-        current_state.turns_to_miss = self.kimarad.get()
-        current_state.treasure_hunting_done = self.kincskeresesKesz
-        for empire in self.hajotar:
-            current_state.looted_ships[empire] = self.hajotar[empire].get()
+        current_state.gold = self.gold.get()
+        current_state.states = self.states
+        current_state.last_roll = self.last_roll
+        current_state.turns_to_miss = self.turns_to_miss.get()
+        current_state.treasure_hunting_done = self.treasure_hunting_done
+        for empire in self.scores:
+            current_state.looted_ships[empire] = self.scores[empire].get()
         return current_state

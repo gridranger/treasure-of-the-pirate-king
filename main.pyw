@@ -277,7 +277,7 @@ class Application(Tk):
     def load_game(self, game_state):
         self._reset_for_game_start()
         for data in game_state.player_data:
-            self.players[data] = Player(self, self.game_board, game_state.player_data[data])
+            self.players[data] = Player(self.empires, self.game_board, game_state.player_data[data])
         self._prepare_new_ui()
         while self.player_order[0] != game_state.next_player:
             self.player_order.append(self.player_order.pop(0))
@@ -311,7 +311,7 @@ class Application(Tk):
     def start_game(self, player_data):
         self._reset_for_game_start()
         for index, data in enumerate(player_data):
-            self.players['player' + str(index)] = Player(self, self.game_board, *data)
+            self.players['player' + str(index)] = Player(self.empires, self.game_board, *data)
         self._prepare_new_ui()
         self.engine = Vezerlo(self)
         self.menu.update_developer_tab()

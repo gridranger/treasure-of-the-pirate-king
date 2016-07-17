@@ -21,7 +21,7 @@ class DeveloperTab(Frame):
 
     def _set_gold(self):
         if self._main_window.engine:
-            self._main_window.engine.aktivjatekos.set_kincs(int(self._gold_entry.get()))
+            self._main_window.engine.aktivjatekos.update_gold(int(self._gold_entry.get()))
 
     def add_game_dependent_tools(self):
         variables = Frame(self)

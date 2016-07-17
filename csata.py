@@ -105,7 +105,7 @@ class Utkozet(Toplevel):
             
     def futnihagy(self):
         "Elvonulás a csatából harc nélkül."
-        if self.ellenfelSullyed.get() and "parrot" in self.master.aktivjatekos.statuszlista:
+        if self.ellenfelSullyed.get() and "parrot" in self.master.aktivjatekos.states:
             for gomb in self.csataGombLista.keys():
                 self.csataGombLista[gomb].pack_forget()
             self.korOsszegzo.config(text = "")
@@ -180,7 +180,7 @@ class Utkozet(Toplevel):
         self.jatekos.eloszamol()
         self.ellenfel.eloszamol()
         for gomb in self.gombszotar.keys():
-            if self.gombszotar[gomb].nev in self.master.engine.aktivjatekos.statuszlista:
+            if self.gombszotar[gomb].nev in self.master.engine.aktivjatekos.states:
                 self.gombszotar[gomb].cooling()
         self.korOsszegzo.config(text = self.master.ui_texts["ship_spotted_battle_starts"])
         self.csataIndulGomb.configure(state = NORMAL)
@@ -298,7 +298,7 @@ class Utkozet(Toplevel):
         elif (len(self.jatekos.ertekkeszlet()) == 1 and not len(self.ellenfel.ertekkeszlet())) or (len(self.jatekos.ertekkeszlet()) > 1 and len(self.ellenfel.ertekkeszlet()) < 2):
             debug('Győztél.')
             self.matroztVisszair() # mentjük a megmaradt matrózok számát a játékos profiljába
-            self.master.engine.aktivjatekos.hajotar[self.ellensegesZaszlo].set(self.master.engine.aktivjatekos.hajotar[self.ellensegesZaszlo].get()+1) # megnöveljük az elfogott hajók számát
+            self.master.engine.aktivjatekos.scores[self.ellensegesZaszlo].set(self.master.engine.aktivjatekos.scores[self.ellensegesZaszlo].get()+1) # megnöveljük az elfogott hajók számát
             if not self.kincsMegszerezve:
                 self.kincsMegszerzese()
             else:
@@ -307,7 +307,7 @@ class Utkozet(Toplevel):
         elif self.ellenfelSullyed.get() and not self.sullyedesigHatravan:
             debug("Az ellenséges hajó elsüllyedt.")
             self.matroztVisszair() # mentjük a megmaradt matrózok számát a játékos profiljába
-            self.master.engine.aktivjatekos.hajotar[self.ellensegesZaszlo].set(self.master.engine.aktivjatekos.hajotar[self.ellensegesZaszlo].get()+1) # megnöveljük az elfogott hajók számát
+            self.master.engine.aktivjatekos.scores[self.ellensegesZaszlo].set(self.master.engine.aktivjatekos.scores[self.ellensegesZaszlo].get()+1) # megnöveljük az elfogott hajók számát
             self.korOsszegzo.config(text = self.master.ui_texts["battle_sink"])
             return True
         else:
@@ -317,9 +317,9 @@ class Utkozet(Toplevel):
         "Ez történik, ha a játékost veszít vagy kilép."
         self.matroztVisszair() # mentjük a megmaradt matrózok számát a játékos profiljába
         self.master.game_board.relocate_ship((5, 2)) # irány a hajótöröttek szigete
-        if "landland" in self.master.engine.aktivjatekos.statuszlista:
-            self.master.engine.aktivjatekos.set_statusz("landland", 0)
-        self.master.engine.aktivjatekos.set_kincskereses(True)
+        if "landland" in self.master.engine.aktivjatekos.states:
+            self.master.engine.aktivjatekos.remove_state("landland")
+        self.master.engine.aktivjatekos.treasure_hunting_done = True
             
     def ablakBezarasa(self):
         if askyesno(self.master.ui_texts["leave_battle"], self.master.ui_texts["leave_battle_text"], parent=self):
@@ -368,8 +368,8 @@ class Utkozet(Toplevel):
         szoveg = self.master.ui_texts["ship_spotted_reward"] % (self.zsakmany,szoveg2)
         if papagaj:
             szoveg = self.master.ui_texts["ship_spotted_parrot"] + szoveg
-        self.master.engine.aktivjatekos.kincs.set(self.master.engine.aktivjatekos.kincs.get()+self.zsakmany)
-        debug(self.master.engine.aktivjatekos.kincs.get())
+        self.master.engine.aktivjatekos.gold.set(self.master.engine.aktivjatekos.gold.get()+self.zsakmany)
+        debug(self.master.engine.aktivjatekos.gold.get())
         self.korOsszegzo.config(text = szoveg)
         self.kincsMegszerezve = True
 
@@ -670,7 +670,7 @@ class Gombjektum():
         
     def cooling(self):
         "Megvalósítja a cooldown-kezelést."
-        if self.nev in self.master.engine.aktivjatekos.statuszlista:
+        if self.nev in self.master.engine.aktivjatekos.states:
             if self.cooldown > 1:
                 self.cooldown += -1
             elif self.cooldown in [0,1]:
@@ -693,7 +693,7 @@ class Gombjektum():
         
     def eldobas(self):
         "Eldobja a játék kártyáját."
-        self.master.engine.aktivjatekos.statuszlista.remove(self.nev)
+        self.master.engine.aktivjatekos.states.remove(self.nev)
         self.talon.append(self.nev)
 
 class Pisztoly(Gombjektum):
@@ -871,7 +871,7 @@ class Majom(Gombjektum):
         
     def cooling(self):
         "Felülírja az alapértelmezett cooldownkezelést."
-        if self.nev in self.master.engine.aktivjatekos.statuszlista:
+        if self.nev in self.master.engine.aktivjatekos.states:
             if self.boss.ellenfelSullyed.get() and not self.boss.kincsMegszerezve:
                 self.gomb.configure(state = NORMAL)
 
@@ -901,7 +901,7 @@ class Szirenkurt(Gombjektum):
         self.boss.jatekos.csatafelirat()
         
     def cooling(self):
-        if self.nev in self.master.engine.aktivjatekos.statuszlista and not self.cooldown:
+        if self.nev in self.master.engine.aktivjatekos.states and not self.cooldown:
             csapatletszamokListaja = []
             for i in range(1,7):
                 csapatletszamokListaja.append(self.boss.jatekos.skalaszotar[i].elo.get())
