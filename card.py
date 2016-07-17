@@ -3,7 +3,8 @@ from random import randrange
 from tkinter import BOTTOM, Button, DISABLED, Frame, GROOVE, HORIZONTAL, Label, LEFT, NORMAL, RIGHT, TOP, Toplevel, X
 from tkinter.ttk import Separator
 
-class Kartya3():
+
+class Card(object):
     """Egy kártyalap leírója."""
     def __init__(self, boss, master, nev, kep, pakli, fuggveny, ertek=0):
         self.boss = boss

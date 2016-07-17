@@ -150,8 +150,8 @@ class Vezerlo(Frame):
         self.treasurestack = []
         eventtar, kincstar, penztar, fuggvenytar = self.boss.data_reader.load_cards_data()
         for lap in eventtar.keys():
-            self.boss.game_board.kartyakep2(eventtar[lap])  # betöltjük a képet
-            self.eventszotar[lap] = Kartya3(self, self.boss, lap, eventtar[lap], 'event', fuggvenytar[lap])
+            self.boss.game_board._render_card_image(eventtar[lap])  # betöltjük a képet
+            self.eventszotar[lap] = Card(self, self.boss, lap, eventtar[lap], 'event', fuggvenytar[lap])
             self.eventdeck.append(lap)
         debug("Event cards in deck: {}/52".format(len(self.eventdeck)))
         self.csataszotar = self.boss.data_reader.load_battle_data()
@@ -161,12 +161,12 @@ class Vezerlo(Frame):
         for penz in penztar.keys():
             iPenz = 0
             for i in range(penztar[penz]):
-                self.kincsszotar['treasure'+penz+'_'+str(iPenz)] = Kartya3(self, self.boss, 'treasure', kincstar['treasure'], 'treasure', fuggvenytar["treasure"], int(penz))
+                self.kincsszotar['treasure'+penz+'_'+str(iPenz)] = Card(self, self.boss, 'treasure', kincstar['treasure'], 'treasure', fuggvenytar["treasure"], int(penz))
                 iPenz += 1
         for lap in kincstar.keys():
-            self.boss.game_board.kartyakep2(kincstar[lap]) # betöltjük a képet
+            self.boss.game_board._render_card_image(kincstar[lap]) # betöltjük a képet
             if lap != 'treasure':
-                self.kincsszotar[lap] = Kartya3(self, self.boss, lap, kincstar[lap], 'treasure', fuggvenytar[lap])
+                self.kincsszotar[lap] = Card(self, self.boss, lap, kincstar[lap], 'treasure', fuggvenytar[lap])
         self.kincspakli = list(self.kincsszotar.keys())
         # Hajók elkészítése
         self.hajotipustar = self.boss.data_reader.get_ship_types()

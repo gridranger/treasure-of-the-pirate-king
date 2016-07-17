@@ -241,16 +241,10 @@ class Board(Frame):
         for button in buttons:
             self.gallery['icon_' + button] = PhotoImage(pillow_open('img/icon_' + button + '.png'))
 
-    def kartyakep(self, pakli, prefix):
-        "Leképezi a kártyákhoz szükséges képeket."
-        for elem in pakli:
-            self.gallery[elem] = PhotoImage(pillow_open('img/'+prefix+elem+'.png'))
-
-    def kartyakep2(self, kep):
-        "Leképezi a kártyákhoz szükséges képeket. A Kartya3-mal kompatibilis."
-        self.gallery[kep] = pillow_open('img/'+kep+'.png')
-        self.gallery[kep[kep.rfind('_')+1:]+'_i'] = PhotoImage(self.gallery[kep].resize((30,30),ANTIALIAS))
-        self.gallery[kep] = PhotoImage(self.gallery[kep])
+    def _render_card_image(self, name):
+        loaded_image = pillow_open('img/' + name + '.png')
+        self.gallery[name.split('_')[-1] + '_i'] = PhotoImage(loaded_image.resize((30, 30), ANTIALIAS))
+        self.gallery[name] = PhotoImage(loaded_image)
 
     def kormanyos(self,mostanioszlop,mostanisor,dobas,szellel = 1):
         "Meghatározza a lépések lehetséges kimenetelét."
