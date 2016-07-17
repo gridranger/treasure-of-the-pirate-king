@@ -156,7 +156,7 @@ class GameTab(Frame):
 
     def _roll_die(self, event):
         if self._land_land_roll:
-            self._main_window.game_board.villogaski()
+            self._main_window.game_board.turn_off_blinker()
             self._main_window.engine.dobasMegtortent.set(False)
         if not self._main_window.engine.dobasMegtortent.get():
             dobas = self.die.dob()

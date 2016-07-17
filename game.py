@@ -128,10 +128,10 @@ class Vezerlo(Frame):
                                ('tortuga',         lambda : self.varos('tortuga')),
                                ('havanna',         lambda : self.varos('havanna')),
                                ('martinique',      lambda : self.varos('martinique')),
-                               ('windplus90',     lambda : self.boss.game_board.szel_valtoztat(90)),
-                               ('windminus90',    lambda : self.boss.game_board.szel_valtoztat(-90)),
-                               ('windplus45',     lambda : self.boss.game_board.szel_valtoztat(45)),
-                               ('windminus45',    lambda : self.boss.game_board.szel_valtoztat(-45)),
+                               ('windplus90',     lambda : self.boss.game_board.change_wind_direction(90)),
+                               ('windminus90',    lambda : self.boss.game_board.change_wind_direction(-90)),
+                               ('windplus45',     lambda : self.boss.game_board.change_wind_direction(45)),
+                               ('windminus45',    lambda : self.boss.game_board.change_wind_direction(-45)),
                                ('bermuda',         self.bermuda),
                                ('landland',        self.landland),
                                ('storm',           self.vihar),
@@ -299,13 +299,9 @@ class Vezerlo(Frame):
         if self.unfinishedMethodes:
             debug("HIBA - Beragadt metódus:", self.unfinishedMethodes)
     
-    def mozgas(self, dobas, szellel = 1):
-        "Irányítja a mozgás folyamatát."
-        if szellel:
-            celok = self.boss.game_board.kormanyos(self.aktivjatekos.pozicio[0], self.aktivjatekos.pozicio[1], dobas)
-        else:
-            celok = self.boss.game_board.kormanyos(self.aktivjatekos.pozicio[0], self.aktivjatekos.pozicio[1], dobas, 0)
-        self.boss.game_board.celkereso(celok)
+    def mozgas(self, roll, add_wind_modifier=True):
+        target_tiles = self.boss.game_board.calculate_target_tiles(self.aktivjatekos.pozicio, roll, add_wind_modifier)
+        self.boss.game_board.mark_target_tiles(target_tiles)
         
     def kincsetHuz(self):
         if not self.kincspakli:
@@ -448,7 +444,7 @@ class Vezerlo(Frame):
                 varos = celokSzotar[dobas].capitalize()
             uzenet = self.boss.ui_texts["castaway_success"] % varos
             x,y = self.boss.game_board.locations[celokSzotar[dobas]][0]
-            self.boss.game_board.hajotathelyez(x,y)
+            self.boss.game_board.relocate_ship(x, y)
             if self.aktivjatekos.kincs.get() < 10:
                 self.aktivjatekos.kincs.set(0)
             else:

@@ -1,9 +1,12 @@
-﻿from PIL.ImageTk import PhotoImage
-from PIL.Image import ANTIALIAS, BICUBIC, open as pillow_open
-from colorize import image_tint
-from logging import debug
+﻿from logging import debug
 from time import sleep
 from tkinter import BooleanVar, Canvas, CENTER, Frame, NW
+
+from PIL.ImageTk import PhotoImage
+from PIL.Image import ANTIALIAS, BICUBIC, open as pillow_open
+
+from colorize import image_tint
+from helmsman import Helmsman
 
 _RGBA = "RGBA"
 
@@ -47,6 +50,9 @@ class Board(Frame):
         self.is_field_select_visible = BooleanVar(value=False)
         #                      N, NE, E, SE,S, SW,W, NW
         self.wind_direction = [2, 1, -3, 1, 2, 1, 0, 1]
+        self._targets = []
+        self.tile_marks = []
+        self._blinker = _Blinker(self)
 
     @property
     def port_coordinates(self):
@@ -55,7 +61,7 @@ class Board(Frame):
     def _add_board_canvas(self):
         canvas = Canvas(self, width=self.size, height=self.size, bd=0, highlightthickness=0, relief='ridge')
         canvas.grid()
-        canvas.bind("<Button-1>", self.klikk)
+        canvas.bind("<Button-1>", self._pick_tile)
         return canvas
 
     def _generate_tiles(self):
@@ -79,7 +85,7 @@ class Board(Frame):
             ports[capital] = self.locations[capital][0]
         return ports
 
-    def change_wind_direction(self, wind_index):
+    def update_wind_direction(self, wind_index):
         while self.wind_direction[wind_index] != 0:
             self.wind_direction.append(self.wind_direction.pop(0))
 
@@ -246,162 +252,70 @@ class Board(Frame):
         self.gallery[name.split('_')[-1] + '_i'] = PhotoImage(loaded_image.resize((30, 30), ANTIALIAS))
         self.gallery[name] = PhotoImage(loaded_image)
 
-    def kormanyos(self,mostanioszlop,mostanisor,dobas,szellel = 1):
-        "Meghatározza a lépések lehetséges kimenetelét."
-        iranyok = {"e":(0,-1),
-                   "d":(0,1),
-                   "k":(1,0),
-                   "ny":(-1,0)} # az irányok rácson való értelmezése
-        szelirany = self.szel()
-        celok = [] # ide írjuk majd az eredményeket (x,y) formában
-        # leképezzük a lehetséges lépéseket
-        utak = [] # az utak során meglátogatott mezők listája
-        lepes = 1
-        for (irany,(oszlop,sor)) in iranyok.items(): # leképezzük az első szomszédos mezőket, és beírjuk a kiindulási irányt, így a további mezőkből meg lehet tudni, hogy merről értük el őket
-            elsomezo = (mostanioszlop+oszlop,mostanisor+sor,lepes,irany)
-            if self.hajozhato(elsomezo[0],elsomezo[1]):
-                utak.append(elsomezo)
-        lepes = 2 # a további mezők következnek
-        while lepes <= dobas+2:
-            for elem in utak:
-                lehetsegesUtak = [] # a vizsgálat alatt álló szomszédos mezők listája
-                if elem[2] == lepes-1: # csak azokat a mezőket vizsgáljuk, amelyeket még nem néztünk meg (CPU takarékos)
-                    for (irany,(oszlop,sor)) in iranyok.items(): # leképezzük a szomszédos mezőket, és felvesszük őket a vizsgálólistára 
-                        lehetsegesUtak.append((elem[0]+oszlop,elem[1]+sor,lepes,elem[3]),)
-                    for lehetsegesUt in lehetsegesUtak: # elvégzünk mindegyik lehetséges úton egy ellenőrzést
-                        if self.hajozhato(lehetsegesUt[0],lehetsegesUt[1]) == False:
-                            lehetsegesUtak[lehetsegesUtak.index(lehetsegesUt)] = 0 # ha a mező nincs rajta a táblán, megjelöljük
-                        else: # megnézzük, a maradék mező nincs-e már rajta az útlistán
-                            for ut in utak:
-                                if (lehetsegesUt[0],lehetsegesUt[1]) == (ut[0],ut[1]) and lehetsegesUt[2] >= ut[2] and (lehetsegesUt[0],lehetsegesUt[1]) not in self.port_coordinates:
-                                    lehetsegesUtak[lehetsegesUtak.index(lehetsegesUt)] = 0 # ha a mező már szerepel a listán, megjelöljük             
-                    # ezzel kinyertük a utak listában tárolt mezők használható szomszédos mezőit
-                for lehetsegesUt in lehetsegesUtak:
-                    if lehetsegesUt:
-                        utak.append(lehetsegesUt)
-            lepes += 1
-        if szellel:
-            for ut in utak:
-                if ut[2] == (dobas + self.szel(ut[3])):
-                    celok.append((ut[0],ut[1]))
-                elif ((ut[0],ut[1]) in self.port_coordinates) and ut[2] < (dobas + self.szel(ut[3])):
-                    celok.append((ut[0],ut[1]))
-        else:
-            for ut in utak:
-                if ut[2] == dobas:
-                    celok.append((ut[0],ut[1]))
-                elif ((ut[0],ut[1]) in self.port_coordinates) and ut[2] < dobas:
-                    celok.append((ut[0],ut[1]))
-        if (mostanioszlop,mostanisor) in celok: # Ha kiindulómező cél lenne, töröljük.
-            celok.remove((mostanioszlop,mostanisor))
-        if (mostanioszlop,mostanisor) in self.port_coordinates and szellel: # Ha kikötőből indulunk, visszatesszük / hozzáadjuk.
-            celok.append((mostanioszlop,mostanisor))
-        for cel in celok:
-            if celok.count(cel) > 1:
-                celok.remove(cel)
-        self.celok = celok
-        return celok
+    def calculate_target_tiles(self, coordinates, roll, add_wind_modifier):
+        helmsman = Helmsman(self.tiles, self.wind_direction, self.port_coordinates)
+        self._targets = helmsman.get_target_coordinates(coordinates, roll, add_wind_modifier)
+        return self._targets
 
-    def hajozhato(self,x,y):
-        "Ellenőrzi, hogy az adott mező része-e a táblának"
-        if (x,y) in self.tiles:
-            return 1
-        else:
-            return 0
-
-    def szel(self,irany="x"):
-        "A szél erejét visszaadó függvény"
-        szeliranyszotar = {"e":   self.wind_direction[0],
-                           "ek":  self.wind_direction[1],
-                           "k":   self.wind_direction[2],
-                           "dk":  self.wind_direction[3],
-                           "d":   self.wind_direction[4],
-                           "dny": self.wind_direction[5],
-                           "ny":  self.wind_direction[6],
-                           "eny": self.wind_direction[7],
-                           "x":   0}
-        return szeliranyszotar[irany]
-        
-    def szel_valtoztat(self, szog = 0):
-        "Megváltoztatja a szél irányát."
-        ujszeliranyindex = (self.wind_direction.index(0) + int(szog / 45)) % 8
-        self.change_wind_direction(ujszeliranyindex)
+    def change_wind_direction(self, angle=0):
+        updated_wind_index = (self.wind_direction.index(0) + int(angle / 45)) % 8
+        self.update_wind_direction(updated_wind_index)
         self._display_wind()
     
-    def celkereso(self, tiles):
-        "Megmutatja a játékosnak azokat a négyzeteket, ahová majd lépni lehet."
-        self.xlista = []
-        for mezox,mezoy in tiles:
-            self.xlista.append(self.board_canvas.create_image((mezox - 0.5) * self.tile_size, (mezoy - 0.5) * self.tile_size, image = self.gallery['x'], anchor = CENTER))
+    def mark_target_tiles(self, tiles):
+        self.tile_marks = []
+        for column, row in tiles:
+            tile_mark = self.board_canvas.create_image((column - 0.5) * self.tile_size, (row - 0.5) * self.tile_size,
+                                                       image=self.gallery['x'], anchor=CENTER)
+            self.tile_marks.append(tile_mark)
             self.is_field_select_visible.set(True)
         self.is_field_select_blinking = True
-        self.villogas = None
-        self.villogas = Mutatrejt(self)
-        self.villogas.start()
+        self._blinker.start()
           
-    def klikk(self,event):
-        "A mezőválasztást kezelő függvény."
+    def _pick_tile(self, event):
         if not self.master.engine.dobasMegtortent.get():
             return
-        self.master.menu.disable_additional_roll()
-        klikkx,klikky = int(event.x / self.tile_size) + 1, int(event.y / self.tile_size) + 1
-        if (klikkx,klikky) not in self.celok:
+        coordinates = int(event.x / self.tile_size) + 1, int(event.y / self.tile_size) + 1
+        if coordinates not in self._targets:
             return
-        else:
-            self.villogaski()
-            self.hajotathelyez(klikkx,klikky)
-            self.master.engine.szakasz_mezoevent()
+        self.master.menu.disable_additional_roll()
+        self.turn_off_blinker()
+        self.relocate_ship(coordinates)
+        self.master.engine.szakasz_mezoevent()
             
-    def villogaski(self):
-        "Kikapcsolja a célnégyzetek villogását."
+    def turn_off_blinker(self):
         self.master.game_board.is_field_select_blinking = False
         if self.is_field_select_visible.get():
-            for x in self.xlista:
-                self.board_canvas.itemconfigure(x, state='hidden')
-            self.is_field_select_visible.set(False)
-            self.xlista = []
-            
-    def hajotathelyez(self, celx, cely):
-        "Végrehajtja a kijelölt lépést."
-        self.board_canvas.coords(self.figures[self.master.engine.aktivjatekos.nev], (celx - 0.5) * self.tile_size, (cely - 0.5) * self.tile_size)
-        self.master.engine.aktivjatekos.pozicio = (celx, cely)
-        
-class Mutatrejt():
-    """A villogást irányító osztály."""
-    def __init__(self, parent):
-        self.boss = parent
+            self._blinker.hide_marks()
+        self.tile_marks = []
+
+    def relocate_ship(self, coordinates):
+        x, y = coordinates
+        self.board_canvas.coords(self.figures[self.master.engine.aktivjatekos.nev], (x - 0.5) * self.tile_size,
+                                 (y - 0.5) * self.tile_size)
+        self.master.engine.aktivjatekos.pozicio = coordinates
+
+
+class _Blinker(object):
+    def __init__(self, master):
+        self._master = master
+        self._main_window = self._master.master
+
     def start(self):
-        while self.boss.is_field_select_blinking:
-            self.fut()
-            self.boss.master.update()
+        while self._master.is_field_select_blinking:
+            if self._master.is_field_select_visible.get():
+                self.hide_marks()
+            else:
+                self._show_marks()
+            self._main_window.update()
             sleep(0.25)
-    
-    def fut(self):
-        if self.boss.is_field_select_visible.get():
-            for x in self.boss.xlista:
-                self.boss.board_canvas.itemconfigure(x,state='hidden')
-            self.boss.is_field_select_visible.set(False)
-        else:
-            for x in self.boss.xlista:
-                self.boss.board_canvas.itemconfigure(x,state='normal')
-            self.boss.is_field_select_visible.set(True)
-    
-    def start0(self):
-        if self.boss.is_field_select_visible.get():
-            for x in self.boss.xlista:
-                self.boss.board_canvas.itemconfigure(x,state='hidden')
-            self.boss.is_field_select_visible.set(False)
-            self.boss.boss.update()
-            if not self.boss.is_field_select_blinking:
-                self.boss.xlista = []
-                return
-        else:
-            if not self.boss.is_field_select_blinking:
-                self.boss.xlista = []
-                return
-            for x in self.boss.xlista:
-                self.boss.board_canvas.itemconfigure(x,state='normal')
-            self.boss.is_field_select_visible.set(True)
-            self.boss.boss.update()
-        sleep(0.25)
-        self.start()
+
+    def hide_marks(self):
+        for mark in self._master.tile_marks:
+            self._master.board_canvas.itemconfigure(mark, state='hidden')
+        self._master.is_field_select_visible.set(False)
+
+    def _show_marks(self):
+        for x in self._master.tile_marks:
+            self._master.board_canvas.itemconfigure(x, state='normal')
+        self._master.is_field_select_visible.set(True)

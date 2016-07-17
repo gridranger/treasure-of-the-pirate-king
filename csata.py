@@ -316,13 +316,13 @@ class Utkozet(Toplevel):
     def vereseg(self):
         "Ez történik, ha a játékost veszít vagy kilép."
         self.matroztVisszair() # mentjük a megmaradt matrózok számát a játékos profiljába
-        self.master.game_board.hajotathelyez(5,2) # irány a hajótöröttek szigete
+        self.master.game_board.relocate_ship((5, 2)) # irány a hajótöröttek szigete
         if "landland" in self.master.engine.aktivjatekos.statuszlista:
             self.master.engine.aktivjatekos.set_statusz("landland", 0)
         self.master.engine.aktivjatekos.set_kincskereses(True)
             
     def ablakBezarasa(self):
-        if askyesno(self.master.ui_texts["leave_battle"], self.master.ui_texts["leave_battle_text"], parent = self):
+        if askyesno(self.master.ui_texts["leave_battle"], self.master.ui_texts["leave_battle_text"], parent=self):
             self.vereseg()
             self.bezar()
         else:

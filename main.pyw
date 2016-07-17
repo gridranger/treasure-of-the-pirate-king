@@ -281,7 +281,7 @@ class Application(Tk):
         while self.player_order[0] != game_state.next_player:
             self.player_order.append(self.player_order.pop(0))
         self.engine = Vezerlo(self, game_state.taverns)
-        self.game_board.change_wind_direction(game_state.wind_index)
+        self.game_board.update_wind_direction(game_state.wind_index)
         if game_state.is_lieutenant_found:
             self.engine.set_hadnagyElokerult()
         if game_state.is_grog_lord_defeated:
