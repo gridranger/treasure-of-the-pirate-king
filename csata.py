@@ -218,7 +218,7 @@ class Utkozet(Toplevel):
         self.valosCelpontok = []
         self.valosCelpontKockak = []
         celpontok,celpontKockak = self.szabadKockak(self.szabadKockaLista)
-        debug("Lehetséges célpontok:",celpontok,"Ahogy a kockákból összeáll:",celpontKockak)
+        debug("Lehetséges célpontok: {}; Ahogy a kockákból összeáll: {}".format(celpontok, celpontKockak))
         for celpont in celpontok:
             if self.ellenfel.skalaszotar[celpont].elo.get():
                 debug('Célba vett csapat: ',celpont,'Ennyi matróz van benne:',self.ellenfel.skalaszotar[celpont].elo.get())
@@ -349,7 +349,7 @@ class Utkozet(Toplevel):
         idx = self.valosCelpontok.index(ertek)
         for elem in self.valosCelpontKockak[idx]:
             self.szabadKockaLista.remove(elem)
-            debug("A szabad kockák közül törölve:",elem)
+            debug("A szabad kockák közül törölve: {}".format(elem))
         debug("Megmaradt szabad kockák: {}".format(self.szabadKockaLista))
         if len(self.szabadKockaLista) > 1:
             debug('További extra lövésre van lehetőség.')
