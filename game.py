@@ -1,102 +1,10 @@
-from tkinter import BooleanVar, Canvas, IntVar, RIDGE
-from tkinter.messagebox import showinfo, askyesno
-from math import sqrt
 from time import sleep
-from csata import Utkozet
+from tkinter import BooleanVar, Canvas, RIDGE
+from tkinter.messagebox import showinfo, askyesno
+
 from card import *
+from csata import Utkozet
 from port import Varos
-
-
-class Jatekos():
-    """Leír egy játékost."""
-    def __init__(self, boss, tabla, nev, szin, empire, hajo ='schooner', legenyseg = 10, pozicio = None, kincs = 0, statusz = [], utolsodobas = 6, kimarad = 0, kincskeresesKesz = True, elfogottHajok = {}):
-        self.game_board = tabla
-        self.boss = boss
-        self.nev = nev
-        self.szin = szin
-        self.empire = empire
-        self.masodikszin = [int(self.szin[1:3], 16), int(self.szin[3:5], 16), int(self.szin[5:], 16)] # a játékos színét rgbvé bontjuk
-        if sqrt(self.masodikszin[0]**2*0.241+self.masodikszin[1]**2*0.691+self.masodikszin[2]**2*0.068) > 127: # megállapítjuk hozzá az optimális gombócszínt
-            self.masodikszin = 'black'
-        else:
-            self.masodikszin = 'white'
-        self.zaszlo = self.boss.get_empire_id_by_capital_coordinates(self.sajatkikoto)
-        debug("{} joined to the {} empire.".format(self.nev, self.zaszlo.capitalize()))
-        self.hajo = hajo
-        self.legenyseg = IntVar()
-        self.legenyseg.set(legenyseg)
-        self.legenyseg_max = IntVar()
-        if not pozicio:
-            self.pozicio = self.sajatkikoto
-        else:
-            self.pozicio = pozicio
-        self.kincs = IntVar()
-        self.kincs.set(kincs)
-        self.kincskeresesKesz = kincskeresesKesz
-        self.statuszlista = statusz
-        self.utolsodobas = utolsodobas
-        self.kimarad = IntVar()
-        self.kimarad.set(kimarad)
-        self.hajotar = {}
-        for empire in self.boss.empires:
-            self.hajotar[empire] = IntVar()
-        if elfogottHajok != {}:
-            for elfogottHajo in elfogottHajok.keys():
-                self.hajotar[elfogottHajo].set(elfogottHajok[elfogottHajo])
-
-    @property
-    def sajatkikoto(self):
-        empire = self.boss.empires[self.empire]
-        return self.boss.game_board.locations[empire.capital][0]
-        
-    def set_hajo(self, tipus):
-        "A megadott típusúra állítja be a játékos hajóját."
-        self.hajo = tipus
-        self.boss.game_board._render_ship_figure(self)
-        
-    def set_legenyseg(self, modosito):
-        "Módosítja a legénység létszámát"
-        self.legenyseg.set(self.legenyseg.get() + modosito)
-        
-    def set_legenyseg_max(self, szam):
-        "Módosítja a legénység maximális létszámát"
-        self.legenyseg_max.set(szam)
-        
-    def set_kincs(self, modosito):
-        "Módosítja a kincs mennyiségét."
-        self.kincs.set(self.kincs.get() + modosito)
-        
-    def set_statusz(self, statusz, ertek = 1):
-        "Ad vagy megvon egy adott státuszt."
-        #debug(self.nev,"státusza módosítás előtt:", self.statuszlista)
-        if ertek:
-            self.statuszlista.append(statusz)
-        else:
-            self.statuszlista.remove(statusz)
-        #debug(self.nev,"státusza módosítás után:", self.statuszlista)
-            
-    def set_utolsodobas(self, ertek):
-        "Megadja az utoljára dobott értéket."
-        self.utolsodobas = ertek
-        
-    def set_kimarad(self, ertek = -1):
-        "Beállítja, hány körből marad ki a játékos. Argumentum nélkül hívva levon egy kört."
-        self.kimarad.set(self.kimarad.get()+ertek)
-        
-    def set_hajoszam(self, birodalom, szam):
-        "Jóváírja a hajópontok változását."
-        self.hajotar[birodalom].set(self.hajotar[birodalom].get()+szam)
-        
-    def set_kincskereses(self, ertek):
-        "Kívülről hívható függvény, amely megváltoztatja a kincskeresesKesz paraméter értékét."
-        self.kincskeresesKesz = ertek
-            
-    def export(self):
-        "Átadja a mentőrutinnak az adatokat."
-        zaszloexport = []
-        for zaszlo in sorted(list(self.hajotar.keys())):
-            zaszloexport.append((zaszlo, self.hajotar[zaszlo].get()))
-        return [self.nev, self.szin, self.empire, self.hajo, self.legenyseg.get(), self.pozicio, self.kincs.get(), self.statuszlista, self.utolsodobas, self.kimarad.get(), zaszloexport, self.kincskeresesKesz]
 
 
 class Vezerlo(Frame):

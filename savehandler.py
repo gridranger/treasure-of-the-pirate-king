@@ -1,4 +1,4 @@
-from models import GameState
+from models import GameState, PlayerState
 from tkinter.filedialog import askopenfilename, asksaveasfilename
 from xml.dom.minidom import parseString
 from xml.etree.ElementTree import Element, parse, SubElement, tostring
@@ -32,31 +32,23 @@ class SaveHandler(object):
 
     @staticmethod
     def _load_player(player):
-        parameters = ['name', 'color', 'empire', 'ship', 'sailors', 'money', 'lastRoll', 'turnsToMiss',
-                      'treasureHuntFinished']
-        state = []
-        for parameter in parameters:
-            state.append(player.find(parameter).text)
-        coordinates = (int(player.find('coordinates').get('x')), int(player.find('coordinates').get('y')))
-        state.insert(5, coordinates)
-        modifiers = player.find('status').text
-        if modifiers is None:
-            state.insert(7, [])
-        else:
-            modifiers = [str(x) for x in modifiers.split(',')]
-            state.insert(7, modifiers)
-        for i in [4, 6, 8, 9]:
-            state[i] = int(state[i])
-        if state[10] == 'True':
-            state[10] = True
-        else:
-            state[10] = False
-        looted_ships = {}
+        name = player.find("name").text
+        color = player.find("color").text
+        empire = player.find("empire").text
+        player_state = PlayerState(name, color, empire)
+        player_state.ship = player.find("ship").text
+        player_state.crew = int(player.find("sailors").text)
+        player_state.gold = int(player.find("money").text)
+        player_state.last_roll = int(player.find("lastRoll").text)
+        player_state.turns_to_miss = int(player.find("turnsToMiss").text)
+        player_state.treasure_hunting_done = True if player.find("treasureHuntFinished").text == "True" else False
+        player_state.coordinates = (int(player.find('coordinates').get('x')), int(player.find('coordinates').get('y')))
+        bulk_states = player.find('status').text
+        player_state.states = [] if bulk_states is None else [str(x) for x in bulk_states.split(',')]
         looted_ships_tag = player.find('shipsLooted')
         for looted_ship in looted_ships_tag.findall('score'):
-            looted_ships[looted_ship.get('empire')] = int(looted_ship.get('ships'))
-        state.append(looted_ships)
-        return state
+            player_state.looted_ships[looted_ship.get('empire')] = int(looted_ship.get('ships'))
+        return player_state
 
     @staticmethod
     def _load_cards(save):
@@ -73,7 +65,7 @@ class SaveHandler(object):
                 decks[decks.index(deck)] = []
         return decks
 
-    def set_adatok_fileba(self, game_state):
+    def write_save(self, game_state):
         assert isinstance(game_state, GameState)
         file_name = asksaveasfilename(defaultextension=self.extension, filetypes=self.type, initialdir='saved')
         if not file_name:
@@ -82,25 +74,10 @@ class SaveHandler(object):
         serialized_decks = []
         for deck in game_state.card_decks:
             serialized_decks.append(", ".join(deck))
-        parameters = ['name', 'color', 'empire', 'ship', 'sailors', 'money', 'status', 'lastRoll', 'turnsToMiss',
-                      'treasureHuntFinished']
-        for player in sorted(game_state.player_data):
+        for player_id, player in sorted(game_state.player_data.items()):
             player_tag = SubElement(save_root, 'player')
-            player_tag.set('id', player)
-            game_state.player_data[player][7] = ", ".join(game_state.player_data[player][7])
-            looted_ships = game_state.player_data[player].pop(10)
-            coordinates = game_state.player_data[player].pop(5)
-            for index, parameter in enumerate(parameters):  # TODO let's structure player state!
-                tag = SubElement(player_tag, parameter)
-                tag.text = str(game_state.player_data[player][index])
-            looted_ships_tag = SubElement(player_tag, 'shipsLooted')
-            for looted_ship in looted_ships:
-                scores_tag = SubElement(looted_ships_tag, 'score')
-                scores_tag.set('empire', looted_ship[0])
-                scores_tag.set('ships', str(looted_ship[1]))
-            coordinates_tag = SubElement(player_tag, 'coordinates')
-            coordinates_tag.set('x', str(coordinates[0]))
-            coordinates_tag.set('y', str(coordinates[1]))
+            player_tag.set('id', player_id)
+            self._save_player(player, player_tag)
         current_player_tag = SubElement(save_root, 'currentPlayer')
         current_player_tag.text = game_state.next_player
         wind_direction_tag = SubElement(save_root, 'windDirection')
@@ -111,9 +88,9 @@ class SaveHandler(object):
         grog_lord_defeated_tag.text = str(game_state.is_grog_lord_defeated)
         taverns_tag = SubElement(save_root, 'taverns')
         for tavern_name, men_count in sorted(game_state.taverns.items()):
-            fogado = SubElement(taverns_tag, 'tavern')
-            fogado.set('port', tavern_name)
-            fogado.set('sailors', str(men_count))
+            tavern_tag = SubElement(taverns_tag, 'tavern')
+            tavern_tag.set('port', tavern_name)
+            tavern_tag.set('sailors', str(men_count))
         card_tag = SubElement(save_root, 'cards')
         event_deck_tag = SubElement(card_tag, 'eventDeck')
         event_deck_tag.text = serialized_decks[0]
@@ -128,4 +105,34 @@ class SaveHandler(object):
         pretty_xml = minidom_xml.toprettyxml('    ', encoding='utf-8')
         with open(file_name, 'wb') as xml_file:
             xml_file.write(pretty_xml)
-        return True
+
+    @staticmethod
+    def _save_player(player, player_tag):
+        name = SubElement(player_tag, 'name')
+        name.text = player.name
+        color = SubElement(player_tag, 'color')
+        color.text = player.color
+        empire = SubElement(player_tag, 'empire')
+        empire.text = player.empire
+        ship = SubElement(player_tag, 'ship')
+        ship.text = player.ship
+        sailors = SubElement(player_tag, 'sailors')
+        sailors.text = str(player.crew)
+        money = SubElement(player_tag, 'money')
+        money.text = str(player.gold)
+        status = SubElement(player_tag, 'status')
+        status.text = ', '.join(player.states)
+        last_roll = SubElement(player_tag, 'lastRoll')
+        last_roll.text = str(player.last_roll)
+        turns_to_miss = SubElement(player_tag, 'turnsToMiss')
+        turns_to_miss.text = str(player.turns_to_miss)
+        treasure_hunt_finished = SubElement(player_tag, 'treasureHuntFinished')
+        treasure_hunt_finished.text = str(player.treasure_hunting_done)
+        ships_looted = SubElement(player_tag, 'shipsLooted')
+        for empire, value in sorted(player.looted_ships.items()):
+            empire_tag = SubElement(ships_looted, "score")
+            empire_tag.set("empire", empire)
+            empire_tag.set("ships", str(value))
+        coordinates = SubElement(player_tag, "coordinates")
+        coordinates.set("x", str(player.coordinates[0]))
+        coordinates.set("y", str(player.coordinates[1]))

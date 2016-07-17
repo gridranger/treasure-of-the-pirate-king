@@ -47,6 +47,22 @@ class LoadedSettings(object):
         self.resolution_list = ()
 
 
+class PlayerState(object):
+    def __init__(self, name, color, empire):
+        self.name = name
+        self.color = color
+        self.empire = empire
+        self.ship = 'schooner'
+        self.crew = 10
+        self.coordinates = (-1, -1)
+        self.gold = 0
+        self.states = []
+        self.last_roll = 6
+        self.turns_to_miss = 0
+        self.treasure_hunting_done = True
+        self.looted_ships = {}
+
+
 class ShipType(object):
     def __init__(self, ship_type, price, crew_limit):
         self.ship_type = ship_type

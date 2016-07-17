@@ -4,7 +4,8 @@ from tkinter.messagebox import askokcancel
 
 from board import Board
 from datareader import DataReader
-from game import Jatekos, Vezerlo
+from game import Vezerlo
+from player import Player
 from logframe import LogFrame
 from models import BRITISH, DUTCH, FRENCH, PIRATE, SPANISH, Empire, GameState
 from newgamepanel import NewGamePanel
@@ -276,7 +277,7 @@ class Application(Tk):
     def load_game(self, game_state):
         self._reset_for_game_start()
         for data in game_state.player_data:
-            self.players[data] = Jatekos(self, self.game_board, *game_state.player_data[data])
+            self.players[data] = Player(self, self.game_board, game_state.player_data[data])
         self._prepare_new_ui()
         while self.player_order[0] != game_state.next_player:
             self.player_order.append(self.player_order.pop(0))
@@ -310,7 +311,7 @@ class Application(Tk):
     def start_game(self, player_data):
         self._reset_for_game_start()
         for index, data in enumerate(player_data):
-            self.players['player' + str(index)] = Jatekos(self, self.game_board, *data)
+            self.players['player' + str(index)] = Player(self, self.game_board, *data)
         self._prepare_new_ui()
         self.engine = Vezerlo(self)
         self.menu.update_developer_tab()
@@ -359,7 +360,7 @@ class Application(Tk):
         game_state.is_grog_lord_defeated = self.engine.grogbaroLegyozve.get()
         game_state.is_lieutenant_found = self.engine.hadnagyElokerult.get()
         if game_state.check():
-            self.save_handler.set_adatok_fileba(game_state)
+            self.save_handler.write_save(game_state)
         else:
             raise RuntimeError('Invalid game state.')
 
