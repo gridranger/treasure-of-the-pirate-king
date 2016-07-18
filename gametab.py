@@ -2,7 +2,7 @@
 from logging import debug
 from tkinter import ALL, E, HORIZONTAL, N, NORMAL, RAISED, S, SUNKEN, W, Frame, Label, Button
 from tkinter.ttk import LabelFrame, Separator
-from game import Dobokocka
+from die import Die
 
 __author__ = 'Bárdos Dávid'
 
@@ -110,8 +110,8 @@ class GameTab(Frame):
 
     def _build_die(self):
         self._die_field.config(relief=RAISED, bd=2)
-        self.die = Dobokocka(self._die_field, self.master.width / 4, self._current_player.color,
-                             self._current_player.secondary_color, self._current_player.last_roll)
+        self.die = Die(self._die_field, self.master.width / 4, self._current_player.color,
+                       self._current_player.secondary_color, self._current_player.last_roll)
         castaway_tiles = self._main_window.game_board.locations["castaways"]
         player_is_on_castaway_island = self._current_player.coordinates in castaway_tiles
         player_has_no_crew = not self._current_player.crew.get()

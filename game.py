@@ -1,5 +1,4 @@
-from time import sleep
-from tkinter import BooleanVar, Canvas, RIDGE
+from tkinter import BooleanVar
 from tkinter.messagebox import showinfo, askyesno
 
 from card import *
@@ -371,53 +370,3 @@ class Vezerlo(Frame):
         self.eventstack.append("leviathan")
         self.aktivjatekos.update_turns_to_miss()
         self.szakasz_0()
-    
-    
-class Dobokocka(Canvas):
-    """Megjelenít egy dobókockát, amely gombnyomásra létrehoz egy értéket."""
-    def __init__(self, master, meret, szin, masodikszin, last_roll):
-        Canvas.__init__(self, master = master, width = meret, height = meret, bd = 1, relief = RIDGE)
-        self.ertek = last_roll
-        self.boss = master
-        self.meret = meret
-        self.szin = szin
-        self.secondary_color = masodikszin
-        self.gomboclista = []
-        self.helylista = [[(5,5)],
-                          [(2,2), (8,8)],
-                          [(8,2), (5,5), (2,8)],
-                          [(2,2), (2,8), (8,2), (8,8)],
-                          [(5,5), (2,2), (2,8), (8,2), (8,8)],
-                          [(2,2), (2,8), (8,2), (8,8), (2,5), (8,5)]]
-        self.x,self.y,self.c = self.meret/2,self.meret/2,self.meret/2 # a kocka középpontja és a fél oldalhossz
-        self.create_rectangle(self.x - self.c + 2,
-                              self.y - self.c + 2,
-                              self.x + self.c + 2,
-                              self.y + self.c + 2,
-                              fill=szin, width=0)
-        self.r = self.meret/10 # a gombócok sugarának mérete
-        self.rajzol()
-            
-    def torol(self):
-        "törli a gombócokat"
-        for gomboc in self.gomboclista:
-            self.delete(gomboc)
-            
-    def rajzol(self):
-        "kirajzolja a gombócokat"
-        for gombocx,gombocy in self.helylista[self.ertek-1]:
-            self.gomboclista.append(self.create_oval((gombocx-1)*self.r + 2, (gombocy-1)*self.r + 2, (gombocx+1)*self.r + 2, (gombocy+1)*self.r + 2, fill = self.secondary_color))
-            
-    def dob(self):
-        "elvégzi a dobást"  
-        for i in range(6):
-            self.torol()
-            self.ertek = randrange(6)+1
-            self.rajzol()
-            self.update_idletasks()
-            sleep(0.075)
-        return self.ertek
-    
-    def export_ertek(self):
-        "Átadja a kocka értékét."
-        return self.ertek

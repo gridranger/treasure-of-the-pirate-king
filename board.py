@@ -55,7 +55,7 @@ class Board(Frame):
         self._blinker = _Blinker(self)
 
     @property
-    def port_coordinates(self):
+    def _port_coordinates(self):
         return list(self.ports.values())
 
     def _add_board_canvas(self):
@@ -253,7 +253,7 @@ class Board(Frame):
         self.gallery[name] = PhotoImage(loaded_image)
 
     def calculate_target_tiles(self, coordinates, roll, add_wind_modifier):
-        helmsman = Helmsman(self.tiles, self.wind_direction, self.port_coordinates)
+        helmsman = Helmsman(self.tiles, self.wind_direction, self._port_coordinates)
         self._targets = helmsman.get_target_coordinates(coordinates, roll, add_wind_modifier)
         return self._targets
 
