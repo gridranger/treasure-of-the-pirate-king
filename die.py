@@ -37,7 +37,7 @@ class Die(Canvas):
         for dot in self._dot_list:
             self.delete(dot)
 
-    def dob(self):
+    def roll(self):
         for i in range(6):
             self._remove_dots()
             self._current_value = randrange(6) + 1

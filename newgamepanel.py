@@ -5,6 +5,7 @@ from PIL.Image import ANTIALIAS
 from PIL.ImageTk import PhotoImage
 
 from colorize import image_tint
+from models import PlayerState
 from newplayerfield import NewPlayerField
 
 __author__ = 'Bárdos Dávid'
@@ -57,7 +58,8 @@ class NewGamePanel(Frame):
                     return
                 self.master.status_bar.log(self.master.ui_texts['start_game'])
                 self.update_idletasks()
-                jatekosadatok.append([self.player_setups[i].nev.get(),
-                                      self.player_setups[i].picked_color.get(),
-                                      self.master.get_empire_id_by_name(self.player_setups[i].nation_picker.get())])
+                player_state = PlayerState(self.player_setups[i].nev.get(),
+                                           self.player_setups[i].picked_color.get(),
+                                           self.master.get_empire_id_by_name(self.player_setups[i].nation_picker.get()))
+                jatekosadatok.append(player_state)
         self.master.start_game(jatekosadatok)

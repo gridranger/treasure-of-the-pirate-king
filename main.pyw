@@ -308,10 +308,10 @@ class Application(Tk):
         self.menu.release_new_game_button()
         self.menu.select(self.menu.game_tab)
 
-    def start_game(self, player_data):
+    def start_game(self, player_states):
         self._reset_for_game_start()
-        for index, data in enumerate(player_data):
-            self.players['player' + str(index)] = Player(self.empires, self.game_board, *data)
+        for index, player_state in enumerate(player_states):
+            self.players['player' + str(index)] = Player(self.empires, self.game_board, player_state)
         self._prepare_new_ui()
         self.engine = Vezerlo(self)
         self.menu.update_developer_tab()
