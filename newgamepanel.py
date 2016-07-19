@@ -5,7 +5,6 @@ from PIL.Image import ANTIALIAS
 from PIL.ImageTk import PhotoImage
 
 from colorize import image_tint
-from models import PlayerState
 from newplayerfield import NewPlayerField
 
 __author__ = 'Bárdos Dávid'
@@ -20,6 +19,9 @@ class NewGamePanel(Frame):
         self.player_setups = []
         self.ship_picture_gray = image_tint('img/schooner.png', '#ffffff')
         self._scale_ship_picture_gray()
+        self._display_fields()
+
+    def _display_fields(self):
         for i in range(6):
             current_setup = NewPlayerField(self)
             is_active = Checkbutton(self, takefocus=0, variable=current_setup.active)
@@ -40,7 +42,7 @@ class NewGamePanel(Frame):
         self.ship_picture_gray = PhotoImage(resized_image)
 
     def player_setup_done(self):
-        jatekosadatok = []
+        player_data = []
         for i in range(6):
             if self.player_setups[i].active.get():
                 error_message = self.player_setups[i].check_player_setup()
@@ -50,8 +52,8 @@ class NewGamePanel(Frame):
                 message = self.master.ui_texts['start_game']
                 self.master.status_bar.log(message)
                 player_state = self.player_setups[i].get_player_state()
-                jatekosadatok.append(player_state)
-        self.master.start_game(jatekosadatok)
+                player_data.append(player_state)
+        self.master.start_game(player_data)
 
     def _show_error_message(self, error_message, player_number):
         if 'name_missing' == error_message:
