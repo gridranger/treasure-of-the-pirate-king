@@ -200,7 +200,7 @@ class Varos(object):
 
     def ujMatrozok(self):
         try:
-            self.matrozokszama.set(self.matrozokszama.get() + self.boss.boss.menu.game_tab.die.export_ertek())
+            self.matrozokszama.set(self.matrozokszama.get() + self.boss.boss.menu.game_tab.die._current_value)
         except AttributeError:
             a = 1
 

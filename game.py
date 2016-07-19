@@ -246,7 +246,7 @@ class Vezerlo(Frame):
 
     def vihar(self):
         "A vihar mező függvénye."
-        viharEreje = self.boss.menu.game_tab.die.dob() # Dobunk, ez adja meg a vihar erejét.
+        viharEreje = self.boss.menu.game_tab.die.roll() # Dobunk, ez adja meg a vihar erejét.
         self.aktivjatekos.last_roll = viharEreje # Mentjük a kocka állapotát.
         if "levasseur" in self.aktivjatekos.states: # Ha a játékos hajóján ott utazik Jacques Levasseur, több esélye van sikeresen navigálni.
             maxSiker = 4
@@ -271,7 +271,7 @@ class Vezerlo(Frame):
 
     def driftwood(self):
         "Vajon sikerül kincsre bukkanni?"
-        dobas = self.boss.menu.game_tab.die.dob() # Szerencsét próbálunk.
+        dobas = self.boss.menu.game_tab.die.roll() # Szerencsét próbálunk.
         self.aktivjatekos.last_roll = dobas # Mentjük a kocka állapotát.
         if dobas == 6:
             self.aktivjatekos.update_gold(1)
@@ -290,7 +290,7 @@ class Vezerlo(Frame):
         "Bennszülöttek csatlakoznak a legénységhez."
         maxFelvehetoBennszulott = self.aktivjatekos.crew_limit.get() - self.aktivjatekos.crew.get()
         if maxFelvehetoBennszulott:
-            dobas = self.boss.menu.game_tab.die.dob() # Szerencsét próbálunk.
+            dobas = self.boss.menu.game_tab.die.roll() # Szerencsét próbálunk.
             self.aktivjatekos.last_roll = dobas  # Mentjük a kocka állapotát.
             if dobas >= maxFelvehetoBennszulott:
                 self.aktivjatekos.update_crew(maxFelvehetoBennszulott)
@@ -315,7 +315,7 @@ class Vezerlo(Frame):
         "A teendők, ha már kincses szigeten áll az ember."
         self.boss.is_turn_in_progress.set(1)
         self.dobasMegtortent.set(True)
-        dobas = self.boss.menu.game_tab.die.dob() # Szerencsét próbálunk.
+        dobas = self.boss.menu.game_tab.die.roll() # Szerencsét próbálunk.
         self.aktivjatekos.last_roll = dobas  # Mentjük a kocka állapotát.
         if dobas == 6:
             self.aktivjatekos.treasure_hunting_done = True
@@ -326,7 +326,7 @@ class Vezerlo(Frame):
     
     def stream(self):
         "Az áramlat függvénye"
-        dobas = self.boss.menu.game_tab.die.dob()
+        dobas = self.boss.menu.game_tab.die.roll()
         self.aktivjatekos.last_roll = dobas
         self.mozgas(dobas, 0)
         return True
@@ -335,7 +335,7 @@ class Vezerlo(Frame):
         "Ez történik, ha valaki legénység nélkül van a száműzöttek szigetén."
         self.boss.is_turn_in_progress.set(1)
         self.dobasMegtortent.set(True)
-        dobas = self.boss.menu.game_tab.die.dob() # Szerencsét próbálunk.
+        dobas = self.boss.menu.game_tab.die.roll() # Szerencsét próbálunk.
         self.aktivjatekos.last_roll = dobas  # Mentjük a kocka állapotát.
         celokSzotar = dict([(1, "martinique"),
                             (2, "curacao"),

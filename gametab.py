@@ -159,7 +159,7 @@ class GameTab(Frame):
             self._main_window.game_board.turn_off_blinker()
             self._main_window.engine.dobasMegtortent.set(False)
         if not self._main_window.engine.dobasMegtortent.get():
-            dobas = self.die.dob()
+            dobas = self.die.roll()
             if "landland" in self._current_player.states:
                 debug("New roll is possible because of Land, land! bonus.")
                 self._main_window.status_bar.log(self._main_window.ui_texts['land_log'])
