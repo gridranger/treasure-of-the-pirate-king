@@ -91,9 +91,10 @@ class NewPlayerField(Frame):
         return PlayerState(self.name.get(), self.picked_color.get(), empire)
 
     def set_player_state(self, player_state):
-        if self.active.get():
-            self.active.set(1)
+        self.active.set(1)
         self.name.insert(0, player_state.name)
-        self.picked_color.set(player_state.color)
-        self._color.config(bg=player_state.color)
-        self.empire_picker.set(self._main_window.empires[player_state.empire].name)
+        if player_state.color:
+            self.picked_color.set(player_state.color)
+            self._color.config(bg=player_state.color)
+        if player_state.empire:
+            self.empire_picker.set(self._main_window.empires[player_state.empire].name)

@@ -36,6 +36,12 @@ class Tabs(Notebook):
     def _enable_hot_keys(self):
         self.enable_traversal()
 
+    def load_ui_texts(self):
+        self.tab(0, text=self.master.ui_texts['main_main'])
+        self.tab(1, text=self.master.ui_texts['game'])
+        self.tab(2, text=self.master.ui_texts['settings'])
+        self.settings_tab.load_ui_texts()
+
     def push_new_game_button(self):
         self._main_tab.push_new_game_button()
 

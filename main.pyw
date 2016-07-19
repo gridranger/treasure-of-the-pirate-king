@@ -99,9 +99,7 @@ class Application(Tk):
     def _text_placer(self):
         picked_nations = []
         self.title(self.ui_texts['title'])
-        self.menu.tab(0, text=self.ui_texts['main_main'])
-        self.menu.tab(1, text=self.ui_texts['game'])
-        self.menu.tab(2, text=self.ui_texts['settings'])
+        self.menu.load_ui_texts()
         if self.is_game_setup_in_progress.get():
             picked_nations = self._save_game_setup_state()
         for rowid, row in self.empires.items():

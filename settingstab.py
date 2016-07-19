@@ -33,6 +33,7 @@ class SettingsTab(Frame):
         self._language_picker.set(self._languages_reversed[self._main_window.language])
         self._language_picker.bind("<<ComboboxSelected>>", self._pick_language)
         self._position_elements()
+        self.load_ui_texts()
 
     def _position_fields(self):
         for index, field in enumerate((self._resolution_field, self._language_field)):
@@ -70,3 +71,7 @@ class SettingsTab(Frame):
         self._full_screen_label.grid(row=2, column=0, padx=5, pady=5, sticky=W)
         self._full_screen_checkbox.grid(row=2, column=1, padx=5, pady=5, sticky=E)
         self._language_picker.grid(row=0, column=0, padx=5, pady=5)
+
+    def load_ui_texts(self):
+        self._resolution_field.config(text=self._main_window.ui_texts['resolution'])
+        self._language_field.config(text=self._main_window.ui_texts['language'])
