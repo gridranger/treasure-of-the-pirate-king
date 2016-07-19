@@ -90,16 +90,10 @@ class NewPlayerField(Frame):
         empire = self._main_window.get_empire_id_by_name(selected_empire_name)
         return PlayerState(self.name.get(), self.picked_color.get(), empire)
 
-    def set_player_state(self):
-        pass
-
-    def visszatolt(self, nev='', szin='', zaszlo=''):
-        if not self.active.get():
+    def set_player_state(self, player_state):
+        if self.active.get():
             self.active.set(1)
-        if nev != '':
-            self.name.insert(0, nev)
-        if szin != '':
-            self.picked_color.set(szin)
-            self._color.config(bg=self.picked_color.get())
-        if zaszlo != '':
-            self.empire_picker.set(zaszlo)
+        self.name.insert(0, player_state.name)
+        self.picked_color.set(player_state.color)
+        self._color.config(bg=player_state.color)
+        self.empire_picker.set(self._main_window.empires[player_state.empire].name)

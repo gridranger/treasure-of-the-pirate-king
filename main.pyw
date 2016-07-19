@@ -208,15 +208,13 @@ class Application(Tk):
         player_data = []
         for i in range(6):
             if self.game_board.player_setups[i].active.get():
-                player_data.append([self.game_board.player_setups[i].get_player_state])
+                player_data.append(self.game_board.player_setups[i].get_player_state())
         return player_data
 
     def _load_game_setup_before_resize(self, player_data):
         self.start_game_setup()
-        if len(player_data) > 0:
-            for i in range(len(player_data)):
-                self.game_board.player_setups[i].visszatolt(player_data[i][0], player_data[i][1],
-                                                            player_data[i][2])
+        for i, player_state in enumerate(player_data):
+            self.game_board.player_setups[i].set_player_state(player_state)
 
     def _remove_everything(self):
         self.menu.destroy()
