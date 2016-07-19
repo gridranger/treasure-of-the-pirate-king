@@ -10,3 +10,4 @@ class LogFrame(Frame):
 
     def log(self, string):
         self.status.config(text=string)
+        self.master.update_idletasks()

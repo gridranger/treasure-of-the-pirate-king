@@ -462,9 +462,9 @@
     <arr>Neved:</arr>
   </name_label>
   <name_missing type="text">
-    <hu>%i. játékos névtelen maradt!</hu>
-    <en>Player %i has no name.</en>
-    <arr>%i. matróz, mi a neved?</arr>
+    <hu>{}. játékos névtelen maradt!</hu>
+    <en>Player {} has no name.</en>
+    <arr>{}. matróz, mi a neved?</arr>
   </name_missing>
   <fight type="text">
     <hu>Összecsapás!</hu>
@@ -522,9 +522,9 @@
     <arr>Vitorla:</arr>
   </color_label>
   <color_missing type="text">
-    <hu>%s még nem választott színt!</hu>
-    <en>%s has picked no color.</en>
-    <arr>%s, válassz színt, de még ma!</arr>
+    <hu>{} még nem választott színt!</hu>
+    <en>{} has picked no color.</en>
+    <arr>{}, válassz színt, de még ma!</arr>
   </color_missing>
   <sirens type="text">
     <hu>Vesztettél %i matrózt.</hu>
@@ -617,9 +617,9 @@
     <arr>A vihar tönkretette a vitorlázatot. Még szerencse, hogy a raktérben volt tartalékvitorla.</arr>
   </storm_sail_damage>
   <flag_invalid type="text">
-    <hu>%s érvénytelen zászlót választott!</hu>
-    <en>%s has picked no valid flag.</en>
-    <arr>%s, válassz zászlót, de érvényeset!</arr>
+    <hu>{} érvénytelen zászlót választott!</hu>
+    <en>{} has picked no valid flag.</en>
+    <arr>{}, válassz zászlót, de érvényeset!</arr>
   </flag_invalid>
   <flag_label type="textvariable">
     <hu>Zászló:</hu>
@@ -627,9 +627,9 @@
     <arr>Lobogó:</arr>
   </flag_label>
   <flag_missing type="text">
-    <hu>%s még nem választott zászlót!</hu>
-    <en>%s has picked no flag.</en>
-    <arr>%s, válassz zászlót, de még ma!</arr>
+    <hu>{} még nem választott zászlót!</hu>
+    <en>{} has picked no flag.</en>
+    <arr>{}, válassz zászlót, de még ma!</arr>
   </flag_missing>
   <mutiny_succeeded type="text">
     <hu>A legénység partra tesz egy szigeten.</hu>

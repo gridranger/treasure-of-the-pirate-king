@@ -40,26 +40,22 @@ class NewGamePanel(Frame):
         self.ship_picture_gray = PhotoImage(resized_image)
 
     def player_setup_done(self):
-        empire_names = [empire.name for empire in self.master.empires.values()]
         jatekosadatok = []
         for i in range(6):
             if self.player_setups[i].active.get():
-                if self.player_setups[i].nev.get() == '':
-                    self.master.status_bar.log(self.master.ui_texts['name_missing'] % (i + 1))
+                error_message = self.player_setups[i].check_player_setup()
+                if error_message:
+                    self._show_error_message(error_message, i)
                     return
-                elif self.player_setups[i].picked_color.get() == '':
-                    self.master.status_bar.log(self.master.ui_texts['color_missing'] % (self.player_setups[i].nev.get()))
-                    return
-                elif self.player_setups[i].nation_picker.get() == '':
-                    self.master.status_bar.log(self.master.ui_texts['flag_missing'] % (self.player_setups[i].nev.get()))
-                    return
-                elif self.player_setups[i].nation_picker.get() not in empire_names:
-                    self.master.status_bar.log(self.master.ui_texts['flag_invalid'] % (self.player_setups[i].nev.get()))
-                    return
-                self.master.status_bar.log(self.master.ui_texts['start_game'])
-                self.update_idletasks()
-                player_state = PlayerState(self.player_setups[i].nev.get(),
-                                           self.player_setups[i].picked_color.get(),
-                                           self.master.get_empire_id_by_name(self.player_setups[i].nation_picker.get()))
+                message = self.master.ui_texts['start_game']
+                self.master.status_bar.log(message)
+                player_state = self.player_setups[i].get_player_state()
                 jatekosadatok.append(player_state)
         self.master.start_game(jatekosadatok)
+
+    def _show_error_message(self, error_message, player_number):
+        if 'name_missing' == error_message:
+            message = self.master.ui_texts[error_message].format(player_number + 1)
+        else:
+            message = self.master.ui_texts[error_message].format(self.player_setups[player_number].name.get())
+        self.master.status_bar.log(message)

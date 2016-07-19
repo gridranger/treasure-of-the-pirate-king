@@ -114,7 +114,7 @@ class Application(Tk):
     def _save_game_setup_state(self):
         picked_nations = []
         for i in range(6):
-            empire_name = self.game_board.player_setups[i].nation_picker.get()
+            empire_name = self.game_board.player_setups[i].empire_picker.get()
             if empire_name != '':
                 picked_nations.append(self.get_empire_id_by_name(empire_name))
             else:
@@ -123,9 +123,9 @@ class Application(Tk):
 
     def _reload_game_setup_state(self, picked_nations):
         for i in range(6):
-            self.game_board.player_setups[i].nation_picker.config(value=self.list_empire_names())
+            self.game_board.player_setups[i].empire_picker.config(value=self.list_empire_names())
             if picked_nations[i] != '':
-                self.game_board.player_setups[i].nation_picker.set(self.empires[picked_nations[i]].name)
+                self.game_board.player_setups[i].empire_picker.set(self.empires[picked_nations[i]].name)
 
     def get_empire_id_by_capital(self, capital):
         for empire in self.empires.values():
@@ -208,9 +208,7 @@ class Application(Tk):
         player_data = []
         for i in range(6):
             if self.game_board.player_setups[i].active.get():
-                player_data.append([self.game_board.player_setups[i].nev.get(),
-                                    self.game_board.player_setups[i].picked_color.get(),
-                                    self.game_board.player_setups[i].nation_picker.get()])
+                player_data.append([self.game_board.player_setups[i].get_player_state])
         return player_data
 
     def _load_game_setup_before_resize(self, player_data):
@@ -271,7 +269,6 @@ class Application(Tk):
         if game_state is None or not game_state.check():
             return
         self.status_bar.log(self.ui_texts['loading_game'])
-        self.update_idletasks()
         self.load_game(game_state)
 
     def load_game(self, game_state):
