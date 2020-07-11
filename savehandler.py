@@ -9,7 +9,7 @@ class SaveHandler(object):
         self._master = master
         self.extension = '.savx'
         self.type = [('XML save', '.savx')]
-        
+
     def load_saved_state(self):
         current_state = GameState()
         file_name = askopenfilename(defaultextension=self.extension, filetypes=self.type, initialdir='saved')

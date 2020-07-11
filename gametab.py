@@ -2,7 +2,7 @@
 from logging import debug
 from tkinter import ALL, E, HORIZONTAL, N, NORMAL, RAISED, S, SUNKEN, W, Frame, Label, Button
 from tkinter.ttk import LabelFrame, Separator
-from die import Die
+from assets import Die
 
 __author__ = 'Bárdos Dávid'
 
