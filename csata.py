@@ -802,47 +802,50 @@ class Kartacs(Gombjektum):
         Gombjektum.__init__(self, boss, master, hely, "grapeshot")
         self.maxCoolDown = -1
         self.hang = "Bu-bu-bu-bu-bu-bummmmmm!"
-        
+
     def mukodes(self):
         "Egy szabad kört biztosít a játékosnak, azaz minden csapatával támadhat, anélkül, hogy az ellenfél visszatámadna."
         jatekosCsapatai = self.boss.jatekos.ertekkeszlet()
         jatekosDobasai = self.boss.dobas(len(jatekosCsapatai))
         for kocka in jatekosDobasai:
-            talalt = self.boss.ellenfel.talalat(kocka)
-        
+            self.boss.ellenfel.talalat(kocka)
+
+
 class Gorogtuz(Gombjektum):
     """Görögtűz objektum"""
     def __init__(self, boss, master, hely):
         Gombjektum.__init__(self, boss, master, hely, "greek_fire")
         self.maxCoolDown = -1
         self.hang = "**Lobog.**"
-        
+
     def mukodes(self):
         "Egy ellenséges csapat feloszlik, és tagjai másik, még létező csapatokba állnak át, vagy végük."
-        self.boss.csataIndulGomb.configure(state = DISABLED)
-        for elem in range(1,7):
-            self.boss.ellenfel.skalaszotar[elem].radio.configure(command = self.boss.gombszotar['greek_fire'].mukodes2, state = NORMAL)
-            
+        self.boss.csataIndulGomb.configure(state=DISABLED)
+        for elem in range(1, 7):
+            self.boss.ellenfel.skalaszotar[elem].radio.configure(command=self.boss.gombszotar['greek_fire'].mukodes2,
+                                                                 state=NORMAL)
+
     def mukodes2(self):
         "Folytatja a futást az adat megszerzése után."
-        celpont = self.boss.ellenfel.valasztottCsapat.get() # Kiolvassuk a felhasználó választását.
-        self.boss.ellenfel.valasztottCsapat.set(0)          # Alaphelyzetbe tesszük a változót.
-        for elem in range(1,7):                             # Visszaállítjuk az eredeti működést.
-            self.boss.ellenfel.skalaszotar[elem].radio.configure(command = self.boss.ellenfel.celzas, state = DISABLED)
+        celpont = self.boss.ellenfel.valasztottCsapat.get()  # Kiolvassuk a felhasználó választását.
+        self.boss.ellenfel.valasztottCsapat.set(0)           # Alaphelyzetbe tesszük a változót.
+        for elem in range(1, 7):                             # Visszaállítjuk az eredeti működést.
+            self.boss.ellenfel.skalaszotar[elem].radio.configure(command=self.boss.ellenfel.celzas, state=DISABLED)
         csapatmeret = self.boss.ellenfel.skalaszotar[celpont].elo.get()
         egyebCsapatok = []
-        for egyebCsapat in range(1,7):
+        for egyebCsapat in range(1, 7):
             if egyebCsapat != celpont:
                 egyebCsapatLetszam = self.boss.ellenfel.skalaszotar[egyebCsapat].elo.get()
                 if 1 < egyebCsapatLetszam < 6:
-                    egyebCsapatok.append([egyebCsapat,egyebCsapatLetszam])
+                    egyebCsapatok.append([egyebCsapat, egyebCsapatLetszam])
         szamlalo = 0
         szamlalo2 = csapatmeret
         while egyebCsapatok != [] and szamlalo2 > 0:
-            aktCsap = egyebCsapatok[szamlalo%(len(egyebCsapatok))]
-            self.boss.ellenfel.skalaszotar[aktCsap[0]].matrozszotar[aktCsap[1]+1].configure(image = self.boss.ellenfel.skalaszotar[aktCsap[0]].teli)
-            self.boss.ellenfel.skalaszotar[aktCsap[0]].elo.set(aktCsap[1]+1)
-            self.boss.ellenfel.skalaszotar[celpont].elo.set(szamlalo2-1)
+            aktCsap = egyebCsapatok[szamlalo % (len(egyebCsapatok))]
+            self.boss.ellenfel.skalaszotar[aktCsap[0]].matrozszotar[aktCsap[1] + 1].configure(
+                image=self.boss.ellenfel.skalaszotar[aktCsap[0]].teli)
+            self.boss.ellenfel.skalaszotar[aktCsap[0]].elo.set(aktCsap[1] + 1)
+            self.boss.ellenfel.skalaszotar[celpont].elo.set(szamlalo2 - 1)
             aktCsap[1] += 1
             szamlalo2 += -1
             if aktCsap[1] == 6:
@@ -851,12 +854,15 @@ class Gorogtuz(Gombjektum):
                 szamlalo += 1
         if szamlalo2 > 0:
             self.boss.ellenfel.skalaszotar[celpont].elo.set(0)
-        for matroz in range(1+szamlalo2,csapatmeret+1):
-            self.boss.ellenfel.skalaszotar[celpont].matrozszotar[matroz].configure(image = self.boss.ellenfel.skalaszotar[celpont].ures)
-        for matroz in range(1,szamlalo2+1):
-            self.boss.ellenfel.skalaszotar[celpont].matrozszotar[matroz].configure(image = self.boss.ellenfel.skalaszotar[celpont].serult)
+        for matroz in range(1 + szamlalo2, csapatmeret + 1):
+            self.boss.ellenfel.skalaszotar[celpont].matrozszotar[matroz].configure(
+                image=self.boss.ellenfel.skalaszotar[celpont].ures)
+        for matroz in range(1, szamlalo2 + 1):
+            self.boss.ellenfel.skalaszotar[celpont].matrozszotar[matroz].configure(
+                image=self.boss.ellenfel.skalaszotar[celpont].serult)
         self.boss.ellenfel.csatafelirat()
-        self.boss.csataIndulGomb.configure(state = NORMAL)
+        self.boss.csataIndulGomb.configure(state=NORMAL)
+
 
 class Majom(Gombjektum):
     """Majom objektum"""
@@ -864,16 +870,17 @@ class Majom(Gombjektum):
         Gombjektum.__init__(self, boss, master, hely, "monkey")
         self.maxCoolDown = -1
         self.hang = "**Fut-fut-fut.**"
-        
+
     def mukodes(self):
         "Megszerzi a kincset, ha az ellenséges hajó már süllyed."
         self.boss.kincsMegszerzese()
-        
+
     def cooling(self):
         "Felülírja az alapértelmezett cooldownkezelést."
         if self.nev in self.master.engine.aktivjatekos.states:
             if self.boss.ellenfelSullyed.get() and not self.boss.kincsMegszerezve:
-                self.gomb.configure(state = NORMAL)
+                self.gomb.configure(state=NORMAL)
+
 
 class Szirenkurt(Gombjektum):
     """A szirének kürtje."""
@@ -881,20 +888,22 @@ class Szirenkurt(Gombjektum):
         Gombjektum.__init__(self, boss, master, hely, "sirenhorn")
         self.maxCoolDown = -1
         self.hang = "Phu-ú!"
-    
+
     def mukodes(self):
         "Minden ellenséges csapatból egy fő átáll a játékoshoz, egy új csapatot alkotva."
         pluszmatrozok = 0
-        for i in range(1,7):
+        for i in range(1, 7):
             letszam = self.boss.ellenfel.skalaszotar[i].elo.get()
             if letszam:
-                self.boss.ellenfel.skalaszotar[i].matrozszotar[letszam].configure(image = self.boss.ellenfel.skalaszotar[i].ures)
-                self.boss.ellenfel.skalaszotar[i].elo.set(letszam-1)
+                self.boss.ellenfel.skalaszotar[i].matrozszotar[letszam].configure(
+                    image=self.boss.ellenfel.skalaszotar[i].ures)
+                self.boss.ellenfel.skalaszotar[i].elo.set(letszam - 1)
                 pluszmatrozok += 1
-        for i in range(1,7):
+        for i in range(1, 7):
             if pluszmatrozok and not self.boss.jatekos.skalaszotar[i].elo.get():
-                for j in range(1,pluszmatrozok+1):
-                    self.boss.jatekos.skalaszotar[i].matrozszotar[j].configure(image = self.boss.jatekos.skalaszotar[i].teli)
+                for j in range(1, pluszmatrozok + 1):
+                    self.boss.jatekos.skalaszotar[i].matrozszotar[j].configure(
+                        image=self.boss.jatekos.skalaszotar[i].teli)
                 self.boss.jatekos.skalaszotar[i].elo.set(pluszmatrozok)
                 pluszmatrozok = 0
         self.boss.ellenfel.csatafelirat()

@@ -1,6 +1,6 @@
 from logging import debug
 from random import randrange
-from tkinter import BOTTOM, Button, DISABLED, Frame, GROOVE, HORIZONTAL, Label, LEFT, NORMAL, RIGHT, TOP, Toplevel, X
+from tkinter import BOTTOM, Button, DISABLED, Frame, GROOVE, HORIZONTAL, Label, LEFT, RIGHT, TOP, Toplevel, X
 from tkinter.ttk import Separator
 
 
@@ -16,17 +16,18 @@ class Card(object):
         self.ertek = ertek   # Ha kincs, értéke
         self.fuggveny = fuggveny
         # --- Eddig tartottak a kártya tulajdonságai. --- #
-        
+
     def megjelenik(self, megtekint=0):
         "Megjelenítő-függvény."
         self.ablak = KartyaAblak(self.master, self.pakli, self.kep, self.nev, self.ertek, self.fuggveny, megtekint)
         self.ablak.grab_set()
         self.ablak.update_idletasks()
-        w, h = self.ablak.winfo_width(),self.ablak.winfo_height()
+        w, h = self.ablak.winfo_width(), self.ablak.winfo_height()
         bx, by = self.master.get_window_position()
-        bh, bw = self.master.height,self.master.width
+        bh, bw = self.master.height, self.master.width
         self.ablak.geometry('+'+str(int(bx+(bw+(bh/3)-w)/2))+'+'+str(int(by+(bh-h)/2)))
         self.master.wait_window(self.ablak)
+
 
 class KartyaAblak(Toplevel):
     """A kártya megjelenítése a felületen."""
@@ -45,42 +46,42 @@ class KartyaAblak(Toplevel):
             szoveg = self.master.card_texts[self.nev][1]
         self.title(self.master.ui_texts[pakli+'_card'])
         cimStilus = 'helvetica 14 bold'
-        self.kartyalap = Frame(self, relief = GROOVE, bd = 2, bg = 'ivory')
-        Label(self.kartyalap, image = self.master.game_board.gallery[kep]).pack()
-        Separator(self.kartyalap, orient = HORIZONTAL).pack(fill = X)
-        Label(self.kartyalap, wraplength = 216, text = cim, font = cimStilus).pack(fill = X)
-        Separator(self.kartyalap, orient = HORIZONTAL).pack(fill = X)
-        self.szovegfelirat = Label(self.kartyalap, wraplength = 216, text = szoveg)
-        self.szovegfelirat.pack(fill = X)
-        self.kartyalap.pack(pady = 5, padx = 5)
+        self.kartyalap = Frame(self, relief=GROOVE, bd=2, bg='ivory')
+        Label(self.kartyalap, image=self.master.game_board.gallery[kep]).pack()
+        Separator(self.kartyalap, orient=HORIZONTAL).pack(fill=X)
+        Label(self.kartyalap, wraplength=216, text=cim, font=cimStilus).pack(fill=X)
+        Separator(self.kartyalap, orient=HORIZONTAL).pack(fill=X)
+        self.szovegfelirat = Label(self.kartyalap, wraplength=216, text=szoveg)
+        self.szovegfelirat.pack(fill=X)
+        self.kartyalap.pack(pady=5, padx=5)
         if megtekint:
             pass
         else:
             exec(self.fuggveny)
             self.protocol("WM_DELETE_WINDOW", self.bezar)
         self.transient(self.master)
-        self.resizable(False,False)
-        
+        self.resizable(False, False)
+
     def noEscape(self):
         debug("There is no escape.")
-        
+
     def dummy(self):
         debug("Card method is yet to be developed.")
         self.bezar = self.lapotEldob
         return
-    
+
     def csakMegtart(self):
         "Függvény a lap kötelező megtartásához."
         self.bezar = self.lapotMegtart
-        Button(self, text = self.master.ui_texts['card_keep'], command = self.lapotMegtart).pack(pady = 5)
-    
-    def lapotMegtart(self, event = None):
+        Button(self, text=self.master.ui_texts['card_keep'], command=self.lapotMegtart).pack(pady=5)
+
+    def lapotMegtart(self, event=None):
         "A lap megtartásának függvénye."
         self.master.engine.aktivjatekos.add_state(self.nev)
         self.destroy()
         self.master.engine.szakasz_0()
-        
-    def lapotEldob(self, event = None):
+
+    def lapotEldob(self, event=None):
         debug("Card discarded.")
         if self.pakli == "event":
             self.master.engine.eventstack.append(self.nev)
@@ -89,18 +90,18 @@ class KartyaAblak(Toplevel):
         elif self.pakli == "treasure":
             self.master.engine.treasurestack.append(self.nev)
             self.destroy()
-    
+
     def eltunik(self):
         "Az ablak bezárása."
         self.destroy()
         return False
-        
+
     def treasure(self):
         "A pénzt adó kincskártyák függvénye."
         self.master.engine.aktivjatekos.update_gold(self.ertek)
-        Button(self, text = self.master.ui_texts['done'], command=self.destroy).pack(pady = 5, side = BOTTOM)
+        Button(self, text=self.master.ui_texts['done'], command=self.destroy).pack(pady=5, side=BOTTOM)
         return
-        
+
     def sirens(self):
         "A sziréneket működtető függvény."
         enekEreje = randrange(1, 7)

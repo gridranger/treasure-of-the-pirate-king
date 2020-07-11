@@ -261,7 +261,7 @@ class Board(Frame):
         updated_wind_index = (self.wind_direction.index(0) + int(angle / 45)) % 8
         self.update_wind_direction(updated_wind_index)
         self._display_wind()
-    
+
     def mark_target_tiles(self, tiles):
         self.tile_marks = []
         for column, row in tiles:
@@ -271,7 +271,7 @@ class Board(Frame):
             self.is_field_select_visible.set(True)
         self.is_field_select_blinking = True
         self._blinker.start()
-          
+
     def _pick_tile(self, event):
         if not self.master.engine.dobasMegtortent.get():
             return
@@ -282,7 +282,7 @@ class Board(Frame):
         self.turn_off_blinker()
         self.relocate_ship(coordinates)
         self.master.engine.szakasz_mezoevent()
-            
+
     def turn_off_blinker(self):
         self.master.game_board.is_field_select_blinking = False
         if self.is_field_select_visible.get():
