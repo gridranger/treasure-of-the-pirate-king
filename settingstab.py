@@ -1,8 +1,6 @@
-# -*- coding: utf-8 -*-
+# flake8: noqa
 from tkinter import DISABLED, E, HORIZONTAL, NORMAL, W, Button, Checkbutton, Frame, IntVar, Label, Scale
 from tkinter.ttk import Combobox, LabelFrame
-
-__author__ = 'Bárdos Dávid'
 
 
 class SettingsTab(Frame):

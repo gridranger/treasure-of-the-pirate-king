@@ -1,11 +1,9 @@
-# -*- coding: utf-8 -*-
+# flake8: noqa
 from logging import debug
 from math import sqrt
 from tkinter import IntVar
 
 from models import PlayerState
-
-__author__ = 'Bárdos Dávid'
 
 
 class Player(object):

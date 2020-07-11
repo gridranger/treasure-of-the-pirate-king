@@ -1,5 +1,4 @@
-# -*- coding: utf-8 -*-
-__author__ = 'Bárdos Dávid'
+# flake8: noqa
 
 BRITISH = 'british'
 FRENCH = 'french'

@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# flake8: noqa
 from tkinter import DISABLED, E, N, W
 from tkinter.ttk import Notebook
 
@@ -6,8 +6,6 @@ from developertab import DeveloperTab
 from gametab import GameTab
 from maintab import MainTab
 from settingstab import SettingsTab
-
-__author__ = 'Bárdos Dávid'
 
 
 class Tabs(Notebook):

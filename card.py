@@ -1,3 +1,4 @@
+# flake8: noqa
 from logging import debug
 from random import randrange
 from tkinter import BOTTOM, Button, DISABLED, Frame, GROOVE, HORIZONTAL, Label, LEFT, NORMAL, RIGHT, TOP, Toplevel, X

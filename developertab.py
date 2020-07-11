@@ -1,3 +1,4 @@
+# flake8: noqa
 from tkinter import Button, Entry, Frame, Label
 
 

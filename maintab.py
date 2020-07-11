@@ -1,3 +1,4 @@
+# flake8: noqa
 from tkinter import Frame, Button, RAISED, FLAT, DISABLED, SUNKEN, NORMAL
 
 

@@ -1,3 +1,4 @@
+# flake8: noqa
 from tkinter import BooleanVar
 from tkinter.messagebox import showinfo, askyesno
 

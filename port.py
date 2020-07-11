@@ -1,10 +1,7 @@
-# -*- coding: utf-8 -*-
+# flake8: noqa
 from tkinter import IntVar, Scale, StringVar, Y
 from card import *
 from tkinter.ttk import LabelFrame, Separator
-
-
-__author__ = 'Bárdos Dávid'
 
 
 class Varos(object):

@@ -1,3 +1,4 @@
+# flake8: noqa
 from PIL.Image import open as pillow_open
 
 

@@ -1,3 +1,4 @@
+# flake8: noqa
 from logging import debug
 from tkinter import BooleanVar, BOTTOM, Button, CENTER, DISABLED, FLAT, Frame, GROOVE, IntVar, Label, LEFT, NORMAL, Radiobutton, RIGHT, StringVar, SUNKEN, TOP, Toplevel, X, Y
 from tkinter.messagebox import askyesno

@@ -1,4 +1,5 @@
-﻿from logging import debug
+﻿# flake8: noqa
+from logging import debug
 from time import sleep
 from tkinter import BooleanVar, Canvas, CENTER, Frame, NW
 

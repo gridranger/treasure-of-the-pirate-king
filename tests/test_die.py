@@ -10,8 +10,8 @@ class TestDie(TestCase):
         self._color_hex = "#80eb56"
         self._die = Die(None, 60, self._color_hex, "black", 1)
 
-    @patch("die.Die._show")
-    @patch("die.Die._show_dots")
+    @patch("assets.Die._show")
+    @patch("assets.Die._show_dots")
     def test___init__(self, _show_dots, _show):
         self._die = Die(None, 60, "#80eb56", "black", 1)
         self.assertEqual(30, self._die._y)
@@ -47,11 +47,11 @@ class TestDie(TestCase):
         self._die._remove_dots()
         self.assertEqual(test_value, delete.call_count)
 
-    @patch("die.Die._remove_dots")
-    @patch("die.Die._show_dots")
+    @patch("assets.Die._remove_dots")
+    @patch("assets.Die._show_dots")
     @patch("tkinter.Canvas.update_idletasks")
     def test_roll(self, update_idletasks, _show_dots, _remove_dots):
-        self.assertTrue(self._die.roll() in range(1,7))
+        self.assertTrue(self._die.roll() in range(1, 7))
         self.assertEqual(6, _remove_dots.call_count)
         self.assertEqual(6, _show_dots.call_count)
         self.assertEqual(6, update_idletasks.call_count)

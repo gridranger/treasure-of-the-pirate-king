@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# flake8: noqa
 from tkinter import Frame, RAISED, IntVar, StringVar, Label, E, Entry, Button, SUNKEN, DISABLED, colorchooser, NORMAL
 from tkinter.ttk import Combobox
 
@@ -7,8 +7,6 @@ from PIL.ImageTk import PhotoImage
 
 from colorize import image_tint
 from models import PlayerState
-
-__author__ = 'Bárdos Dávid'
 
 
 class NewPlayerField(Frame):
