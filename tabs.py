@@ -1,4 +1,3 @@
-# flake8: noqa
 from tkinter import DISABLED, E, N, W
 from tkinter.ttk import Notebook
 

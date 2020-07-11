@@ -1,6 +1,3 @@
-# flake8: noqa
-
-
 class Helmsman(object):
     def __init__(self, tiles, wind_state, port_coordinates):
         self._board_tiles = tiles

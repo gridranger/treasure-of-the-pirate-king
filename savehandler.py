@@ -1,4 +1,3 @@
-# flake8: noqa
 from models import GameState, PlayerState
 from tkinter.filedialog import askopenfilename, asksaveasfilename
 from xml.dom.minidom import parseString

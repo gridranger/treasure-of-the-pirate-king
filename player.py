@@ -1,4 +1,3 @@
-# flake8: noqa
 from logging import debug
 from math import sqrt
 from tkinter import IntVar

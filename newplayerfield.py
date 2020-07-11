@@ -1,4 +1,3 @@
-# flake8: noqa
 from tkinter import Frame, RAISED, IntVar, StringVar, Label, E, Entry, Button, SUNKEN, DISABLED, colorchooser, NORMAL
 from tkinter.ttk import Combobox
 

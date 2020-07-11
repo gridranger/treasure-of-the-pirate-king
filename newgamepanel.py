@@ -1,4 +1,3 @@
-# flake8: noqa
 from tkinter import DISABLED, E, W, Button, Checkbutton, Frame
 
 from PIL.Image import ANTIALIAS

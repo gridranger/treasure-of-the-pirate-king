@@ -1,4 +1,3 @@
-# flake8: noqa
 from tkinter import E, SUNKEN, W, Frame, Label
 
 

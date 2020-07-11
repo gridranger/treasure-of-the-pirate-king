@@ -1,4 +1,3 @@
-# flake8: noqa
 from logging import debug
 from tkinter import BooleanVar, BOTTOM, Button, CENTER, DISABLED, FLAT, Frame, GROOVE, IntVar, Label, LEFT, NORMAL, Radiobutton, RIGHT, StringVar, SUNKEN, TOP, Toplevel, X, Y
 from tkinter.messagebox import askyesno
@@ -900,15 +899,16 @@ class Szirenkurt(Gombjektum):
                 pluszmatrozok = 0
         self.boss.ellenfel.csatafelirat()
         self.boss.jatekos.csatafelirat()
-        
+
     def cooling(self):
         if self.nev in self.master.engine.aktivjatekos.states and not self.cooldown:
             csapatletszamokListaja = []
-            for i in range(1,7):
+            for i in range(1, 7):
                 csapatletszamokListaja.append(self.boss.jatekos.skalaszotar[i].elo.get())
             if 0 in csapatletszamokListaja:
-                self.gomb.configure(state = NORMAL)
-                
+                self.gomb.configure(state=NORMAL)
+
+
 class Szirenek(Gombjektum):
     """Fogjul ejtett szirén."""
     def __init__(self, boss, master, hely):
@@ -917,11 +917,11 @@ class Szirenek(Gombjektum):
         self.hang = "Trillalá!"
         self.okozottVeszteseg = 3
         self.talon = self.master.engine.eventstack
-        
+
     def mukodes(self):
         "A dobott számú csapatból három matrózt a tengerbe csábít."
         self.eldobas()
-        dobas = randrange(1,7)
+        dobas = randrange(1, 7)
         csapat = self.boss.ellenfel.skalaszotar[dobas]
         letszam = csapat.elo.get()
         if letszam >= self.okozottVeszteseg:
@@ -929,8 +929,9 @@ class Szirenek(Gombjektum):
         else:
             levonando = letszam
         for i in range(levonando):
-            csapat.matrozszotar[letszam-i].configure(image = csapat.serult)
+            csapat.matrozszotar[letszam-i].configure(image=csapat.serult)
         csapat.elo.set(letszam-levonando)
+
 
 class Alvarez(Gombjektum):
     """Juan Alvarez"""
@@ -938,7 +939,7 @@ class Alvarez(Gombjektum):
         Gombjektum.__init__(self, boss, master, hely, "alvarez")
         self.maxCoolDown = -1
         self.hang = "A helyetekre, fiúk!"
-        
+
     def mukodes(self):
         "Lehetővé teszi, hogy a játékos átrendezze a csapatait egyszer egy csata folyamán."
         jatekos = self.boss.jatekos
@@ -949,6 +950,7 @@ class Alvarez(Gombjektum):
             jatekos.skalaszotar[i].value.set(jatekos.skalaszotar[i].elo.get())
         jatekos.maxLegenyseg_set(maxLegenyseg)
         jatekos.kiosztottLegenyseg.set(maxLegenyseg)
-        jatekos.osszegzoFelirat.set(self.master.ui_texts['crew']+': '+str(jatekos.kiosztottLegenyseg.get())+'/'+str(jatekos.maxLegenyseg))
+        jatekos.osszegzoFelirat.set(self.master.ui_texts['crew'] + ': ' + str(jatekos.kiosztottLegenyseg.get()) + '/'
+                                    + str(jatekos.maxLegenyseg))
         jatekos.mindentEngedelyez()
-        self.boss.korOsszegzo.config(text = self.master.ui_texts["ship_spotted_alvarez"])
+        self.boss.korOsszegzo.config(text=self.master.ui_texts["ship_spotted_alvarez"])

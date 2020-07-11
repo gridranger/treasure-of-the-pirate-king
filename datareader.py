@@ -1,4 +1,3 @@
-# flake8: noqa
 from models import LoadedSettings, ShipType
 from tkinter.messagebox import showerror
 from xml.etree.ElementTree import parse

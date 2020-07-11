@@ -1,4 +1,3 @@
-# flake8: noqa
 from logging import DEBUG, WARNING, basicConfig, getLogger
 from tkinter import DISABLED, E, N, NORMAL, S, W, Frame, IntVar, StringVar, Tk
 from tkinter.messagebox import askokcancel
