@@ -596,21 +596,21 @@ class MatrozSkala(Frame):
             self.radio.pack(side = RIGHT)
             self.value.set(0)
             self.erteket_beallit(ellensegesLegenyseg)
-            
+
     def letilto(self, x=0, y=0, z=0, all=0):
         if all:
-            self.pluszgomb.configure(state = DISABLED)
-            self.minuszgomb.configure(state = DISABLED)
+            self.pluszgomb.configure(state=DISABLED)
+            self.minuszgomb.configure(state=DISABLED)
         elif self.value.get() == 6:
-            self.pluszgomb.configure(state = DISABLED)
-            self.minuszgomb.configure(state = NORMAL)
+            self.pluszgomb.configure(state=DISABLED)
+            self.minuszgomb.configure(state=NORMAL)
         elif 0 < self.value.get() < 6 and self.boss.kiosztottLegenyseg.get() < self.boss.maxLegenyseg:
-            self.pluszgomb.configure(state = NORMAL)
-            self.minuszgomb.configure(state = NORMAL)
+            self.pluszgomb.configure(state=NORMAL)
+            self.minuszgomb.configure(state=NORMAL)
         elif self.value.get() == 0:
-            self.minuszgomb.configure(state = DISABLED)
-            self.pluszgomb.configure(state = NORMAL)
-            
+            self.minuszgomb.configure(state=DISABLED)
+            self.pluszgomb.configure(state=NORMAL)
+
     def erteket_beallit(self, ertek):
         'Beállítja a skálát a kívánt értékre'
         if self.value.get() == ertek:
@@ -621,26 +621,27 @@ class MatrozSkala(Frame):
         else:
             for i in range(self.value.get()-ertek):
                 self.minusz()
-    
+
     def plusz(self):
         'Kijelzi a matrózok létszámának változását.'
         self.value.set(self.value.get()+1)
-        self.matrozszotar[self.value.get()].configure(image = self.teli)
-        self.boss.kiosztottLegenyseg.set(self.boss.kiosztottLegenyseg.get()+1)
-        
+        self.matrozszotar[self.value.get()].configure(image=self.teli)
+        self.boss.kiosztottLegenyseg.set(self.boss.kiosztottLegenyseg.get() + 1)
+
     def minusz(self):
         'Kijelzi a matrózok létszámának változását.'
-        self.matrozszotar[self.value.get()].configure(image = self.ures)
-        self.value.set(self.value.get()-1)
-        self.boss.kiosztottLegenyseg.set(self.boss.kiosztottLegenyseg.get()-1)
-        
+        self.matrozszotar[self.value.get()].configure(image=self.ures)
+        self.value.set(self.value.get() - 1)
+        self.boss.kiosztottLegenyseg.set(self.boss.kiosztottLegenyseg.get() - 1)
+
     def eloszamol(self):
         self.elo.set(self.value.get())
-    
+
     def talalat(self):
         "A csapat veszít egy matrózt."
-        self.matrozszotar[self.elo.get()].configure(image = self.serult)
+        self.matrozszotar[self.elo.get()].configure(image=self.serult)
         self.elo.set(self.elo.get()-1)
+
 
 class Gombjektum():
     """Egy-egy gomb/kártya/lehetőség alapvető logikai reprezentációja."""
@@ -651,50 +652,52 @@ class Gombjektum():
         self.cooldown = 0
         keret = Frame(hely)
         self.hang = ""
-        self.gomb = Button(keret, image = master.game_board.gallery['icon_'+nev], relief = FLAT, command = self.hasznalat, state = DISABLED)
-        self.gomb.pack(side = TOP)
-        Label(keret, text = master.card_texts[nev][0], wraplength = 55).pack(side = TOP)
-        keret.pack(side = LEFT, fill = Y)
+        self.gomb = Button(keret, image=master.game_board.gallery['icon_' + nev], relief=FLAT, command=self.hasznalat,
+                           state=DISABLED)
+        self.gomb.pack(side=TOP)
+        Label(keret, text=master.card_texts[nev][0], wraplength=55).pack(side=TOP)
+        keret.pack(side=LEFT, fill=Y)
         self.talon = self.master.engine.treasurestack
         self.tooltipSzoveg = self.master.card_texts[self.nev][1]
         self.gomb.bind("<Enter>", self.tooltipMutat)
         self.gomb.bind("<Leave>", self.tooltipRejt)
-        
+
     def tooltipMutat(self, event):
         "Mutatja a súgómezőben a súgószöveget."
-        self.boss.tooltip.label.config(text = self.tooltipSzoveg)
-        
+        self.boss.tooltip.label.config(text=self.tooltipSzoveg)
+
     def tooltipRejt(self, event):
         "Törli a súgómezőből a súgószöveget."
-        self.boss.tooltip.label.config(text = "")
-        
+        self.boss.tooltip.label.config(text="")
+
     def cooling(self):
         "Megvalósítja a cooldown-kezelést."
         if self.nev in self.master.engine.aktivjatekos.states:
             if self.cooldown > 1:
                 self.cooldown += -1
-            elif self.cooldown in [0,1]:
+            elif self.cooldown in [0, 1]:
                 self.cooldown = 0
-                self.gomb.configure(state = NORMAL)
-            
+                self.gomb.configure(state=NORMAL)
+
     def mukodes(self):
         "A gomb fő működésfüggvénye. Minden egyes származtatott osztálynak felül kell írnia ezt a függvényt!"
         pass
-        
+
     def hasznalat(self):
         "Meghívja a működést, majd futtat egy feltételvizsgálatot."
         debug(self.hang)
         for i in self.boss.gombszotar.keys():
-            self.boss.gombszotar[i].gomb.config(state = DISABLED)
+            self.boss.gombszotar[i].gomb.config(state=DISABLED)
         self.mukodes()
         self.cooldown = self.maxCoolDown
-        self.gomb.configure(state = DISABLED)
-        vege_a_harcnak = self.boss.harcfeltetelek_vizsgalata()
-        
+        self.gomb.configure(state=DISABLED)
+        self.boss.harcfeltetelek_vizsgalata()
+
     def eldobas(self):
         "Eldobja a játék kártyáját."
         self.master.engine.aktivjatekos.states.remove(self.nev)
         self.talon.append(self.nev)
+
 
 class Pisztoly(Gombjektum):
     """A gun objektum."""
@@ -702,23 +705,24 @@ class Pisztoly(Gombjektum):
         Gombjektum.__init__(self, boss, master, hely, 'gun')
         self.maxCoolDown = 2
         self.hang = "Piff!"
-        
+
     def mukodes(self):
-        dobas = randrange(1,7)
-        if self.boss.ellenfel.skalaszotar[dobas].elo.get(): # Ha a dobás talált (van a dobott számú csapatban matróz),
-            self.boss.ellenfel.celzas_sima(dobas)           # törlünk belőle egyet.
-        
+        dobas = randrange(1, 7)
+        if self.boss.ellenfel.skalaszotar[dobas].elo.get():  # Ha a dobás talált (van a dobott számú csapatban matróz),
+            self.boss.ellenfel.celzas_sima(dobas)            # törlünk belőle egyet.
+
+
 class Puska(Gombjektum):
     """Pisztoly módosulat."""
     def __init__(self, boss, master, hely):
         Gombjektum.__init__(self, boss, master, hely, 'rifle')
         self.maxCoolDown = 3
         self.hang = "Puff!"
-        
+
     def mukodes(self):
-        self.boss.csataIndulGomb.configure(state = DISABLED)
+        self.boss.csataIndulGomb.configure(state=DISABLED)
         # dobunk
-        dobas = randrange(1,7)
+        dobas = randrange(1, 7)
         # amennyiben értelmes, vesszük a szomszéd értékeket is
         celpontok = [dobas-1, dobas, dobas+1]
         for celpont in celpontok:
@@ -731,49 +735,51 @@ class Puska(Gombjektum):
             if self.boss.ellenfel.skalaszotar[celpont].elo.get():
                 celpontok2.append(celpont)
             else:
-                debug('Célpont',celpont,'eltávolítva.')
+                debug('Célpont', celpont, 'eltávolítva.')
         if not celpontok2:
             debug("Mellé.")
         elif len(celpontok2) == 1:
             debug("AutoCélzás.")
             self.boss.ellenfel.celzas_sima(celpontok2[0])
-            self.boss.csataIndulGomb.configure(state = NORMAL)
+            self.boss.csataIndulGomb.configure(state=NORMAL)
         else:
             self.boss.ellenfel.celpontotMegjelol(celpontok2)
-            self.boss.korOsszegzo.configure(text = self.master.ui_texts['amining'])
-            self.figyelo = self.boss.ellenfel.valasztottCsapat.trace('w',self.mukodes2)
-            
+            self.boss.korOsszegzo.configure(text=self.master.ui_texts['amining'])
+            self.figyelo = self.boss.ellenfel.valasztottCsapat.trace('w', self.mukodes2)
+
     def mukodes2(self, x, y, z):
-        self.boss.ellenfel.valasztottCsapat.trace_vdelete('w',self.figyelo)
-        self.boss.csataIndulGomb.configure(state = NORMAL)
-                
+        self.boss.ellenfel.valasztottCsapat.trace_vdelete('w', self.figyelo)
+        self.boss.csataIndulGomb.configure(state=NORMAL)
+
+
 class Labtovis(Gombjektum):
     """Az ellefél eggyel kevesebb kockával játszhat. Egyszeri használat után eldobandó."""
     def __init__(self, boss, master, hely):
         Gombjektum.__init__(self, boss, master, hely, 'caltrop')
         self.maxCoolDown = -1
         self.hang = "**Szétgurul.**"
-        
+
     def mukodes(self):
         self.eldobas()
         self.boss.caltrop = 1
-        self.gomb.configure(relief = SUNKEN, command = self.mukodes2)
-        
+        self.gomb.configure(relief=SUNKEN, command=self.mukodes2)
+
     def mukodes2(self):
         pass
-                
+
+
 class Granat(Gombjektum):
     """Elsöpör egy tetszőleges ellenséges csapatot. Egyszeri használat után eldobandó."""
     def __init__(self, boss, master, hely):
         Gombjektum.__init__(self, boss, master, hely, 'grenade')
         self.maxCoolDown = -1
         self.hang = "Durrrrr!"
-        
+
     def mukodes(self):
-        self.boss.csataIndulGomb.configure(state = DISABLED)
+        self.boss.csataIndulGomb.configure(state=DISABLED)
         self.eldobas()
-        celpontok = [] # Ahova lőhet a játékos
-        for celpont in range(1,7):
+        celpontok = []  # Ahova lőhet a játékos
+        for celpont in range(1, 7):
             if self.boss.ellenfel.skalaszotar[celpont].elo.get():
                 celpontok.append(celpont)
         if len(celpontok) == 1:
@@ -782,19 +788,20 @@ class Granat(Gombjektum):
                 self.boss.ellenfel.celzas_sima(celpontok[0])
         else:
             self.boss.ellenfel.celpontotMegjelol(celpontok)
-            self.boss.korOsszegzo.configure(text = self.master.ui_texts['aiming'])
-            self.figyelo = self.boss.ellenfel.valasztottCsapat.trace('w',self.mukodes2)
-            
-    def mukodes2(self,x,y,z):
+            self.boss.korOsszegzo.configure(text=self.master.ui_texts['aiming'])
+            self.figyelo = self.boss.ellenfel.valasztottCsapat.trace('w', self.mukodes2)
+
+    def mukodes2(self, x, y, z):
         csapat = self.boss.ellenfel.valasztottCsapat.get()
-        self.boss.ellenfel.valasztottCsapat.trace_vdelete('w',self.figyelo)
+        self.boss.ellenfel.valasztottCsapat.trace_vdelete('w', self.figyelo)
         letszam = self.boss.ellenfel.skalaszotar[csapat].elo.get()
         if letszam < 2:
             pass
         else:
             for i in range(letszam-1):
                 self.boss.ellenfel.skalaszotar[csapat].talalat()
-        self.boss.csataIndulGomb.configure(state = NORMAL)
+        self.boss.csataIndulGomb.configure(state=NORMAL)
+
 
 class Kartacs(Gombjektum):
     """Kartács objektum"""
