@@ -49,9 +49,15 @@ class TestDie(TestCase):
 
     @patch("assets.Die._remove_dots")
     @patch("assets.Die._show_dots")
+    @patch("assets.die.sleep")
+    @patch("assets.die.randrange", return_value=4)
     @patch("tkinter.Canvas.update_idletasks")
-    def test_roll(self, update_idletasks, _show_dots, _remove_dots):
-        self.assertTrue(self._die.roll() in range(1, 7))
+    def test_roll(self, update_idletasks, randrange, sleep, _show_dots, _remove_dots):
+        self.assertEqual(5, self._die.roll())
         self.assertEqual(6, _remove_dots.call_count)
+        self.assertEqual(6, _remove_dots.call_count)
+        self.assertEqual(6, randrange.call_count)
         self.assertEqual(6, _show_dots.call_count)
         self.assertEqual(6, update_idletasks.call_count)
+        self.assertEqual(6, sleep.call_count)
+        sleep.asslert_called_with(0.075)
