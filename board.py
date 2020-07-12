@@ -5,7 +5,7 @@ from tkinter import BooleanVar, Canvas, CENTER, Frame, NW
 from PIL.ImageTk import PhotoImage
 from PIL.Image import ANTIALIAS, BICUBIC, open as pillow_open
 
-from colorize import image_tint
+from assets import Gallery
 from helmsman import Helmsman
 
 _RGBA = "RGBA"
@@ -165,7 +165,7 @@ class Board(Frame):
         ship_image = pillow_open('img/{}-h.png'.format(player.ship))
         height_multiplier = ship_image.size[1] / ship_image.size[0]
         ship_image = self._scale_ship_part(ship_image, height_multiplier)
-        sail_image = image_tint('img/{}-v.png'.format(player.ship), player.color)
+        sail_image = Gallery.tint_image('img/{}-v.png'.format(player.ship), player.color)
         sail_image = self._scale_ship_part(sail_image, height_multiplier)
         ship_image.paste(sail_image, (0, 0), sail_image)
         return ship_image

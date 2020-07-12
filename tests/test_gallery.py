@@ -59,3 +59,34 @@ class TestGallery(TestCase):
         self.assertEqual("photo_data", Gallery._pictures["crewman0"])
         self.mock_image.resize.assert_called_once_with((2, 1), 1)
         self.assertEqual(3, len(Gallery._pictures))
+
+
+class TestTinting(TestCase):
+    def setUp(self):
+        self.pixel_map = dict([((0, 0), (25, 25, 25, 0)),
+                               ((0, 1), (44, 44, 44, 255)),
+                               ((0, 2), (128, 128, 128, 128)),
+                               ((0, 3), (255, 255, 255, 255))])
+        self.mock_image = Mock()
+        self.mock_image.size = 1, 4
+        self.mock_image.load = Mock(return_value=self.pixel_map)
+
+    @patch("assets.gallery.pillow_open", return_value="binary_image_data")
+    def test_tint_image_to_white(self, pillow_open):
+        self.assertEqual("binary_image_data", Gallery.tint_image("img/map.png"))
+
+    @patch("assets.gallery.pillow_open")
+    @patch("assets.Gallery._convert_color_hex_to_rgb", return_value=(0, 127, 127))
+    def def_tint_image_to_dark_cyan(self, _convert_color_hex_to_rgb, pillow_open):
+        pillow_open.return_value = self.mock_image
+        self.assertEqual(self.mock_image, Gallery.tint_image("img/map.png", "#007F7F"))
+        pillow_open.assert_called_once()
+        self.mock_image.load.assert_called_once()
+        _convert_color_hex_to_rgb.assert_called_once()
+        self.assertEqual(self.pixel_map[0, 0], (25, 25, 25, 0))
+        self.assertEqual(self.pixel_map[0, 1], (0, 21, 21, 255))
+        self.assertEqual(self.pixel_map[0, 2], (0, 63, 63, 128))
+        self.assertEqual(self.pixel_map[0, 3], (0, 127, 127, 255))
+
+    def test__convert_color_hex_to_rgb(self):
+        self.assertEqual((0, 127, 127), Gallery._convert_color_hex_to_rgb("#007F7F"))

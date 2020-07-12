@@ -56,3 +56,27 @@ class Gallery:
             cls._pictures[f"crewman{i}"] = PhotoImage(cls._raw_images[f"crewman{i}"])
         crewman_size = cls._raw_images["crewman1"].size
         cls._pictures["crewman0"] = PhotoImage((pillow_open('img/transparent.png')).resize(crewman_size, ANTIALIAS))
+
+    @classmethod
+    def tint_image(cls, src, color_hex_code=""):
+        binary_data = pillow_open(src)
+        if not color_hex_code:
+            return binary_data
+        width, height = binary_data.size
+        pixel_map = binary_data.load()
+        r, g, b = cls._convert_color_hex_to_rgb(color_hex_code)
+        for y in range(0, height):
+            for x in range(0, width):
+                tint = pixel_map[x, y][1] / 255
+                transparency_bit = pixel_map[x, y][3]
+                pixel_is_colored = bool(transparency_bit)
+                if pixel_is_colored:
+                    pixel_map[x, y] = (int(r * tint), int(g * tint), int(b * tint), transparency_bit)
+        return binary_data
+
+    @staticmethod
+    def _convert_color_hex_to_rgb(hex_code):
+        r = int(hex_code[1:3], 16)
+        g = int(hex_code[3:5], 16)
+        b = int(hex_code[5:], 16)
+        return r, g, b
