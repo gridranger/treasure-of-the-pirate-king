@@ -405,11 +405,11 @@ class Hajoablak(Frame):
         self.osszegzoFelirat.set(self.osszegzoFelirat.eleje+str(self.kiosztottLegenyseg.get())+self.osszegzoFelirat.vege)
         self.full = BooleanVar()
         self.full.set(False)
-        self.full.trace('w',self.csataIndulConf)
+        self.full.trace('w', self.csataIndulConf)
         self.skalaszotar = {}
         self.aktivCsapatok = IntVar()
         if user:
-            self.kiosztottLegenyseg.trace('w',self.matrozValtozas)
+            self.kiosztottLegenyseg.trace('w', self.matrozValtozas)
             self.hossz = 6
         else:
             self.valasztottCsapat = IntVar()
@@ -417,108 +417,116 @@ class Hajoablak(Frame):
             for i in boss.ellensegesLegenyseg:
                 if isinstance(i, int):
                     csapatok.append(i)
-            self.hossz = 6 #max(csapatok)
+            self.hossz = 6  # max(csapatok)
         # Adatgenerálás
         if user:
             nev = self.master.ui_texts["ship_name_player"]
-            reszletek = '%s %s' % (self.master.ui_texts[self.master.engine.aktivjatekos.empire], self.master.ui_texts[self.master.engine.aktivjatekos.ship])
+            reszletek = '%s %s' % (self.master.ui_texts[self.master.engine.aktivjatekos.empire],
+                                   self.master.ui_texts[self.master.engine.aktivjatekos.ship])
         else:
             nev = boss.ellensegesHajoNeve
-            reszletek = '%s %s' % (self.master.ui_texts[boss.ellensegesZaszlo], self.master.ui_texts[boss.ellensegesHajoTipusa])
+            reszletek = '%s %s' % (self.master.ui_texts[boss.ellensegesZaszlo],
+                                   self.master.ui_texts[boss.ellensegesHajoTipusa])
         # Képablak
-        kepkeret = Frame(self, height = self.master.game_board.tile_size, width = self.master.game_board.tile_size)
+        kepkeret = Frame(self, height=self.master.game_board.tile_size, width=self.master.game_board.tile_size)
         kepkeret.pack_propagate(0)
         if user:
             kep = self.master.game_board.ship_figure_images[self.master.engine.aktivjatekos.name]
         else:
             kep = self.master.game_board.gallery[self.boss.ellensegesHajoTipusa]
-        Label(kepkeret, image = kep).pack(side = BOTTOM)
+        Label(kepkeret, image=kep).pack(side=BOTTOM)
         kepkeret.pack()
         # Hajó neve
-        Label(self, text = nev, font = cimStilus).pack()
-        Label(self, text = reszletek).pack()
+        Label(self, text=nev, font=cimStilus).pack()
+        Label(self, text=reszletek).pack()
         # Skálák
         self.skalaablak = Frame(self)
-        for i in range(1,7):
-            self.skalaszotar[i] = MatrozSkala(self.skalaablak, self, self.master, user, boss.ellensegesLegenyseg[i-1], radioValue = i, hossz = self.hossz)
+        for i in range(1, 7):
+            self.skalaszotar[i] = MatrozSkala(self.skalaablak, self, self.master, user,
+                                              boss.ellensegesLegenyseg[i - 1], radioValue=i, hossz=self.hossz)
             self.skalaszotar[i].pack()
         elosztas = Frame(self.skalaablak)
-        Label(elosztas, textvariable = self.osszegzoFelirat).pack()
+        Label(elosztas, textvariable=self.osszegzoFelirat).pack()
         pult = Frame(elosztas)
         if user:
-            self.auto = Button(pult, text = self.master.ui_texts['balance_teams'], command = self.autoElosztas)
-            self.auto.pack(side = LEFT, padx = 3)
-            self.kesz = Button(pult, text = self.master.ui_texts['done'], command = self.boss.csataIndul, state = DISABLED)
-            self.kesz.pack(side = LEFT, padx = 3)
+            self.auto = Button(pult, text=self.master.ui_texts['balance_teams'], command=self.autoElosztas)
+            self.auto.pack(side=LEFT, padx=3)
+            self.kesz = Button(pult, text=self.master.ui_texts['done'], command=self.boss.csataIndul, state=DISABLED)
+            self.kesz.pack(side=LEFT, padx=3)
         pult.pack()
-        elosztas.pack(fill = X)
+        elosztas.pack(fill=X)
         # Utókozmetikázás az ellenfél mutatóján
         if not user:
             self.maxLegenyseg = 0
-            for i in range(1,7):
+            for i in range(1, 7):
                 self.maxLegenyseg += self.skalaszotar[i].value.get()
             self.kiosztottLegenyseg.set(self.maxLegenyseg)
-            self.osszegzoFelirat.set(self.osszegzoFelirat.eleje+str(self.kiosztottLegenyseg.get())+'/'+str(self.maxLegenyseg))
-            
+            self.osszegzoFelirat.set(self.osszegzoFelirat.eleje + str(self.kiosztottLegenyseg.get()) + '/' +
+                                     str(self.maxLegenyseg))
+
     def autoElosztas(self):
         "Működteti az automatikus elosztást végző gombot"
-        autoLista = [5, 3, 4, 2, 6] # statisztikailag ez kedvez legjobban a játékosnak
+        autoLista = [5, 3, 4, 2, 6]  # statisztikailag ez kedvez legjobban a játékosnak
         crew = self.maxLegenyseg
         alapletszam = int(crew/6)
-        maradek = crew%6
-        skalaAlapok = [alapletszam]*6
+        maradek = crew % 6
+        skalaAlapok = [alapletszam] * 6
         if maradek > 0:
             for i in range(maradek):
-                skalaAlapok[autoLista[i]-1] += 1
-        for i in range(1,7):
-            self.skalaszotar[i].erteket_beallit(skalaAlapok[i-1])
-    
+                skalaAlapok[autoLista[i] - 1] += 1
+        for i in range(1, 7):
+            self.skalaszotar[i].erteket_beallit(skalaAlapok[i - 1])
+
     def matrozValtozas(self, x=0, y=0, z=0):
         "Ha minden matrózt kiosztott a játékos, megakadályozza, hogy többet osszon ki."
         if self.kiosztottLegenyseg.get() == self.maxLegenyseg:
-            for i in range(1,7):
-                self.skalaszotar[i].pluszgomb.configure(state = DISABLED)
+            for i in range(1, 7):
+                self.skalaszotar[i].pluszgomb.configure(state=DISABLED)
             self.full.set(True)
         elif self.full.get() and self.kiosztottLegenyseg.get() < self.maxLegenyseg:
-            for i in range(1,7):
+            for i in range(1, 7):
                 self.skalaszotar[i].letilto()
             self.full.set(False)
-        self.osszegzoFelirat.set(self.osszegzoFelirat.eleje+str(self.kiosztottLegenyseg.get())+'/'+str(self.maxLegenyseg))
-        
+        self.osszegzoFelirat.set(self.osszegzoFelirat.eleje + str(self.kiosztottLegenyseg.get()) + '/' +
+                                 str(self.maxLegenyseg))
+
     def mindentLetilt(self):
         "Minden változtatást letilt a táblán."
-        for i in range(1,7):
-            self.skalaszotar[i].letilto(all = 1)
-        self.auto.configure(state = DISABLED)
-        self.kesz.configure(state = DISABLED)
-        
+        for i in range(1, 7):
+            self.skalaszotar[i].letilto(all=1)
+        self.auto.configure(state=DISABLED)
+        self.kesz.configure(state=DISABLED)
+
     def mindentEngedelyez(self):
         "Minden változtatást engedélyez a táblán, Alvarez parancsára."
-        self.boss.csataIndulGomb.config(state = DISABLED)
-        for i in range(1,7):
-            self.skalaszotar[i].minuszgomb.config(state = NORMAL)
-            self.skalaszotar[i].pluszgomb.config(state = NORMAL)
+        self.boss.csataIndulGomb.config(state=DISABLED)
+        for i in range(1, 7):
+            self.skalaszotar[i].minuszgomb.config(state=NORMAL)
+            self.skalaszotar[i].pluszgomb.config(state=NORMAL)
         self.matrozValtozas()
-        self.auto.configure(state = NORMAL)
-        self.kesz.configure(state = NORMAL, command = self.boss.csataIndul2)
-            
-    def csataIndulConf(self, x = None, y = None, z = None):
+        self.auto.configure(state=NORMAL)
+        self.kesz.configure(state=NORMAL, command=self.boss.csataIndul2)
+
+    def csataIndulConf(self, x=None, y=None, z=None):
         "Állítja a szülőkeret azonos paraméterét"
         self.boss.jatekosMatrozaiFenn.set(self.full.get())
-        
+
     def ertekkeszlet(self):
-        "Visszaadja az aktív csapatok méretét egy listaként. Amennyiben a csapat inaktív, azaz nem tartalmaz matrózt, nem kerül nulla a listába."
+        """
+            Visszaadja az aktív csapatok méretét egy listaként. Amennyiben a csapat inaktív, azaz nem tartalmaz
+            matrózt, nem kerül nulla a listába.
+        """
         ertekek = []
-        for i in range(1,7):
+        for i in range(1, 7):
             x = self.skalaszotar[i].elo.get()
             if x > 0:
                 ertekek.append(x)
         return ertekek
-    
+
     def eloszamol(self):
         for i in self.skalaszotar.keys():
             self.skalaszotar[i].eloszamol()
-    
+
     def talalat(self, csapatszam):
         "Végrehajtja a találat ellenőrzését, amennyiben nem történt sérülés, False értékkel tér vissza."
         if self.skalaszotar[csapatszam].elo.get():
@@ -527,28 +535,28 @@ class Hajoablak(Frame):
             return True
         else:
             return False
-            
+
     def celpontotMegjelol(self, megjelolendoCelpontok):
         "Megjelöli a választható célpontokat, és a választottat adja eredményül."
         for i in megjelolendoCelpontok:
-            self.skalaszotar[i].radio.configure(state = NORMAL)
-    
+            self.skalaszotar[i].radio.configure(state=NORMAL)
+
     def celzas(self):
         "Szabad kockás célzás."
         ertek = self.valasztottCsapat.get()
         self.celzas_sima(ertek)
         if self.boss.valosCelpontKockak:
             self.boss.szabadKockaListaCsokkent(ertek)
-    
+
     def celzas_sima(self, ertek):
         "Végrehajtja a játékos által célzott támadást."
         self.skalaszotar[ertek].talalat()
         self.csatafelirat()
-        self.boss.korOsszegzo.configure(text = '')
+        self.boss.korOsszegzo.configure(text='')
         self.valasztottCsapat.set(0)
         for i in self.skalaszotar.keys():
-            self.skalaszotar[i].radio.configure(state = DISABLED)
-        
+            self.skalaszotar[i].radio.configure(state=DISABLED)
+
     def csatafelirat(self):
         "Figyelemmel kíséri a létszámváltozásokat, és frissíti a felületet."
         x = 0
@@ -558,15 +566,16 @@ class Hajoablak(Frame):
                 x += self.skalaszotar[i].elo.get()
                 y += 1
         self.osszegzoFelirat.set(self.master.ui_texts['men_count'] % (x, y))
-        
+
     def maxLegenyseg_set(self, ertek):
         "Állítja a maxLegenyseg változót."
         self.maxLegenyseg = ertek
-    
+
+
 class MatrozSkala(Frame):
     """Matrózok elrendezésére szolgál"""
-    def __init__(self, boss2, boss, master, user = 0, ellensegesLegenyseg = 0, radioValue = 0, hossz = 6):
-        Frame.__init__(self, master = boss2)
+    def __init__(self, boss2, boss, master, user=0, ellensegesLegenyseg=0, radioValue=0, hossz=6):
+        Frame.__init__(self, master=boss2)
         if isinstance(ellensegesLegenyseg, str):
             ellensegesLegenyseg = 0
         self.boss = boss
@@ -577,23 +586,24 @@ class MatrozSkala(Frame):
         self.value = IntVar()
         self.elo = IntVar()
         if user:
-            self.minuszgomb = Button(self, text = '-', command = self.minusz, state = DISABLED)
-            self.minuszgomb.pack(side = LEFT)
+            self.minuszgomb = Button(self, text='-', command=self.minusz, state=DISABLED)
+            self.minuszgomb.pack(side=LEFT)
         self.matrozszotar = {}
-        for i in range(1,hossz+1):
-            self.matrozszotar[i] = Label(self, image = self.ures)
+        for i in range(1, hossz + 1):
+            self.matrozszotar[i] = Label(self, image=self.ures)
             if user:
-                self.matrozszotar[i].pack(side = LEFT)
+                self.matrozszotar[i].pack(side=LEFT)
             else:
-                self.matrozszotar[i].pack(side = RIGHT)
+                self.matrozszotar[i].pack(side=RIGHT)
         if user:
-            self.pluszgomb = Button(self, text = '+', command = self.plusz)
-            self.pluszgomb.pack(side = LEFT)
-            self.value.trace('w',self.letilto)
+            self.pluszgomb = Button(self, text='+', command=self.plusz)
+            self.pluszgomb.pack(side=LEFT)
+            self.value.trace('w', self.letilto)
             self.value.set(0)
         else:
-            self.radio = Radiobutton(self, var = self.boss.valasztottCsapat, value = radioValue, state = DISABLED, command = self.boss.celzas)
-            self.radio.pack(side = RIGHT)
+            self.radio = Radiobutton(self, var=self.boss.valasztottCsapat, value=radioValue, state=DISABLED,
+                                     command=self.boss.celzas)
+            self.radio.pack(side=RIGHT)
             self.value.set(0)
             self.erteket_beallit(ellensegesLegenyseg)
 
