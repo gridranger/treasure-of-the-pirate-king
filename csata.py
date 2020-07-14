@@ -3,6 +3,7 @@ from tkinter import BooleanVar, BOTTOM, Button, DISABLED, FLAT, Frame, GROOVE, I
     Radiobutton, RIGHT, StringVar, SUNKEN, TOP, Toplevel, X, Y
 from tkinter.messagebox import askyesno
 from random import randrange
+from assets import Gallery
 
 
 class Utkozet(Toplevel):
@@ -450,7 +451,7 @@ class Hajoablak(Frame):
         if user:
             kep = self.master.game_board.ship_figure_images[self.master.engine.aktivjatekos.name]
         else:
-            kep = self.master.game_board.gallery[self.boss.ellensegesHajoTipusa]
+            kep = Gallery.get(self.boss.ellensegesHajoTipusa)
         Label(kepkeret, image=kep).pack(side=BOTTOM)
         kepkeret.pack()
         # Hajó neve
@@ -597,9 +598,9 @@ class MatrozSkala(Frame):
             ellensegesLegenyseg = 0
         self.boss = boss
         self.root = master
-        self.ures = self.root.game_board.gallery['crewman0']
-        self.teli = self.root.game_board.gallery['crewman1']
-        self.serult = self.root.game_board.gallery['crewman2']
+        self.ures = Gallery.get("crewman0")
+        self.teli = Gallery.get("crewman1")
+        self.serult = Gallery.get("crewman2")
         self.value = IntVar()
         self.elo = IntVar()
         if user:
@@ -679,7 +680,7 @@ class Gombjektum():
         self.cooldown = 0
         keret = Frame(hely)
         self.hang = ""
-        self.gomb = Button(keret, image=master.game_board.gallery['icon_' + nev], relief=FLAT, command=self.hasznalat,
+        self.gomb = Button(keret, image=Gallery.get(f"icon_{nev}"), relief=FLAT, command=self.hasznalat,
                            state=DISABLED)
         self.gomb.pack(side=TOP)
         Label(keret, text=master.card_texts[nev][0], wraplength=55).pack(side=TOP)

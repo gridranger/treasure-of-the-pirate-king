@@ -2,6 +2,7 @@ from logging import debug
 from random import randrange
 from tkinter import BOTTOM, Button, DISABLED, Frame, GROOVE, HORIZONTAL, Label, LEFT, RIGHT, TOP, Toplevel, X
 from tkinter.ttk import Separator
+from assets import Gallery
 
 
 class Card(object):
@@ -47,7 +48,7 @@ class KartyaAblak(Toplevel):
         self.title(self.master.ui_texts[pakli+'_card'])
         cimStilus = 'helvetica 14 bold'
         self.kartyalap = Frame(self, relief=GROOVE, bd=2, bg='ivory')
-        Label(self.kartyalap, image=self.master.game_board.gallery[kep]).pack()
+        Label(self.kartyalap, image=Gallery.get(kep)).pack()
         Separator(self.kartyalap, orient=HORIZONTAL).pack(fill=X)
         Label(self.kartyalap, wraplength=216, text=cim, font=cimStilus).pack(fill=X)
         Separator(self.kartyalap, orient=HORIZONTAL).pack(fill=X)

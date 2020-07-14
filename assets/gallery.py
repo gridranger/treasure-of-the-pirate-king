@@ -44,16 +44,16 @@ class Gallery:
         edge_ratio = image.size[0] / image.size[1]
         size = {"compass": (Settings.tile_size * 3 - 10, Settings.tile_size * 3 - 10),
                 "map": (Settings.board_size, Settings.board_size),
-                "penz-1": (Settings.board_size // 40, Settings.board_size / 40 // edge_ratio),
+                "penz-1": (int(Settings.board_size / 40), int(Settings.board_size / 40 / edge_ratio)),
                 "penz-8": (Settings.icon_size, Settings.icon_size),
                 "penz-d": (Settings.icon_size, Settings.icon_size),
                 "penz-d2": (Settings.icon_size, Settings.icon_size),
                 "crew": (Settings.icon_size, Settings.icon_size),
                 "wind_direction": (int(Settings.tile_size * 2 * edge_ratio), int(Settings.tile_size * 2)),
-                "brigantine": (Settings.tile_size, Settings.tile_size // edge_ratio),
-                "frigate": (Settings.tile_size, Settings.tile_size // edge_ratio),
-                "schooner": (Settings.tile_size, Settings.tile_size // edge_ratio),
-                "galleon": (Settings.tile_size, Settings.tile_size // edge_ratio),
+                "brigantine": (Settings.tile_size, int(Settings.tile_size / edge_ratio)),
+                "frigate": (Settings.tile_size, int(Settings.tile_size / edge_ratio)),
+                "schooner": (Settings.tile_size, int(Settings.tile_size / edge_ratio)),
+                "galleon": (Settings.tile_size, int(Settings.tile_size / edge_ratio)),
                 "tile": (Settings.tile_size, Settings.tile_size)}
         size_required = size.get(name, (int(Settings.tile_size * 0.9), int(Settings.tile_size * 0.9)))
         resized_raw_image = image.resize(size_required, ANTIALIAS)
@@ -74,7 +74,7 @@ class Gallery:
             flag_name = f"flag_{empire.value.adjective.lower()}"
             flag = cls._get_raw_image(flag_name)
             side_ratio = flag.size[0] / flag.size[1]
-            resized_image = flag.resize((Settings.icon_size * side_ratio, Settings.icon_size), ANTIALIAS)
+            resized_image = flag.resize((int(Settings.icon_size * side_ratio), Settings.icon_size), ANTIALIAS)
             cls._pictures[flag_name] = PhotoImage(resized_image)
 
     @classmethod
@@ -94,6 +94,7 @@ class Gallery:
 
     @classmethod
     def _generate_card_image(cls, name):
+        name = name[:-2] if name.endswith("_i") else name
         raw_image = cls._get_raw_image(name)
         cls._pictures[f"{name}_i"] = PhotoImage(raw_image.resize((Settings.icon_size, Settings.icon_size), ANTIALIAS))
         cls._pictures[name] = PhotoImage(raw_image)
@@ -132,3 +133,7 @@ class Gallery:
         g = int(hex_code[3:5], 16)
         b = int(hex_code[5:], 16)
         return r, g, b
+
+    @classmethod
+    def discard_cache(cls):
+        cls._pictures = {}

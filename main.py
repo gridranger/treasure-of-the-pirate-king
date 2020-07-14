@@ -2,6 +2,7 @@ from logging import DEBUG, WARNING, basicConfig, getLogger
 from tkinter import DISABLED, E, N, NORMAL, S, W, Frame, IntVar, StringVar, Tk
 from tkinter.messagebox import askokcancel
 
+from assets import Gallery
 from board import Board
 from datareader import DataReader
 from game import Vezerlo
@@ -11,6 +12,7 @@ from models import BRITISH, DUTCH, FRENCH, PIRATE, SPANISH, GameState
 from assets.empire import _Empire  # Todo remove it
 from newgamepanel import NewGamePanel
 from savehandler import SaveHandler
+from settings import Settings
 from tabs import Tabs
 
 
@@ -45,6 +47,7 @@ class Application(Tk):
         self.is_game_in_progress.trace('w', self._follow_game_progress_change)
         self.is_turn_in_progress.trace('w', self._follow_turn_progress_change)
         self.players = {}
+        # TODO use assets.Empire instead of the following
         self.empires = {BRITISH: _Empire(BRITISH, 'portroyal', '', (0, 0)),
                         FRENCH: _Empire(FRENCH, 'martinique', '', (0, 0)),
                         DUTCH: _Empire(DUTCH, 'curacao', '', (0, 0)),
@@ -61,8 +64,8 @@ class Application(Tk):
     def _process_config(self):
         settings = self.data_reader.load_settings()
         self.language = settings.language
-        self.width = settings.width
-        self.height = settings.height
+        Settings.application_width = self.width = settings.width
+        Settings.application_height = self.height = settings.height
         self.resolution_code = settings.resolution_code
         self.resolution_list = settings.resolution_list
         self.screen_ratio = self.resolution_code[:4]
@@ -216,6 +219,7 @@ class Application(Tk):
             self.game_board.player_setups[i].set_player_state(player_state)
 
     def _remove_everything(self):
+        Gallery.discard_cache()
         self.menu.destroy()
         self.game_board.destroy()
         self.status_bar.destroy()

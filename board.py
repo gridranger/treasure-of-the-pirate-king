@@ -1,14 +1,10 @@
 ﻿from logging import debug
-from time import sleep
+from time import perf_counter, sleep
 from tkinter import BooleanVar, Canvas, CENTER, Frame, NW
-
-from PIL.ImageTk import PhotoImage
-from PIL.Image import ANTIALIAS, BICUBIC, open as pillow_open
 
 from assets import Empire, Gallery
 from helmsman import Helmsman
-
-_RGBA = "RGBA"
+from settings import Settings
 
 
 class Board(Frame):
@@ -19,7 +15,6 @@ class Board(Frame):
         self.board_canvas = self._add_board_canvas()
         self.tile_size = int(width / 9)
         self.tiles = self._generate_tiles()
-        self.gallery = {}
         self.locations = {"battle_french": [(5, 9)],
                           "battle_british": [(9, 5)],
                           "battle_dutch": [(1, 5)],
@@ -105,7 +100,6 @@ class Board(Frame):
 
     def render_board(self):
         debug('Board rendering started.')
-        icon_size = int(self.size / 20)
         self._render_background()
         self._render_semi_transparent_tile_backgrounds()
         self._render_tiles()
@@ -113,13 +107,7 @@ class Board(Frame):
         self._load_tile_picker()
         self._render_compass()
         self._display_wind()
-        self._render_money(icon_size)
-        self._render_ports()
-        self._render_crew(icon_size)
-        self._render_ships()
-        self._render_flags()
-        self._render_crewman()
-        self._render_battle_screen_button_images()
+        self._preload()
         debug('Board rendering finished.')
 
     def _render_background(self):
@@ -135,7 +123,6 @@ class Board(Frame):
             for x, y in self.locations[location]:
                 self.board_canvas.create_image(int((x - 0.5) * self.tile_size), int((y - 0.5) * self.tile_size),
                                                image=Gallery.get(location), anchor=CENTER)
-    # TODO replace .board.gallery[] calls!
 
     def _render_player_ship_figures(self):
         for player_object in self.master.players.values():
@@ -153,23 +140,11 @@ class Board(Frame):
                                                                    anchor=CENTER)
 
     def _load_tile_picker(self):
-        picker = pillow_open('img/X.png')
-        height_multiplier = picker.size[1] / picker.size[0]
-        self.gallery['x'] = PhotoImage(image=picker.resize((self.tile_size, int(self.tile_size * height_multiplier)),
-                                                           ANTIALIAS))
+        Gallery.get("X")
 
     def _render_compass(self):
-        self.gallery['compass'] = PhotoImage((pillow_open('img/compass.png').resize(
-            (self.tile_size * 3 - 10, self.tile_size * 3 - 10), ANTIALIAS)).convert(_RGBA))
         self.board_canvas.create_image(int(6.5 * self.tile_size), int(2.5 * self.tile_size),
-                                       image=self.gallery['compass'], anchor=CENTER)
-        wind_direction_arrow_image = pillow_open('img/wind_direction.png')
-        wind_width_multiplier = wind_direction_arrow_image.size[0] / wind_direction_arrow_image.size[1]
-        wind_direction_arrow_image = wind_direction_arrow_image.resize(
-            (int(self.tile_size * 2 * wind_width_multiplier), int(self.tile_size * 2)), ANTIALIAS).convert(_RGBA)
-        for i in range(8):
-            self.gallery['wind_direction' + str(i)] = PhotoImage(
-                wind_direction_arrow_image.rotate(i * -45, resample=BICUBIC, expand=1))
+                                       image=Gallery.get("compass"), anchor=CENTER)
         self.wind_direction_arrow = self.board_canvas.create_image(0, 0, image=None)
 
     def _display_wind(self):
@@ -178,58 +153,48 @@ class Board(Frame):
         self.board_canvas.delete(self.wind_direction_arrow)
         self.wind_direction_arrow = self.board_canvas.create_image(int(6.5 * self.tile_size),
                                                                    int(2.5 * self.tile_size),
-                                                                   image=self.gallery[image_key], anchor=CENTER)
+                                                                   image=Gallery.get(image_key), anchor=CENTER)
 
-    def _render_money(self, icon_size):
-        money = pillow_open('img/penz-1.png')
-        size_rate = money.size[1] / money.size[0]
-        money = money.resize((int(self.size / 40), int(self.size / 40 * size_rate)), ANTIALIAS)
-        self.gallery['penz-1'] = PhotoImage(money.convert(_RGBA))
-        for money_type in ['8', 'd', 'd2']:
-            i = 'img/penz-' + money_type + '.png'
-            loaded_image = (pillow_open(i).resize((icon_size, icon_size), ANTIALIAS)).convert(_RGBA)
-            self.gallery['penz-' + money_type] = PhotoImage(loaded_image)
+    def _preload(self):
+        if not Settings.preload_images:
+            return
+        tic = perf_counter()
+        self._render_money()
+        self._render_crew()
+        self._render_ships()
+        self._render_flags()
+        self._render_crewman()
+        self._render_battle_screen_button_images()
+        toc = perf_counter()
+        debug(f"Preload took {toc - tic:0.4f} seconds.")
 
-    def _render_ports(self):
-        for empire in self.master.empires.values():
-            capital = empire.capital
-            self.gallery[capital + 'full'] = PhotoImage(pillow_open('img/' + capital + '.png').convert(_RGBA))
+    def _render_money(self):
+        for money_type in ['1', '8', 'd', 'd2']:
+            Gallery.get(f"penz-{money_type}")
 
-    def _render_crew(self, icon_size):
-        self.gallery['crew'] = PhotoImage(
-            (pillow_open('img/crew.png').resize((icon_size, icon_size), ANTIALIAS)).convert(_RGBA))
+    def _render_crew(self):
+        Gallery.get("crew")
 
     def _render_ships(self):
         for ship_type in ['brigantine', 'frigate', 'schooner', 'galleon']:
-            ship_image = pillow_open('img/' + ship_type + '.png')
-            side_ratio = ship_image.size[1] / ship_image.size[0]
-            ship_image = ship_image.resize((self.tile_size, int(self.tile_size * side_ratio)), ANTIALIAS)
-            self.gallery[ship_type] = PhotoImage(ship_image)
+            Gallery.get(ship_type)
 
     def _render_flags(self):
-        for empire in self.master.empires:
-            flag_name = 'flag_' + empire
-            flag_image = pillow_open(('img/' + flag_name + '.png'))
-            side_ratio = flag_image.size[0] / flag_image.size[1]
-            self.gallery[flag_name] = PhotoImage(
-                flag_image.resize((int(self.size / 20 * side_ratio), int(self.size / 20)), ANTIALIAS))
+        for empire in Empire:
+            Gallery.get(f"flag_{empire.value.adjective.lower()}")
 
     def _render_crewman(self):
-        crewman = pillow_open('img/crewman1.png')
-        self.gallery['crewman0'] = PhotoImage((pillow_open('img/transparent.png')).resize(crewman.size, ANTIALIAS))
-        self.gallery['crewman1'] = PhotoImage(crewman)
-        self.gallery['crewman2'] = PhotoImage(pillow_open('img/crewman2.png'))
+        for i in range(3):
+            Gallery.get(f"crewman{i}")
 
     def _render_battle_screen_button_images(self):
-        buttons = ['gun', 'rifle', 'caltrop', 'grenade', 'grapeshot', 'greek_fire', 'monkey', 'sirenhorn', 'sirens',
+        buttons = ["gun", "rifle", "caltrop", "grenade", "grapeshot", "greek_fire", "monkey", "sirenhorn", "sirens",
                    "alvarez"]
         for button in buttons:
-            self.gallery['icon_' + button] = PhotoImage(pillow_open('img/icon_' + button + '.png'))
+            Gallery.get(f"icon_{button}")
 
     def _render_card_image(self, name):
-        loaded_image = pillow_open('img/' + name + '.png')
-        self.gallery[name.split('_')[-1] + '_i'] = PhotoImage(loaded_image.resize((30, 30), ANTIALIAS))
-        self.gallery[name] = PhotoImage(loaded_image)
+        pass
 
     def calculate_target_tiles(self, coordinates, roll, add_wind_modifier):
         helmsman = Helmsman(self.tiles, self.wind_direction, self._port_coordinates)
@@ -245,7 +210,7 @@ class Board(Frame):
         self.tile_marks = []
         for column, row in tiles:
             tile_mark = self.board_canvas.create_image((column - 0.5) * self.tile_size, (row - 0.5) * self.tile_size,
-                                                       image=self.gallery['x'], anchor=CENTER)
+                                                       image=Gallery.get("X"), anchor=CENTER)
             self.tile_marks.append(tile_mark)
             self.is_field_select_visible.set(True)
         self.is_field_select_blinking = True

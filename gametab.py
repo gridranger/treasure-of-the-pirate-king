@@ -1,7 +1,7 @@
 from logging import debug
 from tkinter import ALL, E, HORIZONTAL, N, NORMAL, RAISED, S, SUNKEN, W, Frame, Label, Button
 from tkinter.ttk import LabelFrame, Separator
-from assets import Die
+from assets import Die, Gallery
 
 
 class GameTab(Frame):
@@ -39,7 +39,7 @@ class GameTab(Frame):
         self._load_content()
 
     def _load_content(self):
-        self.master.tab(1, state=NORMAL)
+        self.master.tab(1, state=NORMAL)  # TODO fix it when window is being resized.
         self._build_heading(0)
         self._build_inventory_display(1)
         self._build_score_field(2)
@@ -50,18 +50,18 @@ class GameTab(Frame):
         self._build_turn_order(7)
 
     def _build_heading(self, position):
-        flag = self._main_window.game_board.gallery['flag_' + self._current_player.empire]
+        flag = Gallery.get(f"flag_{self._current_player.empire}")
         Label(self._heading, text=self._current_player.name).grid(row=0, column=0)
         Label(self._heading, image=flag).grid(row=1, column=0)
         self._heading.grid(row=position, column=0, pady=5)
 
     def _build_inventory_display(self, position):
         gold_frame = LabelFrame(self._inventory_display, text=self._main_window.ui_texts['treasure'])
-        Label(gold_frame, image=self._main_window.game_board.gallery['penz-d2']).grid(row=0, column=0)
+        Label(gold_frame, image=Gallery.get("penz-d2")).grid(row=0, column=0)
         Label(gold_frame, textvariable=self._current_player.gold).grid(row=0, column=1)
         gold_frame.grid(row=0, column=0, sticky=N + E + W + S, padx=5)
         crew_frame = LabelFrame(self._inventory_display, text=self._main_window.ui_texts['crew'])
-        Label(crew_frame, image=self._main_window.game_board.gallery['crew']).grid(row=0, column=0)
+        Label(crew_frame, image=Gallery.get("crew")).grid(row=0, column=0)
         Label(crew_frame, textvariable=self._current_player.crew).grid(row=0, column=1)
         crew_frame.grid(row=0, column=1, sticky=N + E + W + S, padx=5)
         self._inventory_display.grid(row=position, column=0)
@@ -77,7 +77,7 @@ class GameTab(Frame):
         target_empires.remove(self._current_player.empire)
         for index, empire in enumerate(target_empires):
             score_fields[empire] = Frame(self._score_field)
-            flag = self._main_window.game_board.gallery['flag_' + empire]
+            flag = Gallery.get(f"flag_{empire}")
             Label(score_fields[empire], image=flag).grid(row=0, column=0)
             Label(score_fields[empire], text=':').grid(row=0, column=1)
             Label(score_fields[empire], textvariable=self._current_player.scores[empire]).grid(row=0, column=2)
@@ -139,11 +139,13 @@ class GameTab(Frame):
                 if state not in self._main_window.engine.nemKartyaStatusz:
                     if state in self._main_window.engine.eventszotar.keys():
                         origin = self._main_window.engine.eventszotar
+                        prefix = "event"
                     else:
                         origin = self._main_window.engine.kincsszotar
-                    icon = self._main_window.engine.eventszotar[state].kep + '_i'
+                        prefix = "treasure"
+                    icon = f"{prefix}_{self._main_window.engine.eventszotar[state].kep}_i"
                     icon = icon[(icon.find('_') + 1):]
-                    button = Button(state_field, image=self._main_window.game_board.gallery[icon],
+                    button = Button(state_field, image=Gallery.get(icon),
                                     command=lambda s=state: origin[s].megjelenik(1))
                     button.grid(row=int(index / state_slots_per_row), column=index % state_slots_per_row)
             state_field.config(height=state_slot_height)

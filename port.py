@@ -108,7 +108,7 @@ class Varos(object):
         self.hajogombok = {}
         for hajo in self.boss.vehetoHajok:
             self.hajoframek[hajo] = Frame(self.hajoacs)
-            self.hajogombok[hajo] = Button(self.hajoframek[hajo], image=self.master.game_board.gallery[hajo],
+            self.hajogombok[hajo] = Button(self.hajoframek[hajo], image=Gallery.get(hajo),
                                            command=lambda hajo=hajo: self.ujHajo(hajo))
             self.hajogombok[hajo].pack(side=LEFT)
             if self.boss.aktivjatekos.ship in self.boss.vehetoHajok:

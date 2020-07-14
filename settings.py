@@ -5,10 +5,11 @@ class Settings:
     application_height = 1024
     application_width = 768
     image_folder_path = "img"
+    preload_images = True
 
     @classproperty
     def board_size(cls):
-        return cls.application_width - cls.application_width % 9
+        return cls.application_height - cls.application_height % 9
 
     @classproperty
     def icon_size(cls):
@@ -16,4 +17,4 @@ class Settings:
 
     @classproperty
     def tile_size(cls):
-        return cls.application_width // 9
+        return cls.application_height // 9
