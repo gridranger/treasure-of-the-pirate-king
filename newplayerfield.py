@@ -53,7 +53,7 @@ class NewPlayerField(Frame):
         self.ship_image = self.ship_image.resize((int(self.master.size / 5),
                                                   int(self.master.size / 5 * height / width)),
                                                  ANTIALIAS)
-        self.sail_image = (Gallery.tint_image('img/schooner-v.png', self.picked_color.get()).resize(
+        self.sail_image = (Gallery.tint_image('schooner-v', self.picked_color.get()).resize(
             (int(self.master.size / 5), int(self.master.size / 5 * height / width)), ANTIALIAS))
         self.ship_image.paste(self.sail_image, (0, 0), self.sail_image)
         self.ship_image = PhotoImage(self.ship_image)

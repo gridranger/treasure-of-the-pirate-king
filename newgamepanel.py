@@ -14,7 +14,7 @@ class NewGamePanel(Frame):
         self.columnconfigure('all', weight=1)
         self.rowconfigure('all', weight=1)
         self.player_setups = []
-        self.ship_picture_gray = Gallery.tint_image('img/schooner.png', '#ffffff')
+        self.ship_picture_gray = Gallery.tint_image('schooner', '#ffffff')
         self._scale_ship_picture_gray()
         self._display_fields()
 

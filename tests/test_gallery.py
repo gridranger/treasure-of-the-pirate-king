@@ -103,6 +103,21 @@ class TestGallery(TestCase):
         self.assertEqual("photo_data", Gallery._pictures["my_card_i"])
         self.assertEqual("photo_data", Gallery._pictures["my_card"])
 
+    @patch("assets.gallery.PhotoImage", return_value="photo_data")
+    @patch("assets.Gallery._get_raw_image")
+    @patch("assets.Gallery.tint_image")
+    def test__generate_assembled_ship_image(self, tint_image, _get_raw_image, PhotoImage):
+        _get_raw_image.return_value = self.mock_image
+        tint_image.return_value = self.mock_image
+        self.mock_image.paste = Mock()
+        self.mock_image.resize.return_value = self.mock_image
+        Gallery._generate_assembled_ship_image("schooner", "#FF0000")
+        self.assertEqual(1, _get_raw_image.call_count)
+        self.assertEqual(2, self.mock_image.resize.call_count)
+        tint_image.assert_called_once_with("schooner-v", "#FF0000")
+        self.mock_image.paste.assert_called_once_with(self.mock_image, (0, 0), self.mock_image)
+        self.assertEqual("photo_data", Gallery._pictures["schooner_#FF0000"])
+
 
 class TestTinting(TestCase):
     def setUp(self):

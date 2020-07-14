@@ -7,7 +7,8 @@ from datareader import DataReader
 from game import Vezerlo
 from player import Player
 from logframe import LogFrame
-from models import BRITISH, DUTCH, FRENCH, PIRATE, SPANISH, Empire, GameState
+from models import BRITISH, DUTCH, FRENCH, PIRATE, SPANISH, GameState
+from assets.empire import _Empire  # Todo remove it
 from newgamepanel import NewGamePanel
 from savehandler import SaveHandler
 from tabs import Tabs
@@ -44,11 +45,11 @@ class Application(Tk):
         self.is_game_in_progress.trace('w', self._follow_game_progress_change)
         self.is_turn_in_progress.trace('w', self._follow_turn_progress_change)
         self.players = {}
-        self.empires = {BRITISH: Empire(BRITISH, 'portroyal', '', (0, 0)),
-                        FRENCH: Empire(FRENCH, 'martinique', '', (0, 0)),
-                        DUTCH: Empire(DUTCH, 'curacao', '', (0, 0)),
-                        SPANISH: Empire(SPANISH, 'havanna', '', (0, 0)),
-                        PIRATE: Empire(PIRATE, 'tortuga', '', (0, 0))}
+        self.empires = {BRITISH: _Empire(BRITISH, 'portroyal', '', (0, 0)),
+                        FRENCH: _Empire(FRENCH, 'martinique', '', (0, 0)),
+                        DUTCH: _Empire(DUTCH, 'curacao', '', (0, 0)),
+                        SPANISH: _Empire(SPANISH, 'havanna', '', (0, 0)),
+                        PIRATE: _Empire(PIRATE, 'tortuga', '', (0, 0))}
         self._text_placer()
         self.protocol("WM_DELETE_WINDOW", self.shutdown_ttk_repeat_fix)
         self.exit_in_progress = False
@@ -103,7 +104,7 @@ class Application(Tk):
         if self.is_game_setup_in_progress.get():
             picked_nations = self._save_game_setup_state()
         for rowid, row in self.empires.items():
-            row.name = self.ui_texts[row.empire_id.lower()]
+            row.name = self.ui_texts[row.adjective.lower()]
         if self.is_game_setup_in_progress.get():
             self._reload_game_setup_state(picked_nations)
         if self.is_game_in_progress.get():
@@ -128,19 +129,19 @@ class Application(Tk):
     def get_empire_id_by_capital(self, capital):
         for empire in self.empires.values():
             if empire.capital == capital:
-                return empire.empire_id
+                return empire.adjective
         return ''
 
     def get_empire_id_by_capital_coordinates(self, coordinates):
         for empire in self.empires.values():
             if empire.coordinates == coordinates:
-                return empire.empire_id
+                return empire.adjective
         return ''
 
     def get_empire_id_by_name(self, name):
         for empire in self.empires.values():
             if empire.name == name:
-                return empire.empire_id
+                return empire.adjective
         return ''
 
     def list_empire_names(self):

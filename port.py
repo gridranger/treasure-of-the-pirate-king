@@ -1,6 +1,7 @@
 from tkinter import BOTTOM, Button, DISABLED, Frame, HORIZONTAL, IntVar, Label, LEFT, NORMAL, RIGHT, Scale, \
     StringVar, TOP, Toplevel, X, Y
 from tkinter.ttk import LabelFrame, Separator
+from assets import Gallery
 
 
 class Varos(object):
@@ -17,7 +18,7 @@ class Varos(object):
 
     @property
     def zaszlo(self):
-        return self.empire.empire_id
+        return self.empire.adjective
 
     def aktival(self):
         "Működteti a kikötőt."
@@ -35,7 +36,7 @@ class Varos(object):
         self.tevekenysegek = Frame(self.ablak)  # Főkeret: tartalma panelek és gombok
         self.tevekenysegek.pack(side=TOP, ipadx=5)
         # A kép panel
-        self.kep = Label(self.tevekenysegek, image=self.master.game_board.gallery[self.nev])
+        self.kep = Label(self.tevekenysegek, image=Gallery.get(self.nev))
         self.kep.pack(side=LEFT, pady=5, padx=5, fill=Y)
         # A fogadó panel
         self.fogado = LabelFrame(self.tevekenysegek, text=self.master.ui_texts['tavern'])
@@ -77,11 +78,11 @@ class Varos(object):
         if self.empire == 'pirate':
             elsullyesztettHelyiHajok = 0  # A kalózok nem birodalom, nem büntetnek az elsüllyedt kalózhajókért
         else:
-            elsullyesztettHelyiHajok = self.boss.aktivjatekos.scores[self.empire.empire_id].get()
+            elsullyesztettHelyiHajok = self.boss.aktivjatekos.scores[self.empire.adjective].get()
         if elsullyesztettHelyiHajok > 0:
             kormanyzo_mondja.set(self.master.ui_texts['governor_punish'] % elsullyesztettHelyiHajok)
             self.boss.aktivjatekos.update_turns_to_miss(elsullyesztettHelyiHajok)
-            self.boss.aktivjatekos.scores[self.empire.empire_id].set(0)
+            self.boss.aktivjatekos.scores[self.empire.adjective].set(0)
         else:
             maxJutalom = self.jutalomszamolo() * 8
             kormanyzo_mondja.set(self.master.ui_texts['governor_reward'] % maxJutalom)

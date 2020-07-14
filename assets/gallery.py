@@ -1,6 +1,6 @@
 from PIL.ImageTk import PhotoImage
 from PIL.Image import ANTIALIAS, BICUBIC, open as pillow_open
-from assets.constants import Empires
+from assets.empire import Empire
 from settings import Settings
 
 
@@ -33,6 +33,12 @@ class Gallery:
         elif "flag_" in name:
             cls._generate_flags()
             return
+        elif "icon_" in name:
+            cls._generate_battle_screen_button_images()
+            return
+        elif any(prefix in name for prefix in ["event_", "treasure_"]):
+            cls._generate_card_image(name)
+            return
         name = "wind_direction" if "wind_direction" in name else name
         image = cls._get_raw_image(name)
         edge_ratio = image.size[0] / image.size[1]
@@ -47,8 +53,9 @@ class Gallery:
                 "brigantine": (Settings.tile_size, Settings.tile_size // edge_ratio),
                 "frigate": (Settings.tile_size, Settings.tile_size // edge_ratio),
                 "schooner": (Settings.tile_size, Settings.tile_size // edge_ratio),
-                "galleon": (Settings.tile_size, Settings.tile_size // edge_ratio)}
-        size_required = size.get(name, (Settings.tile_size, Settings.tile_size))
+                "galleon": (Settings.tile_size, Settings.tile_size // edge_ratio),
+                "tile": (Settings.tile_size, Settings.tile_size)}
+        size_required = size.get(name, (int(Settings.tile_size * 0.9), int(Settings.tile_size * 0.9)))
         resized_raw_image = image.resize(size_required, ANTIALIAS)
         if name == "wind_direction":
             cls._generate_wind_direction_images(resized_raw_image)
@@ -63,8 +70,8 @@ class Gallery:
 
     @classmethod
     def _generate_flags(cls):
-        for empire in Empires:
-            flag_name = f"flag_{empire.value}"
+        for empire in Empire:
+            flag_name = f"flag_{empire.value.adjective.lower()}"
             flag = cls._get_raw_image(flag_name)
             side_ratio = flag.size[0] / flag.size[1]
             resized_image = flag.resize((Settings.icon_size * side_ratio, Settings.icon_size), ANTIALIAS)
@@ -90,6 +97,17 @@ class Gallery:
         raw_image = cls._get_raw_image(name)
         cls._pictures[f"{name}_i"] = PhotoImage(raw_image.resize((Settings.icon_size, Settings.icon_size), ANTIALIAS))
         cls._pictures[name] = PhotoImage(raw_image)
+
+    @classmethod
+    def _generate_assembled_ship_image(cls, ship_type, color):
+        ship_image = cls._get_raw_image(f"{ship_type}-h")
+        edge_ratio = ship_image.size[1] / ship_image.size[0]
+        target_size = Settings.tile_size, int(Settings.tile_size * edge_ratio)
+        resized_ship_image = ship_image.resize(target_size, ANTIALIAS)
+        sail_image = cls.tint_image(f"{ship_type}-v", color)
+        resized_sail_image = sail_image.resize(target_size, ANTIALIAS)
+        resized_ship_image.paste(resized_sail_image, (0, 0), resized_sail_image)
+        cls._pictures[f"{ship_type}_{color}"] = PhotoImage(resized_ship_image)
 
     @classmethod
     def tint_image(cls, src, color_hex_code=""):

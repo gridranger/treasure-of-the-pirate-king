@@ -5,7 +5,7 @@ from tkinter import BooleanVar, Canvas, CENTER, Frame, NW
 from PIL.ImageTk import PhotoImage
 from PIL.Image import ANTIALIAS, BICUBIC, open as pillow_open
 
-from assets import Gallery
+from assets import Empire, Gallery
 from helmsman import Helmsman
 
 _RGBA = "RGBA"
@@ -80,7 +80,7 @@ class Board(Frame):
 
     def _collect_ports(self):
         ports = {}
-        capitals = [empire.capital for empire in self.master.empires.values()]
+        capitals = [empire.value.capital for empire in Empire]
         for capital in capitals:
             ports[capital] = self.locations[capital][0]
         return ports
@@ -123,36 +123,27 @@ class Board(Frame):
         debug('Board rendering finished.')
 
     def _render_background(self):
-        self.gallery['map_background'] = PhotoImage(pillow_open('img/map.png').resize((self.size, self.size),
-                                                                                      ANTIALIAS))
-        self.board_canvas.create_image(0, 0, image=self.gallery['map_background'], anchor=NW)
+        self.board_canvas.create_image(0, 0, image=Gallery.get("map"), anchor=NW)
 
     def _render_semi_transparent_tile_backgrounds(self):
-        i = 'img/tile.png'
-        s = (self.tile_size, self.tile_size)
-        self.gallery['tile_background'] = PhotoImage((pillow_open(i).resize(s, ANTIALIAS)).convert(_RGBA))
-        for (field_x, field_y) in self.tiles:
-            self.board_canvas.create_image(int((field_x - 0.5) * self.tile_size),
-                                           int((field_y - 0.5) * self.tile_size),
-                                           image=self.gallery['tile_background'], anchor=CENTER)
+        for (x, y) in self.tiles:
+            self.board_canvas.create_image(int((x - 0.5) * self.tile_size), int((y - 0.5) * self.tile_size),
+                                           image=Gallery.get("tile"), anchor=CENTER)
 
     def _render_tiles(self):
         for location in self.locations:
-            current = pillow_open('img/' + location + '.png')
-            current = current.resize((int(self.tile_size * 0.9), int(self.tile_size * 0.9)), ANTIALIAS)
-            current = PhotoImage(image=current)
-            self.gallery[location] = current
             for x, y in self.locations[location]:
                 self.board_canvas.create_image(int((x - 0.5) * self.tile_size), int((y - 0.5) * self.tile_size),
-                                               image=self.gallery[location], anchor=CENTER)
+                                               image=Gallery.get(location), anchor=CENTER)
+    # TODO replace .board.gallery[] calls!
 
     def _render_player_ship_figures(self):
         for player_object in self.master.players.values():
             self.render_ship_figure(player_object)
 
     def render_ship_figure(self, player):
-        ship_image = self._render_assembled_ship_image_for_player(player)
-        self.ship_figure_images[player.name] = PhotoImage(ship_image)
+        Gallery._generate_assembled_ship_image(player.ship, player.color)
+        self.ship_figure_images[player.name] = Gallery.get(f"{player.ship}_{player.color}")
         if player.name in self.figures:
             self.board_canvas.delete(self.figures[player.name])
         x, y = player.coordinates
@@ -160,18 +151,6 @@ class Board(Frame):
                                                                    (y - 0.5) * self.tile_size,
                                                                    image=self.ship_figure_images[player.name],
                                                                    anchor=CENTER)
-
-    def _render_assembled_ship_image_for_player(self, player):
-        ship_image = pillow_open('img/{}-h.png'.format(player.ship))
-        height_multiplier = ship_image.size[1] / ship_image.size[0]
-        ship_image = self._scale_ship_part(ship_image, height_multiplier)
-        sail_image = Gallery.tint_image('img/{}-v.png'.format(player.ship), player.color)
-        sail_image = self._scale_ship_part(sail_image, height_multiplier)
-        ship_image.paste(sail_image, (0, 0), sail_image)
-        return ship_image
-
-    def _scale_ship_part(self, ship_part, height_multiplier):
-        return ship_part.resize((self.tile_size, int(self.tile_size * height_multiplier)), ANTIALIAS)
 
     def _load_tile_picker(self):
         picker = pillow_open('img/X.png')
