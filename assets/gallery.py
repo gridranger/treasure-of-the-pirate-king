@@ -78,6 +78,20 @@ class Gallery:
         cls._pictures["crewman0"] = PhotoImage(cls._get_raw_image("transparent").resize(crewman_size, ANTIALIAS))
 
     @classmethod
+    def _generate_battle_screen_button_images(cls):
+        buttons = ['gun', 'rifle', 'caltrop', 'grenade', 'grapeshot', 'greek_fire', 'monkey', 'sirenhorn', 'sirens',
+                   "alvarez"]
+        for button_name in buttons:
+            name = f"icon_{button_name}"
+            cls._pictures[name] = PhotoImage(cls._get_raw_image(name))
+
+    @classmethod
+    def _generate_card_image(cls, name):
+        raw_image = cls._get_raw_image(name)
+        cls._pictures[f"{name}_i"] = PhotoImage(raw_image.resize((Settings.icon_size, Settings.icon_size), ANTIALIAS))
+        cls._pictures[name] = PhotoImage(raw_image)
+
+    @classmethod
     def tint_image(cls, src, color_hex_code=""):
         binary_data = cls._get_raw_image(src)
         if not color_hex_code:

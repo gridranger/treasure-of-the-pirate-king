@@ -86,6 +86,23 @@ class TestGallery(TestCase):
         self.assertEqual(set(Gallery._raw_images.keys()), set(Gallery._pictures.keys()))
         self.assertTrue("photo_data" in Gallery._pictures.values())
 
+    @patch("assets.gallery.PhotoImage", return_value="photo_data")
+    @patch("assets.Gallery._get_raw_image")
+    def test__generate_battle_screen_button_images(self, _get_raw_image, PhotoImage):
+        Gallery._generate_battle_screen_button_images()
+        self.assertEqual(10, _get_raw_image.call_count)
+        self.assertIn("icon_grenade", Gallery._pictures)
+
+    @patch("assets.gallery.PhotoImage", return_value="photo_data")
+    @patch("assets.Gallery._get_raw_image")
+    def test__generate_card_image(self, _get_raw_image, PhtotoImage):
+        _get_raw_image.return_value = self.mock_image
+        Gallery._generate_card_image("my_card")
+        _get_raw_image.assert_called_once_with("my_card")
+        self.mock_image.resize.assert_called_once()
+        self.assertEqual("photo_data", Gallery._pictures["my_card_i"])
+        self.assertEqual("photo_data", Gallery._pictures["my_card"])
+
 
 class TestTinting(TestCase):
     def setUp(self):
