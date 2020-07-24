@@ -439,7 +439,7 @@ class Hajoablak(Frame):
         # Adatgenerálás
         if user:
             nev = self.master.ui_texts["ship_name_player"]
-            reszletek = '%s %s' % (self.master.ui_texts[self.master.engine.aktivjatekos.empire],
+            reszletek = '%s %s' % (self.master.ui_texts[self.master.engine.aktivjatekos.empire.lower()],
                                    self.master.ui_texts[self.master.engine.aktivjatekos.ship])
         else:
             nev = boss.ellensegesHajoNeve

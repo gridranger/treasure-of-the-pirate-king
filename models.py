@@ -1,10 +1,3 @@
-BRITISH = 'british'
-FRENCH = 'french'
-DUTCH = 'dutch'
-PIRATE = 'pirate'
-SPANISH = 'spanish'
-
-
 class GameState(object):
     def __init__(self):
         self.player_data = {}

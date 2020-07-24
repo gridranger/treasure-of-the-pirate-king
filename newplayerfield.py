@@ -35,13 +35,9 @@ class NewPlayerField(Frame):
         self.empire_picker.grid(row=2, column=1)
         for elem in [self.name, self._color, self.empire_picker]:
             elem.config(state=DISABLED)
-        self._render_blank_image()
-        self.ship_image = None
-
-    def _render_blank_image(self):
-        self.ship_image_grey = Gallery.tint_image('schooner', '#ffffff')
-        self.ship = Label(self, image=self.ship_image_grey)
+        self.ship = Label(self, image=self.master.ship_picture_gray)
         self.ship.grid(row=0, column=2, rowspan=3)
+        self.ship_image = None
 
     def _pick_color(self):
         (rgb, hex_code) = colorchooser.askcolor()

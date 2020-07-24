@@ -96,11 +96,12 @@ class Vezerlo(Frame):
         # Városablakok előkészítése
         self.varostar = {}
         if fogadoszotar == {}:
-            for empire in self.boss.empires.values():
-                self.varostar[empire.capital] = Varos(self, self.boss, empire)
+            for empire in Empire:
+                self.varostar[empire.value.capital] = Varos(self, self.boss, empire.value)
         else:
-            for empire in self.boss.empires.values():
-                self.varostar[empire.capital] = Varos(self, self.boss, empire, fogadoszotar[empire.capital])
+            for empire in Empire:
+                self.varostar[empire.value.capital] = Varos(self, self.boss, empire.value,
+                                                            fogadoszotar[empire.value.capital])
 
     def methodeNo_get(self):
         "Szekvenciát képez, amellyel figyelhető, hogy mikor melyik metódus hívódik meg."

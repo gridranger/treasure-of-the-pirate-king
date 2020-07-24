@@ -12,9 +12,8 @@ class TestGalleryToBoard(TestCase):
         self._board = Board(None)
 
     def tearDown(self):
-        if modules.get("assets") and "Gallery" in modules.get("assets").__dict__:
-            modules.get("assets").Gallery._raw_images = {}
-            modules.get("assets").Gallery._raw_images = {}
+        modules.get("assets").Gallery._raw_images = {}
+        modules.get("assets").Gallery._raw_images = {}
 
     @patch(create_image)
     def test__render_background(self, create_image):

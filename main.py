@@ -8,8 +8,7 @@ from datareader import DataReader
 from game import Vezerlo
 from player import Player
 from logframe import LogFrame
-from models import BRITISH, DUTCH, FRENCH, PIRATE, SPANISH, GameState
-from assets.empire import _Empire  # Todo remove it
+from models import GameState
 from newgamepanel import NewGamePanel
 from savehandler import SaveHandler
 from settings import Settings
@@ -47,12 +46,6 @@ class Application(Tk):
         self.is_game_in_progress.trace('w', self._follow_game_progress_change)
         self.is_turn_in_progress.trace('w', self._follow_turn_progress_change)
         self.players = {}
-        # TODO use assets.Empire instead of the following
-        self.empires = {BRITISH: _Empire(BRITISH, 'portroyal', '', (0, 0)),
-                        FRENCH: _Empire(FRENCH, 'martinique', '', (0, 0)),
-                        DUTCH: _Empire(DUTCH, 'curacao', '', (0, 0)),
-                        SPANISH: _Empire(SPANISH, 'havanna', '', (0, 0)),
-                        PIRATE: _Empire(PIRATE, 'tortuga', '', (0, 0))}
         self._text_placer()
         self.protocol("WM_DELETE_WINDOW", self.shutdown_ttk_repeat_fix)
         self.exit_in_progress = False
@@ -129,18 +122,6 @@ class Application(Tk):
             self.game_board.player_setups[i].empire_picker.config(value=Empire.get_names())
             if picked_nations[i]:
                 self.game_board.player_setups[i].empire_picker.set(picked_nations[i].name)
-
-    def get_empire_id_by_capital(self, capital):
-        for empire in self.empires.values():
-            if empire.capital == capital:
-                return empire.adjective
-        return ''
-
-    def get_empire_id_by_capital_coordinates(self, coordinates):
-        for empire in self.empires.values():
-            if empire.coordinates == coordinates:
-                return empire.adjective
-        return ''
 
     def set_new_language(self, new_language):
         if self.language == new_language:
@@ -267,7 +248,7 @@ class Application(Tk):
     def load_game(self, game_state):
         self._reset_for_game_start()
         for data in game_state.player_data:
-            self.players[data] = Player(self.empires, self.game_board, game_state.player_data[data])
+            self.players[data] = Player(self.game_board, game_state.player_data[data])
         self._prepare_new_ui()
         while self.player_order[0] != game_state.next_player:
             self.player_order.append(self.player_order.pop(0))
@@ -301,7 +282,7 @@ class Application(Tk):
     def start_game(self, player_states):
         self._reset_for_game_start()
         for index, player_state in enumerate(player_states):
-            self.players['player' + str(index)] = Player(self.empires, self.game_board, player_state)
+            self.players['player' + str(index)] = Player(self.game_board, player_state)
         self._prepare_new_ui()
         self.engine = Vezerlo(self)
         self.menu.update_developer_tab()
@@ -343,8 +324,8 @@ class Application(Tk):
         game_state.wind_index = self.game_board.wind_direction.index(0)
         for player in sorted(list(self.players)):
             game_state.player_data[player] = self.players[player].export()
-        for empire in self.empires.values():
-            game_state.taverns[empire.capital] = self.engine.varostar[empire.capital].export_matroz()
+        for empire in Empire:
+            game_state.taverns[empire.value.capital] = self.engine.varostar[empire.value.capital].export_matroz()
         game_state.card_decks = [self.engine.eventdeck, self.engine.eventstack,
                                  self.engine.kincspakli, self.engine.treasurestack]
         game_state.is_grog_lord_defeated = self.engine.grogbaroLegyozve.get()

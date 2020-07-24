@@ -26,3 +26,10 @@ class Empire(Enum):
     @classmethod
     def get_names(cls):
         return [empire.value.name for empire in cls]
+
+    @classmethod
+    def get_by_id(cls, empire_id):
+        for empire in cls:
+            if empire.value.adjective == empire_id:
+                return empire.value
+        raise RuntimeError(f"Invalid empire id: '{empire_id}'")

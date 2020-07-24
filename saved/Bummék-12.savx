@@ -3,7 +3,7 @@
     <player id="player0">
         <name>Bumm tengernagy</name>
         <color>#80eb56</color>
-        <empire>pirate</empire>
+        <empire>Pirate</empire>
         <ship>frigate</ship>
         <sailors>1</sailors>
         <money>82</money>
@@ -12,18 +12,18 @@
         <turnsToMiss>0</turnsToMiss>
         <treasureHuntFinished>True</treasureHuntFinished>
         <shipsLooted>
-            <score empire="british" ships="0" />
-            <score empire="dutch" ships="1" />
-            <score empire="french" ships="0" />
-            <score empire="pirate" ships="0" />
-            <score empire="spanish" ships="0" />
+            <score empire="British" ships="0" />
+            <score empire="Dutch" ships="1" />
+            <score empire="French" ships="0" />
+            <score empire="Pirate" ships="0" />
+            <score empire="Spanish" ships="0" />
         </shipsLooted>
         <coordinates x="1" y="5" />
     </player>
     <player id="player1">
         <name>Ormányos kormányos</name>
         <color>#5669eb</color>
-        <empire>french</empire>
+        <empire>French</empire>
         <ship>frigate</ship>
         <sailors>24</sailors>
         <money>9</money>
@@ -32,18 +32,18 @@
         <turnsToMiss>0</turnsToMiss>
         <treasureHuntFinished>True</treasureHuntFinished>
         <shipsLooted>
-            <score empire="british" ships="0" />
-            <score empire="dutch" ships="0" />
-            <score empire="french" ships="0" />
-            <score empire="pirate" ships="0" />
-            <score empire="spanish" ships="0" />
+            <score empire="British" ships="0" />
+            <score empire="Dutch" ships="0" />
+            <score empire="French" ships="0" />
+            <score empire="Pirate" ships="0" />
+            <score empire="Spanish" ships="0" />
         </shipsLooted>
         <coordinates x="1" y="3" />
     </player>
     <player id="player2">
         <name>Narancs parancsnok</name>
         <color>#60d1e1</color>
-        <empire>spanish</empire>
+        <empire>Spanish</empire>
         <ship>frigate</ship>
         <sailors>31</sailors>
         <money>16</money>
@@ -52,11 +52,11 @@
         <turnsToMiss>0</turnsToMiss>
         <treasureHuntFinished>True</treasureHuntFinished>
         <shipsLooted>
-            <score empire="british" ships="0" />
-            <score empire="dutch" ships="0" />
-            <score empire="french" ships="0" />
-            <score empire="pirate" ships="1" />
-            <score empire="spanish" ships="0" />
+            <score empire="British" ships="0" />
+            <score empire="Dutch" ships="0" />
+            <score empire="French" ships="0" />
+            <score empire="Pirate" ships="1" />
+            <score empire="Spanish" ships="0" />
         </shipsLooted>
         <coordinates x="5" y="3" />
     </player>

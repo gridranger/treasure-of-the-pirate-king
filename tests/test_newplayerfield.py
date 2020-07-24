@@ -1,5 +1,5 @@
 from unittest import TestCase
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 from main import Application
 from newgamepanel import NewGamePanel
 from newplayerfield import NewPlayerField
@@ -8,17 +8,19 @@ from newplayerfield import NewPlayerField
 class TestNewPlayerField(TestCase):
 
     @classmethod
-    def setUpClass(cls):
+    @patch("newplayerfield.Label")
+    def setUpClass(cls, Label):
         # TODO The following lines should not be here in a proper unit test case
         cls.application = Application()
         cls.application.set_new_language("en")
+        cls.new_game_panel = NewGamePanel(cls.application)
 
-    def setUp(self):
-        NewPlayerField._render_blank_image = Mock()
+    @patch("newplayerfield.Label")
+    def setUp(self, Label):
         # TODO The following line should not be here in a proper unit test case
-        new_game_panel = NewGamePanel(self.application)
-        self._new_player_field = NewPlayerField(new_game_panel)
+        self._new_player_field = NewPlayerField(self.new_game_panel)
         self._dummy_color = "#123456"
+        self._new_player_field.picked_color.trace_vdelete("w", self._new_player_field.picked_color._tclCommands[0])
 
     def test_get_player_state(self):
         self._new_player_field.empire_picker.get = Mock(return_value="Pirate")

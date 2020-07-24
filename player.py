@@ -1,14 +1,13 @@
 from logging import debug
 from math import sqrt
 from tkinter import IntVar
-
+from assets import Empire
 from models import PlayerState
 
 
 class Player(object):
-    def __init__(self, empires, game_board, state):
+    def __init__(self, game_board, state):
         self._game_board = game_board
-        self._empires = empires
         self.name = state.name
         self.color = state.color
         self.empire = state.empire
@@ -27,12 +26,12 @@ class Player(object):
         self.last_roll = state.last_roll
         self.turns_to_miss = IntVar(value=state.turns_to_miss)
         self.scores = {}
-        for empire in self._empires:
-            self.scores[empire] = IntVar(value=state.looted_ships.get(empire, 0))
+        for empire in [empire.value for empire in Empire]:
+            self.scores[empire.adjective] = IntVar(value=state.looted_ships.get(empire, 0))
 
     @property
     def _home_port(self):
-        empire = self._empires[self.empire]
+        empire = Empire.get_by_id(self.empire)
         return self._game_board.locations[empire.capital][0]
 
     def _pick_secondary_color(self):
