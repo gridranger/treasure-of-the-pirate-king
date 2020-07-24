@@ -10,7 +10,7 @@ from newplayerfield import NewPlayerField
 class NewGamePanel(Frame):
     def __init__(self, master):
         Frame.__init__(self, master=master, height=master.board_width, width=master.board_width)
-        self.size = self.master.board_width
+        self.horizontal_space = self.master.board_width
         self.columnconfigure('all', weight=1)
         self.rowconfigure('all', weight=1)
         self.player_setups = []
@@ -20,14 +20,14 @@ class NewGamePanel(Frame):
 
     def _display_fields(self):
         for i in range(6):
-            current_setup = NewPlayerField(self)
-            is_active = Checkbutton(self, takefocus=0, variable=current_setup.active)
+            current_field = NewPlayerField(self)
+            is_active = Checkbutton(self, takefocus=0, variable=current_field.active)
             if i == 0:
-                current_setup.active.set(1)
+                current_field.active.set(1)
                 is_active.config(state=DISABLED)
             is_active.grid(row=i % 6, column=0, padx=5, pady=5, sticky=E)
-            current_setup.grid(row=i % 6, column=1, sticky=W)
-            self.player_setups.append(current_setup)
+            current_field.grid(row=i % 6, column=1, sticky=W)
+            self.player_setups.append(current_field)
         start_button = Button(self, textvariable=self.master.ui_text_variables['start_button'],
                               command=self.player_setup_done)
         start_button.grid(row=0, column=2, rowspan=6, sticky=W)
@@ -35,7 +35,8 @@ class NewGamePanel(Frame):
     def _scale_ship_picture_gray(self):
         w = self.ship_picture_gray.width
         h = self.ship_picture_gray.height
-        resized_image = self.ship_picture_gray.resize((int(self.size / 5), int(self.size / 5 * h / w)), ANTIALIAS)
+        resized_image = self.ship_picture_gray.resize((int(self.horizontal_space / 5),
+                                                       int(self.horizontal_space / 5 * h / w)), ANTIALIAS)
         self.ship_picture_gray = PhotoImage(resized_image)
 
     def player_setup_done(self):

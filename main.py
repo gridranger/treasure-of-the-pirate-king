@@ -2,7 +2,7 @@ from logging import DEBUG, WARNING, basicConfig, getLogger
 from tkinter import DISABLED, E, N, NORMAL, S, W, Frame, IntVar, StringVar, Tk
 from tkinter.messagebox import askokcancel
 
-from assets import Gallery
+from assets import Empire, Gallery
 from board import Board
 from datareader import DataReader
 from game import Vezerlo
@@ -106,8 +106,8 @@ class Application(Tk):
         self.menu.load_ui_texts()
         if self.is_game_setup_in_progress.get():
             picked_nations = self._save_game_setup_state()
-        for rowid, row in self.empires.items():
-            row.name = self.ui_texts[row.adjective.lower()]
+        for empire in Empire:
+            empire.value.name = self.ui_texts[empire.value.adjective.lower()]
         if self.is_game_setup_in_progress.get():
             self._reload_game_setup_state(picked_nations)
         if self.is_game_in_progress.get():
@@ -118,16 +118,17 @@ class Application(Tk):
         for i in range(6):
             empire_name = self.game_board.player_setups[i].empire_picker.get()
             if empire_name != '':
-                picked_nations.append(self.get_empire_id_by_name(empire_name))
+                current_empire = Empire.get_by_name(empire_name)
+                picked_nations.append(current_empire)
             else:
                 picked_nations.append('')
         return picked_nations
 
     def _reload_game_setup_state(self, picked_nations):
         for i in range(6):
-            self.game_board.player_setups[i].empire_picker.config(value=self.list_empire_names())
-            if picked_nations[i] != '':
-                self.game_board.player_setups[i].empire_picker.set(self.empires[picked_nations[i]].name)
+            self.game_board.player_setups[i].empire_picker.config(value=Empire.get_names())
+            if picked_nations[i]:
+                self.game_board.player_setups[i].empire_picker.set(picked_nations[i].name)
 
     def get_empire_id_by_capital(self, capital):
         for empire in self.empires.values():
@@ -140,15 +141,6 @@ class Application(Tk):
             if empire.coordinates == coordinates:
                 return empire.adjective
         return ''
-
-    def get_empire_id_by_name(self, name):
-        for empire in self.empires.values():
-            if empire.name == name:
-                return empire.adjective
-        return ''
-
-    def list_empire_names(self):
-        return [empire.name for empire in self.empires.values()]
 
     def set_new_language(self, new_language):
         if self.language == new_language:

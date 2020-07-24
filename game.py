@@ -2,6 +2,7 @@ from logging import debug
 from random import randrange
 from tkinter import BooleanVar, Frame
 from tkinter.messagebox import showinfo, askyesno
+from assets import Empire
 from card import Card
 from csata import Utkozet
 from port import Varos
@@ -151,7 +152,7 @@ class Vezerlo(Frame):
         self.boss.status_bar.log('')
         if self.boss.exit_in_progress:
             return
-        port_list = [empire.capital for empire in self.master.empires.values()]
+        port_list = [empire.value.capital for empire in Empire]
         if 'grog_riot' in self.aktivjatekos.states:
             if self.boss.game_board.locationsR[self.aktivjatekos.coordinates] in port_list:
                 self.aktivjatekos.remove_state("grog_riot")

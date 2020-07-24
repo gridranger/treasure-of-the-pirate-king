@@ -15,3 +15,14 @@ class Empire(Enum):
     DUTCH = _Empire("Dutch", 'curacao', '', (0, 0))
     SPANISH = _Empire("Spanish", 'havanna', '', (0, 0))
     PIRATE = _Empire("Pirate", 'tortuga', '', (0, 0))
+
+    @classmethod
+    def get_by_name(cls, name):
+        for empire in cls:
+            if empire.value.name == name:
+                return empire.value
+        raise RuntimeError(f"Invalid empire name: '{name}'")
+
+    @classmethod
+    def get_names(cls):
+        return [empire.value.name for empire in cls]

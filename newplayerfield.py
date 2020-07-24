@@ -4,7 +4,7 @@ from tkinter.ttk import Combobox
 from PIL.Image import ANTIALIAS, open as pillow_open
 from PIL.ImageTk import PhotoImage
 
-from assets import Gallery
+from assets import Empire, Gallery
 from models import PlayerState
 
 
@@ -16,8 +16,8 @@ class NewPlayerField(Frame):
         self.active.trace('w', self._toggle_availability)
         self.picked_color = StringVar(value='')
         self.picked_color.trace('w', self._recolor_sails)
-        self._recolor_sails()
-        self.config(height=self.master.size / 5, width=(self.master.size - (3 * self.master.size / 10)) / 2)
+        self.config(height=self.master.horizontal_space / 5,
+                    width=(self.master.horizontal_space - (3 * self.master.horizontal_space / 10)) / 2)
         self.columnconfigure('all', weight=1)
         self.rowconfigure('all', weight=1)
         name_label = Label(self, textvariable=self._main_window.ui_text_variables['name_label'])
@@ -30,15 +30,18 @@ class NewPlayerField(Frame):
         self._color.grid(row=1, column=1)
         empire_label = Label(self, textvariable=self._main_window.ui_text_variables['flag_label'])
         empire_label.grid(row=2, column=0, sticky=E)
-        self.empire_picker = Combobox(self, value=self._main_window.list_empire_names(), takefocus=0, width=12,
-                                      state='readonly')
+        self.empire_picker = Combobox(self, value=Empire.get_names(), takefocus=0, width=12, state='readonly')
         self.empire_picker.bind("<<ComboboxSelected>>")
         self.empire_picker.grid(row=2, column=1)
         for elem in [self.name, self._color, self.empire_picker]:
             elem.config(state=DISABLED)
-        self.ship = Label(self, image=self.master.ship_picture_gray)
-        self.ship.grid(row=0, column=2, rowspan=3)
+        self._render_blank_image()
         self.ship_image = None
+
+    def _render_blank_image(self):
+        self.ship_image_grey = Gallery.tint_image('schooner', '#ffffff')
+        self.ship = Label(self, image=self.ship_image_grey)
+        self.ship.grid(row=0, column=2, rowspan=3)
 
     def _pick_color(self):
         (rgb, hex_code) = colorchooser.askcolor()
@@ -50,11 +53,11 @@ class NewPlayerField(Frame):
     def _recolor_sails(self, a=None, b=None, c=None):
         self.ship_image = pillow_open('img/schooner-h.png')
         width, height = self.ship_image.size
-        self.ship_image = self.ship_image.resize((int(self.master.size / 5),
-                                                  int(self.master.size / 5 * height / width)),
+        self.ship_image = self.ship_image.resize((int(self.master.horizontal_space / 5),
+                                                  int(self.master.horizontal_space / 5 * height / width)),
                                                  ANTIALIAS)
         self.sail_image = (Gallery.tint_image('schooner-v', self.picked_color.get()).resize(
-            (int(self.master.size / 5), int(self.master.size / 5 * height / width)), ANTIALIAS))
+            (int(self.master.horizontal_space / 5), int(self.master.horizontal_space / 5 * height / width)), ANTIALIAS))
         self.ship_image.paste(self.sail_image, (0, 0), self.sail_image)
         self.ship_image = PhotoImage(self.ship_image)
         self.ship = Label(self, image=self.ship_image)
@@ -78,14 +81,12 @@ class NewPlayerField(Frame):
             error_message = 'color_missing'
         elif self.empire_picker.get() == '':
             error_message = 'flag_missing'
-        elif self.empire_picker.get() not in self._main_window.list_empire_names():
+        elif self.empire_picker.get() not in Empire.get_names():
             error_message = 'flag_invalid'
         return error_message
 
     def get_player_state(self):
-        selected_empire_name = self.empire_picker.get()
-        empire = self._main_window.get_empire_id_by_name(selected_empire_name)
-        return PlayerState(self.name.get(), self.picked_color.get(), empire)
+        return PlayerState(self.name.get(), self.picked_color.get(), self.empire_picker.get())
 
     def set_player_state(self, player_state):
         self.active.set(1)
@@ -94,4 +95,5 @@ class NewPlayerField(Frame):
             self.picked_color.set(player_state.color)
             self._color.config(bg=player_state.color)
         if player_state.empire:
-            self.empire_picker.set(self._main_window.empires[player_state.empire].name)
+            empire = Empire.get_by_name(player_state.empire)
+            self.empire_picker.set(empire.adjective)
