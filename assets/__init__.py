@@ -1,6 +1,7 @@
+from .carddeck import CardDeck
 from .classproperty import classproperty
-from .empire import Empire
 from .die import Die
+from .empire import Empire
 from .gallery import Gallery
 
-__all__ = ['classproperty', 'Die', 'Empire', 'Gallery']
+__all__ = ['CardDeck', 'classproperty', 'Die', 'Empire', 'Gallery']

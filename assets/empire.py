@@ -7,6 +7,7 @@ class _Empire(object):
         self.capital = capital
         self.name = name
         self.coordinates = coordinates
+        self.sailors_in_tavern = 0
 
 
 class Empire(Enum):
