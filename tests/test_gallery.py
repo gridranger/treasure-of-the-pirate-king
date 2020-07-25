@@ -51,9 +51,16 @@ class TestGallery(TestCase):
         self.assertEqual("photo_data", Gallery._pictures["flag_pirate"])
 
     @patch("assets.Gallery._generate_crewman")
-    def test__load_picture_crewman(self, _generate_crewman):
-        Gallery._load_picture("crewman1")
-        _generate_crewman.assert_called_once()
+    @patch("assets.Gallery._generate_flags")
+    @patch("assets.Gallery._generate_battle_screen_button_images")
+    @patch("assets.Gallery._generate_card_image")
+    def test__load_picture_redirections(self, _generate_card_image, _generate_battle_screen_button_images,
+                                        _generate_flags, _generate_crewman):
+        redirections = {"crewman1": _generate_crewman, "flag_pirate": _generate_flags,
+                        "icon_rifle": _generate_battle_screen_button_images, "event_mutiny": _generate_card_image}
+        for special_image_name, method in redirections.items():
+            Gallery._load_picture(special_image_name)
+            method.assert_called_once()
 
     @patch("assets.Gallery._get_raw_image")
     @patch("assets.gallery.PhotoImage", return_value="photo_data")
@@ -148,3 +155,8 @@ class TestTinting(TestCase):
 
     def test__convert_color_hex_to_rgb(self):
         self.assertEqual((0, 127, 127), Gallery._convert_color_hex_to_rgb("#007F7F"))
+
+    def test_discard_cache(self):
+        Gallery._pictures = {"alma": "a", "barack": "b", "citrom": "c"}
+        Gallery.discard_cache()
+        self.assertDictEqual({}, Gallery._pictures)
