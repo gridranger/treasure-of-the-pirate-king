@@ -100,7 +100,7 @@ class Application(Tk):
         if self.is_game_setup_in_progress.get():
             picked_nations = self._save_game_setup_state()
         for empire in Empire:
-            empire.value.name = self.ui_texts[empire.value.adjective.lower()]
+            empire.value.name = self.ui_texts[empire.value.adjective]
         if self.is_game_setup_in_progress.get():
             self._reload_game_setup_state(picked_nations)
         if self.is_game_in_progress.get():

@@ -10,11 +10,11 @@ class _Empire(object):
 
 
 class Empire(Enum):
-    BRITISH = _Empire("British", 'portroyal', '', (0, 0))
-    FRENCH = _Empire("French", 'martinique', '', (0, 0))
-    DUTCH = _Empire("Dutch", 'curacao', '', (0, 0))
-    SPANISH = _Empire("Spanish", 'havanna', '', (0, 0))
-    PIRATE = _Empire("Pirate", 'tortuga', '', (0, 0))
+    BRITISH = _Empire("British", 'Port Royal', '', (0, 0))
+    FRENCH = _Empire("French", 'Martinique', '', (0, 0))
+    DUTCH = _Empire("Dutch", 'Curacao', '', (0, 0))
+    SPANISH = _Empire("Spanish", 'Havanna', '', (0, 0))
+    PIRATE = _Empire("Pirate", 'Tortuga', '', (0, 0))
 
     @classmethod
     def get_by_name(cls, name):

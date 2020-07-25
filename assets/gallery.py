@@ -22,7 +22,8 @@ class Gallery:
         try:
             result = cls._raw_images[item]
         except KeyError:
-            result = cls._raw_images[item] = pillow_open(f"{Settings.image_folder_path}/{item}.png")
+            file_name = item.replace(" ", "").lower()
+            result = cls._raw_images[item] = pillow_open(f"{Settings.image_folder_path}/{file_name}.png")
         return result
 
     @classmethod

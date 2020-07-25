@@ -10,11 +10,11 @@
     <en>Apply</en>
     <arr>Hajrá!</arr>
   </apply>
-  <british type="text">
+  <British type="text">
     <hu>angol</hu>
     <en>British</en>
     <arr>könyörtelen angol</arr>
-  </british>
+  </British>
   <price type="text">
     <hu>Ár</hu>
     <en>Cost</en>
@@ -120,11 +120,11 @@
     <en>Tavern</en>
     <arr>Csapszék</arr>
   </tavern>
-  <french type="text">
+  <French type="text">
     <hu>francia</hu>
     <en>French</en>
     <arr>puhány francia</arr>
-  </french>
+  </French>
   <frigate type="text">
     <hu>fregatt</hu>
     <en>frigate</en>
@@ -261,11 +261,11 @@
     <en>Pick up the fight</en>
     <arr>Harcra!</arr>
   </to_battle>
-  <dutch type="text">
+  <Dutch type="text">
     <hu>holland</hu>
     <en>Dutch</en>
     <arr>pohos holland</arr>
-  </dutch>
+  </Dutch>
   <info type="text">
     <hu>Üzenet</hu>
     <en>Message</en>
@@ -311,11 +311,11 @@
     <en>Turn order:</en>
     <arr>Csak sorjában, matrózok:</arr>
   </turn_order>
-  <pirate type="text">
+  <Pirate type="text">
     <hu>kalóz</hu>
     <en>Pirate</en>
     <arr>kalóz</arr>
-  </pirate>
+  </Pirate>
   <card_discard type="text">
     <hu>Lap eldobása</hu>
     <en>Discard it</en>
@@ -481,11 +481,11 @@
     <en>Scores</en>
     <arr>Davy Jones ládája</arr>
   </scores>
-  <spanish type="text">
+  <Spanish type="text">
     <hu>spanyol</hu>
     <en>Spanish</en>
     <arr>gaz spanyol</arr>
-  </spanish>
+  </Spanish>
   <start_button type="textvariable">
     <hu>Start</hu>
     <en>Start</en>

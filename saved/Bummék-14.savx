@@ -65,11 +65,11 @@
     <firstMateFound>False</firstMateFound>
     <grogLordDefeated>False</grogLordDefeated>
     <taverns>
-        <tavern port="curacao" sailors="9"/>
-        <tavern port="havanna" sailors="5"/>
-        <tavern port="martinique" sailors="5"/>
-        <tavern port="portroyal" sailors="10"/>
-        <tavern port="tortuga" sailors="5"/>
+        <tavern port="Curacao" sailors="9"/>
+        <tavern port="Havanna" sailors="5"/>
+        <tavern port="Martinique" sailors="5"/>
+        <tavern port="Port Royal" sailors="10"/>
+        <tavern port="Tortuga" sailors="5"/>
     </taverns>
     <cards>
         <eventDeck>set_sail_to_curacao, set_sail_to_tortuga, set_sail_to_martinique, set_sail_to_havanna, set_sail_to_portroyal</eventDeck>

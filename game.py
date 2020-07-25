@@ -32,11 +32,11 @@ class Vezerlo(Frame):
                                ('battle_british', lambda: self.csata("b3")),
                                ('battle_dutch', lambda: self.csata("b1")),
                                ('battle_spanish', lambda: self.csata("b2")),
-                               ('portroyal', lambda: self.varos('portroyal')),
-                               ('curacao', lambda: self.varos('curacao')),
-                               ('tortuga', lambda: self.varos('tortuga')),
-                               ('havanna', lambda: self.varos('havanna')),
-                               ('martinique', lambda: self.varos('martinique')),
+                               ('Port Royal', lambda: self.varos('Port Royal')),
+                               ('Curacao', lambda: self.varos('Curacao')),
+                               ('Tortuga', lambda: self.varos('Tortuga')),
+                               ('Havanna', lambda: self.varos('Havanna')),
+                               ('Martinique', lambda: self.varos('Martinique')),
                                ('windplus90', lambda: self.boss.game_board.change_wind_direction(90)),
                                ('windminus90', lambda: self.boss.game_board.change_wind_direction(-90)),
                                ('windplus45', lambda: self.boss.game_board.change_wind_direction(45)),
@@ -344,18 +344,15 @@ class Vezerlo(Frame):
         self.dobasMegtortent.set(True)
         dobas = self.boss.menu.game_tab.die.roll()  # Szerencsét próbálunk.
         self.aktivjatekos.last_roll = dobas  # Mentjük a kocka állapotát.
-        celokSzotar = dict([(1, "martinique"),
-                            (2, "curacao"),
-                            (3, "havanna"),
-                            (4, "tortuga"),
-                            (5, "portroyal")])
+        celokSzotar = dict([(1, "Martinique"),
+                            (2, "Curacao"),
+                            (3, "Havanna"),
+                            (4, "Tortuga"),
+                            (5, "Port Royal")])
         if dobas == 6:
             uzenet = self.boss.ui_texts["castaway_no_hope"]
         else:
-            if dobas == 5:
-                varos = "Port Royal"
-            else:
-                varos = celokSzotar[dobas].capitalize()
+            varos = celokSzotar[dobas]
             uzenet = self.boss.ui_texts["castaway_success"] % varos
             x, y = self.boss.game_board.locations[celokSzotar[dobas]][0]
             self.boss.game_board.relocate_ship(x, y)

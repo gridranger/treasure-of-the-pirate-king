@@ -2,7 +2,7 @@
 <battles>
   <!--Spanish ships 0-3-->
   <encounter id="0">
-    <flag>spanish</flag>
+    <flag>Spanish</flag>
     <shipType>galleon</shipType>
     <shipName>Trouvadore</shipName>
     <parts>
@@ -17,7 +17,7 @@
     <treasure>0</treasure>
   </encounter>
   <encounter id="1">
-    <flag>spanish</flag>
+    <flag>Spanish</flag>
     <shipType>schooner</shipType>
     <shipName>Rosario</shipName>
     <parts>
@@ -32,7 +32,7 @@
     <treasure>1</treasure>
   </encounter>
   <encounter id="2">
-    <flag>spanish</flag>
+    <flag>Spanish</flag>
     <shipType>brigantine</shipType>
     <shipName>San Lorenzo</shipName>
     <parts>
@@ -47,7 +47,7 @@
     <treasure>1</treasure>
   </encounter>
   <encounter id="3">
-    <flag>spanish</flag>
+    <flag>Spanish</flag>
     <shipType>frigate</shipType>
     <shipName>Triunfo</shipName>
     <parts>
@@ -63,7 +63,7 @@
   </encounter>
   <!--French ships 4-7-->
   <encounter id="4">
-    <flag>french</flag>
+    <flag>French</flag>
     <shipType>galleon</shipType>
     <shipName>Brézé</shipName>
     <parts>
@@ -78,7 +78,7 @@
     <treasure>0</treasure>
   </encounter>
   <encounter id="5">
-    <flag>french</flag>
+    <flag>French</flag>
     <shipType>schooner</shipType>
     <shipName>Bougainville</shipName>
     <parts>
@@ -93,7 +93,7 @@
     <treasure>1</treasure>
   </encounter>
   <encounter id="6">
-    <flag>french</flag>
+    <flag>French</flag>
     <shipType>brigantine</shipType>
     <shipName>Mutin</shipName>
     <parts>
@@ -108,7 +108,7 @@
     <treasure>1</treasure>
   </encounter>
   <encounter id="7">
-    <flag>french</flag>
+    <flag>French</flag>
     <shipType>frigate</shipType>
     <shipName>Triomphant</shipName>
     <parts>
@@ -124,7 +124,7 @@
   </encounter>
   <!--Dutch ships 8-11-->
   <encounter id="8">
-    <flag>dutch</flag>
+    <flag>Dutch</flag>
     <shipType>galleon</shipType>
     <shipName>Vogelstruys</shipName>
     <parts>
@@ -139,7 +139,7 @@
     <treasure>0</treasure>
   </encounter>
   <encounter id="9">
-    <flag>dutch</flag>
+    <flag>Dutch</flag>
     <shipType>schooner</shipType>
     <shipName>Eenhoorn</shipName>
     <parts>
@@ -154,7 +154,7 @@
     <treasure>1</treasure>
   </encounter>
   <encounter id="10">
-    <flag>dutch</flag>
+    <flag>Dutch</flag>
     <shipType>brigantine</shipType>
     <shipName>Dolphijn</shipName>
     <parts>
@@ -169,7 +169,7 @@
     <treasure>1</treasure>
   </encounter>
   <encounter id="11">
-    <flag>dutch</flag>
+    <flag>Dutch</flag>
     <shipType>frigate</shipType>
     <shipName>Triomf</shipName>
     <parts>
@@ -185,7 +185,7 @@
   </encounter>
   <!--British ships 12-15-->
   <encounter id="12">
-    <flag>british</flag>
+    <flag>British</flag>
     <shipType>galleon</shipType>
     <shipName>Godspeed</shipName>
     <parts>
@@ -200,7 +200,7 @@
     <treasure>0</treasure>
   </encounter>
   <encounter id="13">
-    <flag>british</flag>
+    <flag>British</flag>
     <shipType>schooner</shipType>
     <shipName>Royal Will</shipName>
     <parts>
@@ -215,7 +215,7 @@
     <treasure>1</treasure>
   </encounter>
   <encounter id="14">
-    <flag>british</flag>
+    <flag>British</flag>
     <shipType>brigantine</shipType>
     <shipName>Victory</shipName>
     <parts>
@@ -230,7 +230,7 @@
     <treasure>1</treasure>
   </encounter>
   <encounter id="15">
-    <flag>british</flag>
+    <flag>British</flag>
     <shipType>frigate</shipType>
     <shipName>Triumph</shipName>
     <parts>
@@ -246,9 +246,9 @@
   </encounter>
   <!--Pirate ships 16-19-->
   <encounter id="16">
-    <flag>pirate</flag>
+    <flag>Pirate</flag>
     <shipType>schooner</shipType>
-    <shipName>pirate0</shipName>
+    <shipName>Pirate0</shipName>
     <parts>
       <p1>2</p1>
       <p2>underWaterHit</p2>
@@ -261,9 +261,9 @@
     <treasure>0</treasure>
   </encounter>
   <encounter id="17">
-    <flag>pirate</flag>
+    <flag>Pirate</flag>
     <shipType>schooner</shipType>
-    <shipName>pirate1</shipName>
+    <shipName>Pirate1</shipName>
     <parts>
       <p1>4</p1>
       <p2>3</p2>
@@ -276,9 +276,9 @@
     <treasure>1</treasure>
   </encounter>
   <encounter id="18">
-    <flag>pirate</flag>
+    <flag>Pirate</flag>
     <shipType>brigantine</shipType>
-    <shipName>pirate2</shipName>
+    <shipName>Pirate2</shipName>
     <parts>
       <p1>6</p1>
       <p2>5</p2>
@@ -291,9 +291,9 @@
     <treasure>1</treasure>
   </encounter>
   <encounter id="19">
-    <flag>pirate</flag>
+    <flag>Pirate</flag>
     <shipType>frigate</shipType>
-    <shipName>pirate3</shipName>
+    <shipName>Pirate3</shipName>
     <parts>
       <p1>6</p1>
       <p2>6</p2>
@@ -307,7 +307,7 @@
   </encounter>
   <!--Ships on the game board b0-b3-->
   <encounter id="b0">
-    <flag>french</flag>
+    <flag>French</flag>
     <shipType>galleon</shipType>
     <shipName>Loire</shipName>
     <parts>
@@ -322,7 +322,7 @@
     <treasure>0</treasure>
   </encounter>
   <encounter id="b1">
-    <flag>dutch</flag>
+    <flag>Dutch</flag>
     <shipType>schooner</shipType>
     <shipName>Hollandia</shipName>
     <parts>
@@ -337,7 +337,7 @@
     <treasure>0</treasure>
   </encounter>
   <encounter id="b2">
-    <flag>spanish</flag>
+    <flag>Spanish</flag>
     <shipType>brigantine</shipType>
     <shipName>Almiranta</shipName>
     <parts>
@@ -352,7 +352,7 @@
     <treasure>0</treasure>
   </encounter>
   <encounter id="b3">
-    <flag>british</flag>
+    <flag>British</flag>
     <shipType>frigate</shipType>
     <shipName>Falcon</shipName>
     <parts>

@@ -85,9 +85,9 @@ class Utkozet(Toplevel):
 
     def csatakezdet(self):
         "Ellátja a játékost a kezdeti információkkal."
-        if self.master.engine.aktivjatekos.empire == 'pirate':
+        if self.master.engine.aktivjatekos.empire == 'Pirate':
             tamad = randrange(2)
-        elif self.ellensegesZaszlo == "pirate":
+        elif self.ellensegesZaszlo == "Pirate":
             tamad = 1
         else:
             tamad = 0
@@ -439,7 +439,7 @@ class Hajoablak(Frame):
         # Adatgenerálás
         if user:
             nev = self.master.ui_texts["ship_name_player"]
-            reszletek = '%s %s' % (self.master.ui_texts[self.master.engine.aktivjatekos.empire.lower()],
+            reszletek = '%s %s' % (self.master.ui_texts[self.master.engine.aktivjatekos.empire],
                                    self.master.ui_texts[self.master.engine.aktivjatekos.ship])
         else:
             nev = boss.ellensegesHajoNeve

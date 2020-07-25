@@ -237,7 +237,7 @@
         <arr></arr>
       </text>
       <img>event_map</img>
-      <method>self.set_sail_to("portroyal")</method>
+      <method>self.set_sail_to("Port Royal")</method>
     </card>
     <card id="set_sail_to_havanna">
       <title>
@@ -251,7 +251,7 @@
         <arr></arr>
       </text>
       <img>event_map</img>
-      <method>self.set_sail_to("havanna")</method>
+      <method>self.set_sail_to("Havanna")</method>
     </card>
     <card id="set_sail_to_martinique">
       <title>
@@ -265,7 +265,7 @@
         <arr></arr>
       </text>
       <img>event_map</img>
-      <method>self.set_sail_to("martinique")</method>
+      <method>self.set_sail_to("Martinique")</method>
     </card>
     <card id="set_sail_to_curacao">
       <title>
@@ -279,7 +279,7 @@
         <arr></arr>
       </text>
       <img>event_map</img>
-      <method>self.set_sail_to("curacao")</method>
+      <method>self.set_sail_to("Curacao")</method>
     </card>
     <card id="set_sail_to_tortuga">
       <title>
@@ -293,7 +293,7 @@
         <arr></arr>
       </text>
       <img>event_map</img>
-      <method>self.set_sail_to("tortuga")</method>
+      <method>self.set_sail_to("Tortuga")</method>
     </card>
     <card id="shipwreck">
       <title>
