@@ -24,7 +24,7 @@ class TestGallery(TestCase):
         self.assertEqual("bar", Gallery.get("foo"))
         _load_picture.assert_called_once_with("foo")
 
-    @patch("assets.gallery.Settings.board_size", new_callable=PropertyMock)
+    @patch("assets.gallery.app.board_size", new_callable=PropertyMock)
     @patch("assets.Gallery._get_raw_image")
     @patch("assets.gallery.PhotoImage", return_value="photo_data")
     def test__load_picture(self, PhotoImage, _ger_raw_image, board_size):

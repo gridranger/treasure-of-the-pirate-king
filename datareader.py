@@ -1,32 +1,19 @@
-from models import LoadedSettings, ShipType
 from tkinter.messagebox import showerror
 from xml.etree.ElementTree import parse
-
-__author__ = 'Bárdos Dávid'
+from models import LoadedSettings, ShipType
+from settings import Paths
 
 
 class DataReader(object):
     def __init__(self, master):
         self.master = master
         self.missing_files = []
-        self.path_dictionary = self._load_path_dictionary('db/paths.xml')
         self.errors = self._load_errors()
         if self.missing_files:
             showerror('Error', (self.errors['configLocationMissingError'] % ', '.join(self.missing_files)))
 
-    def _load_path_dictionary(self, path_file):
-        path_xml_root = parse(path_file).getroot()
-        path_dictionary = {}
-        config_list = [item.tag for item in path_xml_root.find('xml')]
-        for config in config_list:
-            try:
-                path_dictionary[config] = path_xml_root.find('xml').find(config).text
-            except AttributeError:
-                self.missing_files.append(config)
-        return path_dictionary
-
     def _load_errors(self):
-        error_xml_root = parse(self.path_dictionary['errors']).getroot()
+        error_xml_root = parse(Paths.errors).getroot()
         errors = {}
         for error in error_xml_root.findall('exception'):
             errors[error.get('id')] = error.text.replace('\\n', '\n')
@@ -34,7 +21,7 @@ class DataReader(object):
 
     def load_settings(self):
         settings = LoadedSettings()
-        config_root = parse(self.path_dictionary['config']).getroot()
+        config_root = parse(Paths.config).getroot()
         settings.language = config_root.find('language').text
         resolution_code_text = config_root.find('resolution').text
         resolution_code = config_root.find(("./resolutionlist/res[@type='" + resolution_code_text + "']"))
@@ -51,16 +38,15 @@ class DataReader(object):
         return settings
 
     def save_settings(self, new_resolution=None, new_full_screen=None, new_language=None):
-        config_xml_path = self.path_dictionary['config']
-        config_xml = parse(config_xml_path)
+        config_xml = parse(Paths.config)
         config = config_xml.getroot()
         if new_resolution and new_full_screen:
             config.find('resolution').text = new_resolution
             config.find('fullscreen').text = new_full_screen
         if new_language:
             config.find('language').text = new_language
-        config_xml.write(self.path_dictionary['config'], xml_declaration=True, encoding='utf-8', method='xml')
-        self._reformat_saved_xml(config_xml_path)
+        config_xml.write(Paths.config, xml_declaration=True, encoding='utf-8', method='xml')
+        self._reformat_saved_xml(Paths.config)
 
     @staticmethod
     def _reformat_saved_xml(xml):
@@ -73,7 +59,7 @@ class DataReader(object):
             file_handler.write(text)
 
     def load_battle_data(self):
-        battle_xml = parse(self.path_dictionary['battles']).getroot()
+        battle_xml = parse(Paths.battles).getroot()
         battles = battle_xml.findall('encounter')
         battle_dictionary = {}
         for battle in battles:
@@ -106,8 +92,7 @@ class DataReader(object):
         except ValueError:
             battle_id = battle.get('id')
             ship_name = battle.find('shipName').text
-            showerror('Error', (self.errors['teamValueError'] % (ship_name, battle_id,
-                                                                 self.path_dictionary['battles'])))
+            showerror('Error', (self.errors['teamValueError'] % (ship_name, battle_id, Paths.battles)))
         else:
             team = min(team, 6)
         return team
@@ -119,8 +104,7 @@ class DataReader(object):
         except ValueError:
             battle_id = battle.get('id')
             ship_name = battle.find('shipName').text
-            showerror('Error', (self.errors['lootValueError'] % (ship_name, battle_id,
-                                                                 self.path_dictionary['battles'])))
+            showerror('Error', (self.errors['lootValueError'] % (ship_name, battle_id, Paths.battles)))
         return loot
 
     @staticmethod
@@ -185,7 +169,7 @@ class DataReader(object):
             error_message = self.master.ui_texts['translation_missing']
         except AttributeError:
             error_message = self.errors['stringAttributeError']
-        all_cards = parse(self.path_dictionary['cards']).getroot()
+        all_cards = parse(Paths.cards).getroot()
         events = all_cards.find('events')
         loot = all_cards.find('loot')
         return all_cards, error_message, events, loot
@@ -201,7 +185,7 @@ class DataReader(object):
             return result
 
     def _get_interface_root(self):
-        interface = parse(self.path_dictionary['interface']).getroot()
+        interface = parse(Paths.interface).getroot()
         return interface
 
     def load_language_list(self):
@@ -212,7 +196,7 @@ class DataReader(object):
         return language_list
 
     def get_ship_types(self):
-        ship_types_root = parse(self.path_dictionary['shiptypes']).getroot()
+        ship_types_root = parse(Paths.shiptypes).getroot()
         result = {}
         for ship in ship_types_root.findall('ship'):
             price = int(ship.get('cost'))

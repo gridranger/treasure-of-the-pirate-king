@@ -1,7 +1,7 @@
 from PIL.ImageTk import PhotoImage
 from PIL.Image import ANTIALIAS, BICUBIC, open as pillow_open
 from assets.empire import Empire
-from settings import Settings
+from settings import ApplicationSettings as app, Paths
 
 
 class Gallery:
@@ -23,7 +23,7 @@ class Gallery:
             result = cls._raw_images[item]
         except KeyError:
             file_name = item.replace(" ", "").lower()
-            result = cls._raw_images[item] = pillow_open(f"{Settings.image_folder_path}/{file_name}.png")
+            result = cls._raw_images[item] = pillow_open(f"{Paths.image_folder}/{file_name}.png")
         return result
 
     @classmethod
@@ -43,20 +43,20 @@ class Gallery:
         name = "wind_direction" if "wind_direction" in name else name
         image = cls._get_raw_image(name)
         edge_ratio = image.size[0] / image.size[1]
-        size = {"compass": (Settings.tile_size * 3 - 10, Settings.tile_size * 3 - 10),
-                "map": (Settings.board_size, Settings.board_size),
-                "penz-1": (int(Settings.board_size / 40), int(Settings.board_size / 40 / edge_ratio)),
-                "penz-8": (Settings.icon_size, Settings.icon_size),
-                "penz-d": (Settings.icon_size, Settings.icon_size),
-                "penz-d2": (Settings.icon_size, Settings.icon_size),
-                "crew": (Settings.icon_size, Settings.icon_size),
-                "wind_direction": (int(Settings.tile_size * 2 * edge_ratio), int(Settings.tile_size * 2)),
-                "brigantine": (Settings.tile_size, int(Settings.tile_size / edge_ratio)),
-                "frigate": (Settings.tile_size, int(Settings.tile_size / edge_ratio)),
-                "schooner": (Settings.tile_size, int(Settings.tile_size / edge_ratio)),
-                "galleon": (Settings.tile_size, int(Settings.tile_size / edge_ratio)),
-                "tile": (Settings.tile_size, Settings.tile_size)}
-        size_required = size.get(name, (int(Settings.tile_size * 0.9), int(Settings.tile_size * 0.9)))
+        size = {"compass": (app.tile_size * 3 - 10, app.tile_size * 3 - 10),
+                "map": (app.board_size, app.board_size),
+                "penz-1": (int(app.board_size / 40), int(app.board_size / 40 / edge_ratio)),
+                "penz-8": (app.icon_size, app.icon_size),
+                "penz-d": (app.icon_size, app.icon_size),
+                "penz-d2": (app.icon_size, app.icon_size),
+                "crew": (app.icon_size, app.icon_size),
+                "wind_direction": (int(app.tile_size * 2 * edge_ratio), int(app.tile_size * 2)),
+                "brigantine": (app.tile_size, int(app.tile_size / edge_ratio)),
+                "frigate": (app.tile_size, int(app.tile_size / edge_ratio)),
+                "schooner": (app.tile_size, int(app.tile_size / edge_ratio)),
+                "galleon": (app.tile_size, int(app.tile_size / edge_ratio)),
+                "tile": (app.tile_size, app.tile_size)}
+        size_required = size.get(name, (int(app.tile_size * 0.9), int(app.tile_size * 0.9)))
         resized_raw_image = image.resize(size_required, ANTIALIAS)
         if name == "wind_direction":
             cls._generate_wind_direction_images(resized_raw_image)
@@ -75,7 +75,7 @@ class Gallery:
             flag_name = f"flag_{empire.value.adjective.lower()}"
             flag = cls._get_raw_image(flag_name)
             side_ratio = flag.size[0] / flag.size[1]
-            resized_image = flag.resize((int(Settings.icon_size * side_ratio), Settings.icon_size), ANTIALIAS)
+            resized_image = flag.resize((int(app.icon_size * side_ratio), app.icon_size), ANTIALIAS)
             cls._pictures[flag_name] = PhotoImage(resized_image)
 
     @classmethod
@@ -97,14 +97,14 @@ class Gallery:
     def _generate_card_image(cls, name):
         name = name[:-2] if name.endswith("_i") else name
         raw_image = cls._get_raw_image(name)
-        cls._pictures[f"{name}_i"] = PhotoImage(raw_image.resize((Settings.icon_size, Settings.icon_size), ANTIALIAS))
+        cls._pictures[f"{name}_i"] = PhotoImage(raw_image.resize((app.icon_size, app.icon_size), ANTIALIAS))
         cls._pictures[name] = PhotoImage(raw_image)
 
     @classmethod
     def _generate_assembled_ship_image(cls, ship_type, color):
         ship_image = cls._get_raw_image(f"{ship_type}-h")
         edge_ratio = ship_image.size[1] / ship_image.size[0]
-        target_size = Settings.tile_size, int(Settings.tile_size * edge_ratio)
+        target_size = app.tile_size, int(app.tile_size * edge_ratio)
         resized_ship_image = ship_image.resize(target_size, ANTIALIAS)
         sail_image = cls.tint_image(f"{ship_type}-v", color)
         resized_sail_image = sail_image.resize(target_size, ANTIALIAS)

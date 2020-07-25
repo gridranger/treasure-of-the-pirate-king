@@ -7,7 +7,6 @@ class _Empire(object):
         self.capital = capital
         self.name = name
         self.coordinates = coordinates
-        self.sailors_in_tavern = 0
 
 
 class Empire(Enum):
@@ -29,8 +28,8 @@ class Empire(Enum):
         return [empire.value.name for empire in cls]
 
     @classmethod
-    def get_by_id(cls, empire_id):
+    def get_by_adjective(cls, empire_id):
         for empire in cls:
             if empire.value.adjective == empire_id:
                 return empire.value
-        raise RuntimeError(f"Invalid empire id: '{empire_id}'")
+        raise RuntimeError(f"Invalid empire adjective: '{empire_id}'")

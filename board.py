@@ -4,7 +4,7 @@ from tkinter import BooleanVar, Canvas, CENTER, Frame, NW
 
 from assets import Empire, Gallery
 from helmsman import Helmsman
-from settings import Settings
+from settings import ApplicationSettings
 
 
 class Board(Frame):
@@ -156,7 +156,7 @@ class Board(Frame):
                                                                    image=Gallery.get(image_key), anchor=CENTER)
 
     def _preload(self):
-        if not Settings.preload_images:
+        if not ApplicationSettings.preload_images:
             return
         tic = perf_counter()
         self._render_money()

@@ -1,10 +1,9 @@
-from assets import classproperty
+from extensions import classproperty
 
 
-class Settings:
+class ApplicationSettings:
     application_height = 1024
     application_width = 768
-    image_folder_path = "img"
     preload_images = True
 
     @classproperty

@@ -11,7 +11,7 @@ from logframe import LogFrame
 from models import GameState
 from newgamepanel import NewGamePanel
 from savehandler import SaveHandler
-from settings import Settings
+from settings import ApplicationSettings
 from tabs import Tabs
 
 
@@ -57,8 +57,8 @@ class Application(Tk):
     def _process_config(self):
         settings = self.data_reader.load_settings()
         self.language = settings.language
-        Settings.application_width = self.width = settings.width
-        Settings.application_height = self.height = settings.height
+        ApplicationSettings.application_width = self.width = settings.width
+        ApplicationSettings.application_height = self.height = settings.height
         self.resolution_code = settings.resolution_code
         self.resolution_list = settings.resolution_list
         self.screen_ratio = self.resolution_code[:4]

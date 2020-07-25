@@ -12,12 +12,12 @@ class TestEmpire(TestCase):
         with self.assertRaises(RuntimeError, msg="Invalid empire name: 'Portugal'"):
             self.assertEqual(Empire.PIRATE.value, Empire.get_by_name("Portugal"))
 
-    def test_get_empire_by_id(self):
-        self.assertEqual(Empire.PIRATE.value, Empire.get_by_id("Pirate"))
+    def test_get_empire_by_adjective(self):
+        self.assertEqual(Empire.PIRATE.value, Empire.get_by_adjective("Pirate"))
 
-    def test_get_empire_by_id_fail(self):
+    def test_get_empire_by_adjective_fail(self):
         with self.assertRaises(RuntimeError, msg="Invalid empire name: 'Portugal'"):
-            self.assertEqual(Empire.PIRATE.value, Empire.get_by_id("Portugal"))
+            self.assertEqual(Empire.PIRATE.value, Empire.get_by_adjective("Portugal"))
 
     def test_get_names(self):
         self.assertEqual(['British', 'French', 'Dutch', 'Spanish', 'Pirate'], Empire.get_names())

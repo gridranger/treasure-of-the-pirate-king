@@ -31,7 +31,7 @@ class Player(object):
 
     @property
     def _home_port(self):
-        empire = Empire.get_by_id(self.empire)
+        empire = Empire.get_by_adjective(self.empire)
         return self._game_board.locations[empire.capital][0]
 
     def _pick_secondary_color(self):
