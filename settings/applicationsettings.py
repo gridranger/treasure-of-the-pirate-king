@@ -4,6 +4,7 @@ from extensions import classproperty
 class ApplicationSettings:
     application_height = 1024
     application_width = 768
+    language = None
     preload_images = True
 
     @classproperty

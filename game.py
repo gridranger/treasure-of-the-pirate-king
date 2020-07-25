@@ -6,6 +6,7 @@ from assets import Empire
 from card import Card
 from csata import Utkozet
 from port import Varos
+from settings import ApplicationSettings as s
 
 
 class Vezerlo(Frame):
@@ -71,7 +72,7 @@ class Vezerlo(Frame):
             iPenz = 0
             for i in range(penztar[penz]):
                 self.kincsszotar['treasure'+penz+'_'+str(iPenz)] = Card(self, self.boss, 'treasure',
-                                                                        kincstar['treasure'], 'treasure',
+                                                                        kincstar["treasure"], 'treasure',
                                                                         fuggvenytar["treasure"], int(penz))
                 iPenz += 1
         for lap in kincstar.keys():
@@ -132,14 +133,14 @@ class Vezerlo(Frame):
             self.boss.player_order.append(self.boss.player_order.pop(0))
         self.aktivjatekos = self.boss.players[self.boss.player_order[0]]
         debug("\n{0}\nIt's {1}'s turn.\n{0}\n".format('-' * 20, self.aktivjatekos.name))
-        self.master.status_bar.log(self.master.ui_texts["new_turn"] % self.aktivjatekos.name)
+        self.master.status_bar.log(s.language.new_turn % self.aktivjatekos.name)
         self.dobasMegtortent.set(False)
         self.boss.menu.reset_game_tab()
         if "scurvy" in self.aktivjatekos.states:
             self.aktivjatekos.update_crew(-1)
         self.boss.is_turn_in_progress.set(0)
         if not self.aktivjatekos.treasure_hunting_done:
-            if askyesno(self.boss.ui_texts["dig_for_treasure_label"], self.boss.ui_texts["dig_for_treasure_question"]):
+            if askyesno(s.language.dig_for_treasure_label, s.language.dig_for_treasure_question):
                 self.dig_on_treasureisland()
             else:
                 self.aktivjatekos.treasure_hunting_done = True
@@ -159,7 +160,7 @@ class Vezerlo(Frame):
                 self.aktivjatekos.remove_state("grog_riot")
                 self.eventstack.append("grog_riot")
             else:
-                self.eventszotar['grog_riot'].megjelenik()
+                self.eventszotar["grog_riot"].megjelenik()
         self.hivas = self.teendotar[self.boss.game_board.locationsR[self.aktivjatekos.coordinates]]()
         if self.hivas is False:
             self.szakasz_0()
@@ -235,7 +236,7 @@ class Vezerlo(Frame):
 
     def bermuda(self):
         "A Bermuda mező roppant izgalmas függvénye."
-        showinfo(self.boss.ui_texts['info'], self.boss.ui_texts['bermuda'])
+        showinfo(s.language.info, s.language.bermuda)
 
     def csata(self, csataId):
         "A csatát inicializáló függvény."
@@ -244,7 +245,7 @@ class Vezerlo(Frame):
 
     def landland(self):
         "A játékos újra dobhat a következő körben, ha az eredeti dobás kedvezőtlen."
-        showinfo(self.boss.ui_texts['info'], self.boss.ui_texts['land'])
+        showinfo(s.language.info, s.language.land)
         self.aktivjatekos.add_state("fold_fold")
         if "scurvy" in self.aktivjatekos.states:
             self.aktivjatekos.remove_state("scurvy")
@@ -263,15 +264,15 @@ class Vezerlo(Frame):
             if "spare_sail" in self.aktivjatekos.states:  # Ha a játékosnak van pótvitorlája, megússza, hogy kimaradjon.
                 self.aktivjatekos.remove_state("spare_sail")  # Eldobja a vitorlát.
                 self.treasurestack.append("spare_sail")  # A vitorlakártya a talonba kerül.
-                uzenet = self.boss.ui_texts["storm_sail_damage"]
+                uzenet = s.language.storm_sail_damage
                 return
             else:
                 self.aktivjatekos.update_turns_to_miss(1)  # Beállítjuk, hogy turns_to_miss egy körből.
-                uzenet = self.boss.ui_texts["storm_miss_turn"]
-            showinfo(self.boss.ui_texts["info"], uzenet)  # Kiírjuk, a történteket.
+                uzenet = s.language.storm_miss_turn
+            showinfo(s.language.info, uzenet)  # Kiírjuk, a történteket.
             return
         else:
-            self.boss.status_bar.log(self.boss.ui_texts["storm_success"])
+            self.boss.status_bar.log(s.language.storm_success)
             self.mozgas(viharEreje)
             self.szakasz_mezoevent()
             return True
@@ -282,15 +283,15 @@ class Vezerlo(Frame):
         self.aktivjatekos.last_roll = dobas  # Mentjük a kocka állapotát.
         if dobas == 6:
             self.aktivjatekos.update_gold(1)
-            self.boss.status_bar.log(self.boss.ui_texts["driftwood_success"])
+            self.boss.status_bar.log(s.language.driftwood_success)
         else:
-            self.boss.status_bar.log(self.boss.ui_texts["driftwood"])
+            self.boss.status_bar.log(s.language.driftwood)
         return
 
     def calm(self):
         "Egy körből turns_to_miss a játékos."
         self.aktivjatekos.update_turns_to_miss(1)  # Beállítjuk, hogy turns_to_miss egy körből.
-        showinfo(self.boss.ui_texts["info"], self.boss.ui_texts["calm"])
+        showinfo(s.language.info, s.language.calm)
         return
 
     def taino(self):
@@ -306,17 +307,17 @@ class Vezerlo(Frame):
                 self.aktivjatekos.update_crew(dobas)
                 felveve = dobas
             if felveve < 2:
-                self.boss.status_bar.log(self.boss.ui_texts["taino_one"])
+                self.boss.status_bar.log(s.language.taino_one)
             else:
-                self.boss.status_bar.log(self.boss.ui_texts["taino_some"] % felveve)
+                self.boss.status_bar.log(s.language.taino_some % felveve)
         else:
-            self.boss.status_bar.log(self.boss.ui_texts["taino_none"])
+            self.boss.status_bar.log(s.language.taino_none)
         return
 
     def treasureisland(self):
         "Egy mező, ahol kincset lehet ásni."
         self.aktivjatekos.treasure_hunting_done = False
-        self.boss.status_bar.log(self.boss.ui_texts["dig_for_treasure"])
+        self.boss.status_bar.log(s.language.dig_for_treasure)
 
     def dig_on_treasureisland(self):
         "A teendők, ha már kincses szigeten áll az ember."
@@ -328,7 +329,7 @@ class Vezerlo(Frame):
             self.aktivjatekos.treasure_hunting_done = True
             self.kincsetHuz()
         else:
-            showinfo(self.boss.ui_texts["dig_for_treasure_label"], self.boss.ui_texts["dig_for_treasure_nothing"])
+            showinfo(s.language.dig_for_treasure_label, s.language.dig_for_treasure_nothing)
         self.szakasz_0()
 
     def stream(self):
@@ -350,10 +351,10 @@ class Vezerlo(Frame):
                             (4, "Tortuga"),
                             (5, "Port Royal")])
         if dobas == 6:
-            uzenet = self.boss.ui_texts["castaway_no_hope"]
+            uzenet = s.language.castaway_no_hope
         else:
             varos = celokSzotar[dobas]
-            uzenet = self.boss.ui_texts["castaway_success"] % varos
+            uzenet = s.language.castaway_success % varos
             x, y = self.boss.game_board.locations[celokSzotar[dobas]][0]
             self.boss.game_board.relocate_ship(x, y)
             if self.aktivjatekos.gold.get() < 10:
@@ -361,7 +362,7 @@ class Vezerlo(Frame):
             else:
                 self.aktivjatekos.gold.set(self.aktivjatekos.gold.get() - 10)
             self.aktivjatekos.update_crew(10)
-        showinfo(self.boss.ui_texts["info"], uzenet)
+        showinfo(s.language.info, uzenet)
         self.master.engine.szakasz_0()
         return False
 

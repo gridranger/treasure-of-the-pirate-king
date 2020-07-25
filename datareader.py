@@ -1,7 +1,8 @@
 from tkinter.messagebox import showerror
 from xml.etree.ElementTree import parse
 from models import LoadedSettings, ShipType
-from settings import Paths
+from localization import Languages
+from settings import ApplicationSettings as s, Paths
 
 
 class DataReader(object):
@@ -44,7 +45,7 @@ class DataReader(object):
             config.find('resolution').text = new_resolution
             config.find('fullscreen').text = new_full_screen
         if new_language:
-            config.find('language').text = new_language
+            config.find('language').text = new_language.name
         config_xml.write(Paths.config, xml_declaration=True, encoding='utf-8', method='xml')
         self._reformat_saved_xml(Paths.config)
 
@@ -142,9 +143,12 @@ class DataReader(object):
     def load_cards_text(self):
         all_cards, error_message, events, loot = self._load_common_card_data()
         card_dictionary = {}
+        legacy_language_solution_compatibility = {Languages.ENGLISH.value: "en",
+                                                  Languages.HUNGARIAN.value: "hu",
+                                                  Languages.PIRATE.value: "arr"}
         for event_card in events.findall('card') + loot.findall('card'):
             try:
-                title = event_card.find('title').find(self.master.language).text
+                title = event_card.find('title').find(legacy_language_solution_compatibility[s.language]).text
             except AttributeError:
                 title = error_message
             else:
@@ -153,7 +157,7 @@ class DataReader(object):
                 else:
                     title = title.replace('\\n', '\n')
             try:
-                text = event_card.find('text').find(self.master.language).text
+                text = event_card.find('text').find(legacy_language_solution_compatibility[s.language]).text
             except AttributeError:
                 text = error_message
             else:
@@ -175,13 +179,17 @@ class DataReader(object):
         return all_cards, error_message, events, loot
 
     def load_dictionary(self, language=None, entry_type=None):
+        legacy_language_solution_compatibility = {Languages.ENGLISH.value: "en",
+                                                  Languages.HUNGARIAN.value: "hu",
+                                                  Languages.PIRATE.value: "arr"}
         interface = self._get_interface_root()
         if language:
             term_dictionary = []
             for item in interface:
                 if item.get('type') == entry_type:
                     term_dictionary.append(item.tag)
-            result = {original: interface.find(original).find(language).text for original in term_dictionary}
+            result = {original: interface.find(original).find(legacy_language_solution_compatibility[language]).text
+                      for original in term_dictionary}
             return result
 
     def _get_interface_root(self):

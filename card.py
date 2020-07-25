@@ -3,6 +3,7 @@ from random import randrange
 from tkinter import BOTTOM, Button, DISABLED, Frame, GROOVE, HORIZONTAL, Label, LEFT, RIGHT, TOP, Toplevel, X
 from tkinter.ttk import Separator
 from assets import Gallery
+from settings import ApplicationSettings as s
 
 
 class Card(object):
@@ -45,7 +46,7 @@ class KartyaAblak(Toplevel):
             szoveg = self.master.card_texts[self.nev][1] % ertek
         else:
             szoveg = self.master.card_texts[self.nev][1]
-        self.title(self.master.ui_texts[pakli+'_card'])
+        self.title(s.language.event_card if self.pakli == "event" else s.language.treasure.card)
         cimStilus = 'helvetica 14 bold'
         self.kartyalap = Frame(self, relief=GROOVE, bd=2, bg='ivory')
         Label(self.kartyalap, image=Gallery.get(kep)).pack()
@@ -74,7 +75,7 @@ class KartyaAblak(Toplevel):
     def csakMegtart(self):
         "Függvény a lap kötelező megtartásához."
         self.bezar = self.lapotMegtart
-        Button(self, text=self.master.ui_texts['card_keep'], command=self.lapotMegtart).pack(pady=5)
+        Button(self, text=s.language.card_keep, command=self.lapotMegtart).pack(pady=5)
 
     def lapotMegtart(self, event=None):
         "A lap megtartásának függvénye."
@@ -100,34 +101,33 @@ class KartyaAblak(Toplevel):
     def treasure(self):
         "A pénzt adó kincskártyák függvénye."
         self.master.engine.aktivjatekos.update_gold(self.ertek)
-        Button(self, text=self.master.ui_texts['done'], command=self.destroy).pack(pady=5, side=BOTTOM)
+        Button(self, text=s.language.done, command=self.destroy).pack(pady=5, side=BOTTOM)
         return
 
     def sirens(self):
         "A sziréneket működtető függvény."
         enekEreje = randrange(1, 7)
         if enekEreje == 6:
-            uzenet = self.master.ui_texts["sirens_skipped"]
+            uzenet = s.language.sirens_skipped
             parancs = self.lapotMegtart
         else:
             if self.master.engine.aktivjatekos.crew.get() > 3:
                 self.master.engine.aktivjatekos.update_crew(-3)
-                uzenet = self.master.ui_texts["sirens"] % 3
+                uzenet = s.language.sirens % 3
             else:
                 self.master.engine.aktivjatekos.update_crew(-self.master.engine.aktivjatekos.get())
-                uzenet = self.master.ui_texts["sirens"] % self.master.engine.aktivjatekos.crew.get()
+                uzenet = s.language.sirens % self.master.engine.aktivjatekos.crew.get()
                 self.master.game_board.relocate_ship((5, 2))  # TODO replace this and other occurrences to dynamic coorinate
             parancs = self.lapotEldob
         self.bezar = parancs
         Label(self, text=uzenet, wraplength=216).pack()
-        Button(self, text=self.master.ui_texts['done'], command=parancs).pack(pady=5, side=BOTTOM)
+        Button(self, text=s.language.done, command=parancs).pack(pady=5, side=BOTTOM)
 
     def bobbyDick(self):
         "A cetet vezérlő függvény."
         self.bezar = self.lapotMegtart
-        Button(self, text=self.master.ui_texts['card_keep'], command=self.lapotMegtart).pack(side=LEFT, pady=5, padx=5)
-        Button(self, text=self.master.ui_texts['card_discard'], command=self.bobbyDick_eldob).pack(side=RIGHT, pady=5,
-                                                                                                   padx=5)
+        Button(self, text=s.language.card_keep, command=self.lapotMegtart).pack(side=LEFT, pady=5, padx=5)
+        Button(self, text=s.language.card_discard, command=self.bobbyDick_eldob).pack(side=RIGHT, pady=5, padx=5)
 
     def bobbyDick_eldob(self):
         "A cet eldobását vezérlő függvény."
@@ -154,16 +154,16 @@ class KartyaAblak(Toplevel):
                     self.master.engine.aktivjatekos.remove_state("landland")
                 self.master.engine.aktivjatekos.treasure_hunting_done = True
                 self.master.game_board.relocate_ship((5, 2))
-                uzenet = self.master.ui_texts["mutiny_succeeded"]
+                uzenet = s.language.mutiny_succeeded
             else:
                 self.master.engine.aktivjatekos.update_gold(self.master.engine.aktivjatekos.gold.get() - (6 - matrozokHusege))
                 self.master.engine.aktivjatekos.update_crew(-1)
-                uzenet = self.master.ui_texts["mutiny_suppressed"]
+                uzenet = s.language.mutiny_suppressed
         else:
             self.master.engine.aktivjatekos.update_crew(-1)
-            uzenet = self.master.ui_texts["mutiny_suppressed"]
+            uzenet = s.language.mutiny_suppressed
         Label(self, text=uzenet, wraplength=216).pack()
-        self.btn_mutiny = Button(self, text=self.master.ui_texts['done'], command=self.lapotEldob)
+        self.btn_mutiny = Button(self, text=s.language.done, command=self.lapotEldob)
         self.btn_mutiny.pack(pady=5, side=BOTTOM)
 
     def reefs(self):
@@ -178,13 +178,13 @@ class KartyaAblak(Toplevel):
         else:
             uzenet = uzenet[:cezura]
         self.szovegfelirat.config(text=uzenet)
-        Button(self, text=self.master.ui_texts['done'], command=self.lapotEldob).pack(pady=5, side=BOTTOM)
+        Button(self, text=s.language.done, command=self.lapotEldob).pack(pady=5, side=BOTTOM)
 
     def deserters(self):
         "A dezertőrök függvénye."
         self.bezar = self.lapotEldob
         self.csatlakozikVagyElmegy(False)
-        Button(self, text=self.master.ui_texts['done'], command=self.lapotEldob).pack(pady=5, side=BOTTOM)
+        Button(self, text=s.language.done, command=self.lapotEldob).pack(pady=5, side=BOTTOM)
 
     def treacherous_mate(self):
         """
@@ -194,7 +194,7 @@ class KartyaAblak(Toplevel):
         self.bezar = self.eltunik
         self.master.engine.set_hadnagyElokerult()  # A játékszintű változót átírjuk.
         # Kilépésgomb. Ld. 2 sorral fejjebb.
-        Button(self, text=self.master.ui_texts['done'], command=self.eltunik).pack(pady=5, side=BOTTOM)
+        Button(self, text=s.language.done, command=self.eltunik).pack(pady=5, side=BOTTOM)
 
     def kraken(self):
         "A kraken kártyája."
@@ -202,11 +202,11 @@ class KartyaAblak(Toplevel):
         if 'bobbydick' in self.master.engine.aktivjatekos.states:
             self.bezar = self.kraken_bobbydick  # Az ablaki X-gomb függvénye
             # Gomb azoknak, akik rendelkeznek a Bobby Dick kártyával.
-            Button(self, text=(self.master.card_texts['bobbydick'][0] + ' ' + self.master.ui_texts['whalevsoctopus']),
+            Button(self, text=(self.master.card_texts["bobbydick"][0] + ' ' + s.language.whalevsoctopus),
                    command=self.kraken_bobbydick).pack(pady=5, side=BOTTOM)
         else:
             self.bezar = self.noEscape
-            self.btn_kraken_dob = Button(self, text=self.master.ui_texts['to_battle'], command=self.kraken_dob)
+            self.btn_kraken_dob = Button(self, text=s.language.to_battle, command=self.kraken_dob)
             self.btn_kraken_dob.pack(pady=5, side=BOTTOM)
 
     def kraken_bobbydick(self):
@@ -230,8 +230,7 @@ class KartyaAblak(Toplevel):
         if i < self.master.engine.aktivjatekos.crew.get():  # Ha nem fogyott el az összes matróz...
             self.master.engine.aktivjatekos.update_crew(-i)  # ...akkor levonjuk az elesetteket,
             # és kiírjuk, mennyit vesztett.
-            Label(frame_kraken, text=(self.master.ui_texts['casualties_of_kraken'] % i), wraplength=216).pack(pady=5,
-                                                                                                              side=TOP)
+            Label(frame_kraken, text=(s.language.casualties_of_kraken % i), wraplength=216).pack(pady=5, side=TOP)
         else:  # Ha elfogyott az összes matróz...
             # ... elvesszük az összeset,
             self.master.engine.aktivjatekos.update_crew(self.master.engine.aktivjatekos.crew.get() * -1)
@@ -241,11 +240,10 @@ class KartyaAblak(Toplevel):
             # és persze leállítjuk a kincskeresést, ha épp aktív volt.
             self.master.engine.aktivjatekos.treasure_hunting_done = True
             # Kiírjuk, hogy vesztett.
-            Label(frame_kraken, text=self.master.ui_texts['defeated_by_kraken'], wraplength=216).pack(pady=5,
-                                                                                                      side=TOP)
+            Label(frame_kraken, text=s.language.defeated_by_kraken, wraplength=216).pack(pady=5, side=TOP)
         self.protocol("WM_DELETE_WINDOW", self.lapotEldob)  # Most már bezárható a lap, és talonba kerül.
         # Kilépésgomb. A lap a talonba kerül.
-        Button(frame_kraken, text=self.master.ui_texts['done'], command=self.lapotEldob).pack(pady=5, side=TOP)
+        Button(frame_kraken, text=s.language.done, command=self.lapotEldob).pack(pady=5, side=TOP)
         frame_kraken.pack(side=BOTTOM)
 
     def grogLazadas(self):
@@ -256,7 +254,7 @@ class KartyaAblak(Toplevel):
             self.btn_mutiny.config(command=self.grogLazadastEldob)
         else:
             self.bezar = self.lapotMegtart
-            Button(self, text=self.master.ui_texts['done'], command=self.lapotMegtart).pack(pady=5, sid=BOTTOM)
+            Button(self, text=s.language.done, command=self.lapotMegtart).pack(pady=5, sid=BOTTOM)
 
     def grogLazadastEldob(self):
         self.master.engine.aktivjatekos.remove_state("grog_riot")
@@ -265,21 +263,21 @@ class KartyaAblak(Toplevel):
     def carousal(self):
         self.bezar = self.lapotEldob
         self.master.engine.aktivjatekos.add_state("fold_fold")
-        Button(self, text=self.master.ui_texts['done'], command=self.lapotEldob).pack(pady=5, side=BOTTOM)
+        Button(self, text=s.language.done, command=self.lapotEldob).pack(pady=5, side=BOTTOM)
 
     def three_headed_monkey(self):
         self.bezar = self.lapotEldob
-        Button(self, text=self.master.ui_texts['done'], command=self.lapotEldob).pack(pady=5, side=BOTTOM)
+        Button(self, text=s.language.done, command=self.lapotEldob).pack(pady=5, side=BOTTOM)
 
     def castaways(self):
         self.bezar = self.lapotEldob
         self.csatlakozikVagyElmegy()
-        Button(self, text=self.master.ui_texts['done'], command=self.lapotEldob).pack(pady=5, side=BOTTOM)
+        Button(self, text=s.language.done, command=self.lapotEldob).pack(pady=5, side=BOTTOM)
 
     def ghost_ship(self):
         self.bezar = self.ghost_ship2
         self.csatlakozikVagyElmegy(False)
-        Button(self, text=self.master.ui_texts['done'], command=self.ghost_ship2).pack(pady=5, side=BOTTOM)
+        Button(self, text=s.language.done, command=self.ghost_ship2).pack(pady=5, side=BOTTOM)
 
     def ghost_ship2(self):
         "A kísértethajó nevű kártya eldobásának metódusa."
@@ -292,7 +290,7 @@ class KartyaAblak(Toplevel):
         "A sorold fel a vitorla részeit kezdetű kártya metódusa."
         self.bezar = self.lapotEldob
         self.master.engine.dobasMegtortent.set(0)
-        Button(self, text=self.master.ui_texts['done'], command=self.lapotEldob).pack(pady=5, side=BOTTOM)
+        Button(self, text=s.language.done, command=self.lapotEldob).pack(pady=5, side=BOTTOM)
 
     def csatlakozikVagyElmegy(self, csatlakozik=True):
         "A csatlakozó matrózok függvénye. False esetén a legénység létszáma csökken, és nem nő."
@@ -322,14 +320,14 @@ class KartyaAblak(Toplevel):
         "A felszabadított rabszolgák nevű kártya metódusa."
         self.bezar = self.lapotEldob
         self.csatlakozikVagyElmegy()
-        Button(self, text=self.master.ui_texts['done'], command=self.lapotEldob).pack(pady=5, side=BOTTOM)
+        Button(self, text=s.language.done, command=self.lapotEldob).pack(pady=5, side=BOTTOM)
 
     def set_sail_to(self, celKikoto):
         self.bezar = self.irany_bezar
         celkocka = self.master.game_board.locations[celKikoto][0]  # Kiolvassuk, hol van az adott város.
         debug("Set sail target city is at {}".format(celkocka))
         self.master.game_board.relocate_ship(celkocka)  # Áttesszük oda a játékost.
-        Button(self, text=self.master.ui_texts['done'], command=self.irany_bezar).pack(pady=5, side=BOTTOM)
+        Button(self, text=s.language.done, command=self.irany_bezar).pack(pady=5, side=BOTTOM)
 
     def irany_bezar(self):
         self.master.engine.eventstack.append(self.nev)

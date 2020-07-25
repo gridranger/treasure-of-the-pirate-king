@@ -1,5 +1,7 @@
 from tkinter import DISABLED, E, HORIZONTAL, NORMAL, W, Button, Checkbutton, Frame, IntVar, Label, Scale
 from tkinter.ttk import Combobox, LabelFrame
+from localization import Languages
+from settings import ApplicationSettings as s
 
 
 class SettingsTab(Frame):
@@ -26,8 +28,9 @@ class SettingsTab(Frame):
         self._full_screen_checkbox = Checkbutton(self._resolution_field, takefocus=0, variable=self._is_full_screen,
                                                  command=lambda: self._resolution_changer.config(state=NORMAL))
         self._languages = self._main_window.data_reader.load_language_list()
-        self._language_picker = Combobox(self._language_field, value=sorted(list(self._languages)), takefocus=0)
-        self._language_picker.set(self._languages_reversed[self._main_window.language])
+        self._languages = [language.value.name for language in Languages]
+        self._language_picker = Combobox(self._language_field, value=sorted(self._languages), takefocus=0)
+        self._language_picker.set(self._main_window.language.name)
         self._language_picker.bind("<<ComboboxSelected>>", self._pick_language)
         self._position_elements()
         self.load_ui_texts()
@@ -58,7 +61,7 @@ class SettingsTab(Frame):
         self._main_window.resize(self._resolutions[self._resolution_scale.get()], self._is_full_screen.get())
 
     def _pick_language(self, event):
-        new_language = self._languages[self._language_picker.get()]
+        new_language = Languages.get_language_by_name(self._language_picker.get())
         self._main_window.set_new_language(new_language)
 
     def _position_elements(self):
@@ -70,5 +73,5 @@ class SettingsTab(Frame):
         self._language_picker.grid(row=0, column=0, padx=5, pady=5)
 
     def load_ui_texts(self):
-        self._resolution_field.config(text=self._main_window.ui_texts['resolution'])
-        self._language_field.config(text=self._main_window.ui_texts['language'])
+        self._resolution_field.config(text=s.language.resolution)
+        self._language_field.config(text=s.language.language)

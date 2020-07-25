@@ -4,6 +4,7 @@ from tkinter.ttk import Notebook
 from developertab import DeveloperTab
 from gametab import GameTab
 from maintab import MainTab
+from settings import ApplicationSettings as s
 from settingstab import SettingsTab
 
 
@@ -34,9 +35,9 @@ class Tabs(Notebook):
         self.enable_traversal()
 
     def load_ui_texts(self):
-        self.tab(0, text=self.master.ui_texts['main_main'])
-        self.tab(1, text=self.master.ui_texts['game'])
-        self.tab(2, text=self.master.ui_texts['settings'])
+        self.tab(0, text=s.language.main_main)
+        self.tab(1, text=s.language.game)
+        self.tab(2, text=s.language.settings)
         self.settings_tab.load_ui_texts()
 
     def push_new_game_button(self):

@@ -6,6 +6,7 @@ from PIL.ImageTk import PhotoImage
 
 from assets import Empire, Gallery
 from models import PlayerState
+from settings import ApplicationSettings as s
 
 
 class NewPlayerField(Frame):
@@ -72,13 +73,13 @@ class NewPlayerField(Frame):
     def check_player_setup(self):
         error_message = ''
         if self.name.get() == '':
-            error_message = 'name_missing'
+            error_message = s.language.name_missing
         elif self.picked_color.get() == '':
-            error_message = 'color_missing'
+            error_message = s.language.color_missing
         elif self.empire_picker.get() == '':
-            error_message = 'flag_missing'
+            error_message = s.language.color_missing.flag_missing
         elif self.empire_picker.get() not in Empire.get_names():
-            error_message = 'flag_invalid'
+            error_message = s.language.color_missing.flag_invalid
         return error_message
 
     def get_player_state(self):

@@ -4,6 +4,7 @@ from tkinter import BooleanVar, BOTTOM, Button, DISABLED, FLAT, Frame, GROOVE, I
 from tkinter.messagebox import askyesno
 from random import randrange
 from assets import Gallery
+from settings import ApplicationSettings as s
 
 
 class Utkozet(Toplevel):
@@ -14,13 +15,15 @@ class Utkozet(Toplevel):
         self.master = master
         self.grab_set()
         self.kovetkezoSzakasz = kovetkezoSzakasz
-        self.title(self.master.ui_texts['battle'])
+        self.title(s.language.battle)
         self.protocol("WM_DELETE_WINDOW", self.ablakBezarasa)
         self.resizable(width=0, height=0)
         self.ellensegesZaszlo, self.ellensegesHajoTipusa, self.ellensegesHajoNeve, self.ellensegesLegenyseg, \
             self.zsakmany, self.kincskartyaHuzas = csatainfok
         if self.ellensegesHajoNeve[0:6] == "pirate":
-            self.ellensegesHajoNeve = self.master.ui_texts["ship_name_"+self.ellensegesHajoNeve]
+            self.ellensegesHajoNeve = [s.language.ship_name_pirate0, s.language.ship_name_pirate1,
+                                       s.language.ship_name_pirate3, s.language.ship_name_pirate4,
+                                       s.language.ship_name_pirate5][int(self.ellensegesHajoNeve[-1])]
         self.gombok = ['gun', 'rifle', 'caltrop', 'grenade', 'grapeshot', 'greek_fire', 'monkey', 'sirenhorn',
                        'sirens']
         self.jatekosMatrozaiFenn = BooleanVar()
@@ -69,7 +72,7 @@ class Utkozet(Toplevel):
         self.interaktiv = Frame(self.csatater)
         self.textGombok = Frame(self.interaktiv)
         self.korOsszegzo = Label(self.interaktiv)
-        self.csataIndulGomb = Button(self.textGombok, text=self.master.ui_texts['fight'], command=self.harcikor,
+        self.csataIndulGomb = Button(self.textGombok, text=s.language.fight, command=self.harcikor,
                                      state=DISABLED)
         self.csataIndulGomb.pack(side=BOTTOM, pady=10)
         self.csataIndulGomb.pack_forget()
@@ -92,16 +95,16 @@ class Utkozet(Toplevel):
         else:
             tamad = 0
         if tamad:
-            self.korOsszegzo.config(text=self.master.ui_texts["ship_spotted_pirate"])
+            self.korOsszegzo.config(text=s.language.ship_spotted_pirate)
         else:
-            self.korOsszegzo.config(text=self.master.ui_texts["ship_spotted"])
+            self.korOsszegzo.config(text=s.language.ship_spotted)
         self.csataGombLista = {}
-        for buttonText, command in (("ship_spotted_fire", self.agyuzas), ("ship_spotted_boarding", self.megcsaklyazas),
-                                    ("ship_spotted_let_them_flee", self.futnihagy),
-                                    ("ship_spotted_fleeing", self.menekules)):
-            self.csataGombLista[buttonText] = Button(self.textGombok, text=self.master.ui_texts[buttonText],
-                                                     command=command)
-            self.csataGombLista[buttonText].pack(side=LEFT, padx=3)
+        for id, txt, command in (("ship_spotted_fire", s.language.ship_spotted_fire, self.agyuzas),
+                                 ("ship_spotted_boarding", s.language.ship_spotted_boarding, self.megcsaklyazas),
+                                 ("ship_spotted_let_them_flee", s.language.ship_spotted_let_them_flee, self.futnihagy),
+                                 ("ship_spotted_fleeing", s.language.ship_spotted_fleeing, self.menekules)):
+            self.csataGombLista[id] = Button(self.textGombok, text=txt, command=command)
+            self.csataGombLista[id].pack(side=LEFT, padx=3)
         if tamad:
             self.csataGombLista["ship_spotted_let_them_flee"].pack_forget()
         else:
@@ -122,15 +125,15 @@ class Utkozet(Toplevel):
         if self.boss.hajotipustar[self.ellensegesHajoTipusa].price < \
                 self.boss.hajotipustar[self.master.engine.aktivjatekos.ship].price:
             self.megcsaklyazas()
-            self.korOsszegzo.config(text=(self.master.ui_texts["ship_spotted_fleeing_unsuccesful"] + "\n" +
-                                          self.master.ui_texts["ship_spotted_battle"]))
+            self.korOsszegzo.config(text=(s.language.ship_spotted_fleeing_unsuccesful + "\n" +
+                                          s.language.ship_spotted_battle))
         else:
             debug(self.master.engine.aktivjatekos.name + " elmenekült.")
             self.bezar()
 
     def megcsaklyazas(self):
         "A közelharcot indító függvény."
-        self.korOsszegzo.config(text=self.master.ui_texts["ship_spotted_battle"])
+        self.korOsszegzo.config(text=s.language.ship_spotted_battle)
         for gomb in self.csataGombLista.keys():
             self.csataGombLista[gomb].pack_forget()
         self.csataIndulGomb.pack(side=BOTTOM, pady=10)
@@ -147,23 +150,23 @@ class Utkozet(Toplevel):
         if self.ellensegesLegenyseg[dobas-1] == 'underWaterHit':
             self.ellenfelSullyed.set(True)
             self.sullyedesigHatravan = 2
-            eredmeny += (self.master.ui_texts["ship_spotted_enemy_sinking"])
+            eredmeny += (s.language.ship_spotted_enemy_sinking)
         elif self.ellensegesLegenyseg[dobas-1] == 'powderStore':
             self.ellenfelSullyed.set(True)
             self.sullyedesigHatravan = 0
             for gomb in self.csataGombLista.keys():
                 self.csataGombLista[gomb].pack_forget()
             self.harcfeltetelek_vizsgalata()
-            self.csataIndulGomb.configure(text=self.master.ui_texts['done'], command=self.bezar, state=NORMAL)
+            self.csataIndulGomb.configure(text=s.language.done, command=self.bezar, state=NORMAL)
             self.csataIndulGomb.pack()
-            eredmeny += (self.master.ui_texts["ship_spotted_powder_storage"])
+            eredmeny += (s.language.ship_spotted_powder_storage)
         else:
             if self.ellenfel.skalaszotar[dobas].value.get() > 1:
                 minusz = 2
             elif self.ellenfel.skalaszotar[dobas].value.get() == 1:
                 minusz = 1
             self.ellenfel.skalaszotar[dobas].erteket_beallit(self.ellenfel.skalaszotar[dobas].value.get()-minusz)
-            eredmeny += (self.master.ui_texts["ship_spotted_enemy_casualties"] % minusz)
+            eredmeny += (s.language.ship_spotted_enemy_casualties % minusz)
         # Ellenfél lő a játékosra
         dobas2 = randrange(1, 7)
         lehetsegesCsapatok = self.master.engine.aktivjatekos.crew.get() / 6
@@ -172,7 +175,7 @@ class Utkozet(Toplevel):
             self.jatekos.maxLegenyseg = self.master.engine.aktivjatekos.crew.get()
             if eredmeny != "":
                 eredmeny += "\n"
-            eredmeny += (self.master.ui_texts["ship_spotted_player_casualties"])
+            eredmeny += (s.language.ship_spotted_player_casualties)
         # Eredménykijelzés
         self.korOsszegzo.config(text=eredmeny)
         self.jatekos.osszegzoFelirat.vege = '/' + str(self.jatekos.maxLegenyseg)
@@ -192,7 +195,7 @@ class Utkozet(Toplevel):
         for gomb in self.gombszotar.keys():
             if self.gombszotar[gomb].nev in self.master.engine.aktivjatekos.states:
                 self.gombszotar[gomb].cooling()
-        self.korOsszegzo.config(text=self.master.ui_texts["ship_spotted_battle_starts"])
+        self.korOsszegzo.config(text=s.language.ship_spotted_battle_starts)
         self.csataIndulGomb.configure(state=NORMAL)
 
     def csataIndul2(self):
@@ -200,7 +203,7 @@ class Utkozet(Toplevel):
         self.jatekos.mindentLetilt()
         self.jatekos.eloszamol()
         self.ellenfel.eloszamol()
-        self.korOsszegzo.config(text=self.master.ui_texts["ship_spotted_battle_starts"])
+        self.korOsszegzo.config(text=s.language.ship_spotted_battle_starts)
         self.csataIndulGomb.configure(state=NORMAL)
 
     def harcikor(self):
@@ -247,12 +250,12 @@ class Utkozet(Toplevel):
                 self.ellenfel.celzas()
             else:
                 self.ellenfel.celpontotMegjelol(self.valosCelpontok)
-                self.korOsszegzo.configure(text=self.master.ui_texts['extra'])
+                self.korOsszegzo.configure(text=s.language.extra)
         else:
             self.harcikor_vege()
 
     def harcikor_vege(self):
-        self.korOsszegzo.config(text=self.master.ui_texts["ship_spotted_battle_starts"])
+        self.korOsszegzo.config(text=s.language.ship_spotted_battle_starts)
         vege_a_harcnak = self.harcfeltetelek_vizsgalata()
         if not vege_a_harcnak:
             for gomb in self.gombszotar.keys():
@@ -266,7 +269,7 @@ class Utkozet(Toplevel):
     def harcfeltetelek_vizsgalata(self):
         "Ellenőrzi, tart-e még a harc."
         if self.harc_vege():
-            self.csataIndulGomb.configure(text=self.master.ui_texts['done'], command=self.bezar)
+            self.csataIndulGomb.configure(text=s.language.done, command=self.bezar)
             for gomb in self.gombszotar.keys():
                 self.gombszotar[gomb].gomb.configure(state=DISABLED)
             return True
@@ -304,7 +307,7 @@ class Utkozet(Toplevel):
         "Ellenőrzi a felek harcképességét."
         if not self.jatekos.ertekkeszlet():
             debug('Vesztítettél.')
-            self.korOsszegzo.configure(text=self.master.ui_texts["battle_lose"])
+            self.korOsszegzo.configure(text=s.language.battle_lose)
             self.vereseg()
             return True
         elif (len(self.jatekos.ertekkeszlet()) == 1 and not len(self.ellenfel.ertekkeszlet())) or \
@@ -325,7 +328,7 @@ class Utkozet(Toplevel):
             # megnöveljük az elfogott hajók számát
             self.master.engine.aktivjatekos.scores[self.ellensegesZaszlo].set(
                 self.master.engine.aktivjatekos.scores[self.ellensegesZaszlo].get() + 1)
-            self.korOsszegzo.config(text=self.master.ui_texts["battle_sink"])
+            self.korOsszegzo.config(text=s.language.battle_sink)
             return True
         else:
             return False
@@ -339,7 +342,7 @@ class Utkozet(Toplevel):
         self.master.engine.aktivjatekos.treasure_hunting_done = True
 
     def ablakBezarasa(self):
-        if askyesno(self.master.ui_texts["leave_battle"], self.master.ui_texts["leave_battle_text"], parent=self):
+        if askyesno(s.language.leave_battle, s.language.leave_battle_text, parent=self):
             self.vereseg()
             self.bezar()
         else:
@@ -378,13 +381,13 @@ class Utkozet(Toplevel):
     def kincsMegszerzese(self, papagaj=0):
         "Átadja a zsákmányt a játékosnak."
         if self.kincskartyaHuzas:
-            szoveg2 = self.master.ui_texts["ship_spotted_reward2"]
+            szoveg2 = s.language.ship_spotted_reward2
             self.kartyaHuzando = True
         else:
             szoveg2 = ""
-        szoveg = self.master.ui_texts["ship_spotted_reward"] % (self.zsakmany, szoveg2)
+        szoveg = s.language.ship_spotted_reward % (self.zsakmany, szoveg2)
         if papagaj:
-            szoveg = self.master.ui_texts["ship_spotted_parrot"] + szoveg
+            szoveg = s.language.ship_spotted_parrot + szoveg
         self.master.engine.aktivjatekos.gold.set(self.master.engine.aktivjatekos.gold.get() + self.zsakmany)
         debug(self.master.engine.aktivjatekos.gold.get())
         self.korOsszegzo.config(text=szoveg)
@@ -418,7 +421,7 @@ class Hajoablak(Frame):
         self.kiosztottLegenyseg = IntVar()
         self.kiosztottLegenyseg.set(0)
         self.osszegzoFelirat = StringVar()
-        self.osszegzoFelirat.eleje = self.master.ui_texts['crew']+': '
+        self.osszegzoFelirat.eleje = s.language.crew+': '
         self.osszegzoFelirat.vege = '/'+str(self.maxLegenyseg)
         self.osszegzoFelirat.set(self.osszegzoFelirat.eleje+str(self.kiosztottLegenyseg.get())+self.osszegzoFelirat.vege)
         self.full = BooleanVar()
@@ -438,13 +441,14 @@ class Hajoablak(Frame):
             self.hossz = 6  # max(csapatok)
         # Adatgenerálás
         if user:
-            nev = self.master.ui_texts["ship_name_player"]
-            reszletek = '%s %s' % (self.master.ui_texts[self.master.engine.aktivjatekos.empire],
-                                   self.master.ui_texts[self.master.engine.aktivjatekos.ship])
+            nev = s.language.ship_name_player
+            # TODO empire and ship translations should be received more elegant better than this
+            reszletek = '%s %s' % (s.language.get(master.engine.aktivjatekos.empire),
+                                   s.language.get(master.engine.aktivjatekos.ship))
         else:
+            # TODO also this
             nev = boss.ellensegesHajoNeve
-            reszletek = '%s %s' % (self.master.ui_texts[boss.ellensegesZaszlo],
-                                   self.master.ui_texts[boss.ellensegesHajoTipusa])
+            reszletek = '%s %s' % (s.language.get(boss.ellensegesZaszlo), s.language.get(boss.ellensegesHajoTipusa))
         # Képablak
         kepkeret = Frame(self, height=self.master.game_board.tile_size, width=self.master.game_board.tile_size)
         kepkeret.pack_propagate(0)
@@ -467,9 +471,9 @@ class Hajoablak(Frame):
         Label(elosztas, textvariable=self.osszegzoFelirat).pack()
         pult = Frame(elosztas)
         if user:
-            self.auto = Button(pult, text=self.master.ui_texts['balance_teams'], command=self.autoElosztas)
+            self.auto = Button(pult, text=s.language.balance_teams, command=self.autoElosztas)
             self.auto.pack(side=LEFT, padx=3)
-            self.kesz = Button(pult, text=self.master.ui_texts['done'], command=self.boss.csataIndul, state=DISABLED)
+            self.kesz = Button(pult, text=s.language.done, command=self.boss.csataIndul, state=DISABLED)
             self.kesz.pack(side=LEFT, padx=3)
         pult.pack()
         elosztas.pack(fill=X)
@@ -583,7 +587,7 @@ class Hajoablak(Frame):
             if self.skalaszotar[i].elo.get():
                 x += self.skalaszotar[i].elo.get()
                 y += 1
-        self.osszegzoFelirat.set(self.master.ui_texts['men_count'] % (x, y))
+        self.osszegzoFelirat.set(s.language.men_count % (x, y))
 
     def maxLegenyseg_set(self, ertek):
         "Állítja a maxLegenyseg változót."
@@ -772,7 +776,7 @@ class Puska(Gombjektum):
             self.boss.csataIndulGomb.configure(state=NORMAL)
         else:
             self.boss.ellenfel.celpontotMegjelol(celpontok2)
-            self.boss.korOsszegzo.configure(text=self.master.ui_texts['amining'])
+            self.boss.korOsszegzo.configure(text=s.language.amining)
             self.figyelo = self.boss.ellenfel.valasztottCsapat.trace('w', self.mukodes2)
 
     def mukodes2(self, x, y, z):
@@ -816,7 +820,7 @@ class Granat(Gombjektum):
                 self.boss.ellenfel.celzas_sima(celpontok[0])
         else:
             self.boss.ellenfel.celpontotMegjelol(celpontok)
-            self.boss.korOsszegzo.configure(text=self.master.ui_texts['aiming'])
+            self.boss.korOsszegzo.configure(text=s.language.aiming)
             self.figyelo = self.boss.ellenfel.valasztottCsapat.trace('w', self.mukodes2)
 
     def mukodes2(self, x, y, z):
@@ -994,7 +998,7 @@ class Alvarez(Gombjektum):
             jatekos.skalaszotar[i].value.set(jatekos.skalaszotar[i].elo.get())
         jatekos.maxLegenyseg_set(maxLegenyseg)
         jatekos.kiosztottLegenyseg.set(maxLegenyseg)
-        jatekos.osszegzoFelirat.set(self.master.ui_texts['crew'] + ': ' + str(jatekos.kiosztottLegenyseg.get()) + '/'
+        jatekos.osszegzoFelirat.set(s.language.crew + ': ' + str(jatekos.kiosztottLegenyseg.get()) + '/'
                                     + str(jatekos.maxLegenyseg))
         jatekos.mindentEngedelyez()
-        self.boss.korOsszegzo.config(text=self.master.ui_texts["ship_spotted_alvarez"])
+        self.boss.korOsszegzo.config(text=s.language.ship_spotted_alvarez)

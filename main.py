@@ -7,6 +7,7 @@ from board import Board
 from datareader import DataReader
 from game import Vezerlo
 from player import Player
+from localization import Languages
 from logframe import LogFrame
 from models import GameState
 from newgamepanel import NewGamePanel
@@ -34,9 +35,9 @@ class Application(Tk):
         self.data_reader = DataReader(self)
         self._process_config()
         self.card_texts = {}
-        self.ui_texts = {}
+        self.ui_texts = self.language._terms
         self.ui_text_variables = {}
-        self._load_texts()
+        # self._load_texts()
         self._load_text_variables()
         self.save_handler = SaveHandler(self)
         self.is_game_setup_in_progress = IntVar(value=0)
@@ -56,7 +57,8 @@ class Application(Tk):
 
     def _process_config(self):
         settings = self.data_reader.load_settings()
-        self.language = settings.language
+        self.language = Languages.get_language_by_name(settings.language)
+        ApplicationSettings.language = Languages.get_language_by_name(settings.language)
         ApplicationSettings.application_width = self.width = settings.width
         ApplicationSettings.application_height = self.height = settings.height
         self.resolution_code = settings.resolution_code
@@ -85,17 +87,19 @@ class Application(Tk):
         self.ui_texts = self.data_reader.load_dictionary(self.language, entry_type='text')
 
     def _load_text_variable_values(self):
-        text_variable_values = self.data_reader.load_dictionary(self.language, entry_type='textvariable')
+        text_variable_values = self.data_reader.load_dictionary({Languages.HUNGARIAN.value: "hu",
+                                                                 Languages.ENGLISH.value: "en",
+                                                                 Languages.PIRATE.value: "arr"}[self.language],
+                                                                entry_type='textvariable')
         return text_variable_values
 
     def _load_text_variables(self):
-        text_variable_values = self._load_text_variable_values()
-        for entry in text_variable_values:
-            self.ui_text_variables.setdefault(entry, StringVar()).set(text_variable_values[entry])
+        for entry, translation in self.language.var_terms.items():
+            self.ui_text_variables.setdefault(entry, StringVar()).set(translation)
 
     def _text_placer(self):
         picked_nations = []
-        self.title(self.ui_texts['title'])
+        self.title(ApplicationSettings.language.title)
         self.menu.load_ui_texts()
         if self.is_game_setup_in_progress.get():
             picked_nations = self._save_game_setup_state()
@@ -237,7 +241,7 @@ class Application(Tk):
 
     def select_file_to_load(self):
         if self.is_game_in_progress.get():
-            if not askokcancel(self.ui_text_variables['new_game'].get(), self.ui_texts['discard_game-b']):
+            if not askokcancel(self.ui_text_variables['new_game'].get(), self.ui_texts['discard_game_b']):
                 return
         game_state = self.save_handler.load_saved_state()
         if game_state is None or not game_state.check():

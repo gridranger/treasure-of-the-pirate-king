@@ -1,6 +1,7 @@
 from unittest import TestCase
 from unittest.mock import Mock, patch
 from main import Application
+from localization import Languages
 from newgamepanel import NewGamePanel
 from newplayerfield import NewPlayerField
 
@@ -12,7 +13,7 @@ class TestNewPlayerField(TestCase):
     def setUpClass(cls, Label):
         # TODO The following lines should not be here in a proper unit test case
         cls.application = Application()
-        cls.application.set_new_language("en")
+        cls.application.set_new_language(Languages.ENGLISH.value)
         cls.new_game_panel = NewGamePanel(cls.application)
 
     @patch("newplayerfield.Label")

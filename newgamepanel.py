@@ -5,6 +5,7 @@ from PIL.ImageTk import PhotoImage
 
 from assets import Gallery
 from newplayerfield import NewPlayerField
+from settings import ApplicationSettings as s
 
 
 class NewGamePanel(Frame):
@@ -47,7 +48,7 @@ class NewGamePanel(Frame):
                 if error_message:
                     self._show_error_message(error_message, i)
                     return
-                message = self.master.ui_texts['start_game']
+                message = s.language.start_game
                 self.master.status_bar.log(message)
                 player_state = self.player_setups[i].get_player_state()
                 player_data.append(player_state)
@@ -55,7 +56,7 @@ class NewGamePanel(Frame):
 
     def _show_error_message(self, error_message, player_number):
         if 'name_missing' == error_message:
-            message = self.master.ui_texts[error_message].format(player_number + 1)
+            message = error_message.format(player_number + 1)
         else:
-            message = self.master.ui_texts[error_message].format(self.player_setups[player_number].name.get())
+            message = error_message.format(self.player_setups[player_number].name.get())
         self.master.status_bar.log(message)
