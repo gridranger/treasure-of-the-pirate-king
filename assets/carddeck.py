@@ -3,9 +3,9 @@ from random import choice
 
 
 class CardDeck(ABC):
-    def __init__(self):
-        self._unused_cards = []
-        self._used_cards = []
+    def __init__(self, cards, used_cards=None):
+        self._unused_cards = cards
+        self._used_cards = used_cards if used_cards else []
 
     def get_card(self):
         if not self._unused_cards:

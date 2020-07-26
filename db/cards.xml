@@ -155,7 +155,7 @@
       <img>event_carousal</img>
       <method>self.carousal()</method>
     </card>
-    <card id="majom3">
+    <card id="monkey3">
       <title>
         <hu>A háromfejű majom</hu>
         <en>Three-headed monkey</en>
@@ -421,7 +421,7 @@
       <img>event_breath</img>
       <method>self.dummy()</method>
     </card>
-    <card id="kincses0">
+    <card id="pirate_map_0">
       <title>
         <hu>Kincses térkép</hu>
         <en>Treasure map</en>
@@ -435,7 +435,7 @@
       <img>event_map</img>
       <method>self.dummy()</method>
     </card>
-    <card id="kincses1">
+    <card id="pirate_map_1">
       <title>
         <hu>Kincses térkép</hu>
         <en>Treasure map</en>

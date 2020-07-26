@@ -31,7 +31,8 @@ class NewPlayerField(Frame):
         self._color.grid(row=1, column=1)
         empire_label = Label(self, textvariable=self._main_window.ui_text_variables['flag_label'])
         empire_label.grid(row=2, column=0, sticky=E)
-        self.empire_picker = Combobox(self, value=Empires.get_names(), takefocus=0, width=12, state='readonly')
+        empire_names = [s.language.get(e.value.adjective) for e in Empires]
+        self.empire_picker = Combobox(self, value=empire_names, takefocus=0, width=12, state='readonly')
         self.empire_picker.bind("<<ComboboxSelected>>")
         self.empire_picker.grid(row=2, column=1)
         for elem in [self.name, self._color, self.empire_picker]:
@@ -77,8 +78,8 @@ class NewPlayerField(Frame):
         elif self.picked_color.get() == '':
             error_message = s.language.color_missing
         elif self.empire_picker.get() == '':
-            error_message = s.language.color_missing.flag_missing
-        elif self.empire_picker.get() not in Empires.get_names():
+            error_message = s.language.flag_missing
+        elif self.empire_picker.get() not in [s.language.get(e.value.adjective) for e in Empires]:
             error_message = s.language.color_missing.flag_invalid
         return error_message
 

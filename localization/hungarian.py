@@ -138,5 +138,141 @@ class Hungarian(Localization):
         "color_label": "Szín:",
         "full_screen": "Teljes képernyő",
         "new_game": "Új játék",
-        "flag_label": "Zászló:"
+        "flag_label": "Zászló:",
+        "leviathan_title": "Leviatán",
+        "sirens_title": "Szirének",
+        "bobbydick_title": "Bobby Dick",
+        "scurvy_title": "Skorbut",
+        "mutiny_title": "Zendülés",
+        "reefs_title": "Zátonyok",
+        "deserters_title": "Dezertőrök",
+        "treacherous_mate_title": "Az áruló hadnagy",
+        "kraken_title": "Támad a Kraken",
+        "grog_riot_title": "Groglázadás",
+        "carousal_title": "Tivornya",
+        "monkey3_title": "A háromfejű majom",
+        "castaways_title": "Hajótöröttek",
+        "ghost_ship_title": "Kísértethajó",
+        "sail_title": "Sorold fel a vitorla részeit!",
+        "freed_slaves_title": "Felszabadított rabszolgák",
+        "set_sail_to_portroyal_title": "Irány Port Royal!",
+        "set_sail_to_havanna_title": "Irány Havanna!",
+        "set_sail_to_martinique_title": "Irány Martinique!",
+        "set_sail_to_curacao_title": "Irány Curacao!",
+        "set_sail_to_tortuga_title": "Irány Tortuga!",
+        "shipwreck_title": "Hajótörés",
+        "voodoo_curse_title": "Vuduátok",
+        "voodoo_wind_spell_title": "Vudu szélvarázs",
+        "tavern_brawl_title": "Verekedés a csapszékben",
+        "found_port_title": "Alapíts kalózkikötőt!",
+        "competition_title": "Csomózási verseny",
+        "compass_title": "Megzavarodott iránytű",
+        "luck_title": "Horgászszerencse",
+        "breath_title": "Lélegzetvisszatartó-\nverseny",
+        "pirate_map_0_title": "Kincses térkép",
+        "pirate_map_1_title": "Kincses térkép",
+        "leviathan_text": "Az ijesztő tengeri kígyó már-már ráveti magát hajódra, amikor egy ősz matróz szigorúan "
+                          "legorombítja. A szörnyeteg ettől kezes jószággá válik.\nA játékos akkor is dobhat, ha "
+                          "kimaradna, mert a szörny tovább vontatja. Egyszer használható.",
+        "sirens_text": "Egy közeli szirt irányából különös dal csendül, amely megzavarja a legénységet.",
+        "bobbydick_text": "Az óriás ámbráscet egy szigonytól kínlódik. Eldöntheted, hogy elejted vagy segítesz rajta.",
+        "scurvy_text": "A fedélzeten skorbutjárvány tör ki. Minden körben egy matrózt veszítesz, amíg Föld! Föld! "
+                       "mezőre vagy kikötőre nem lépsz.",
+        "mutiny_text": "A fedélzeten zendülés tör ki.",
+        "reefs_text": "Hajód zátonyok közt halad át.|Hajód megfeneklett, amikor a zátonyok közt lavíroztál. Egy körből"
+                      " kimaradsz.",
+        "deserters_text": "Az egyik csónak eltűnt az éjjel. | fő elszökött a legénységből.",
+        "treacherous_mate_text": "Egy félrebeszélő hajótöröttben a Grogbáró nevű hajó szökött hadnagyára ismersz. A "
+                                 "halála előtti utolsó tiszta pillanatban még elmondja, hogyan lehet megtalálni a "
+                                 "kalózkirály kincsét a szigeten, amelynek koordinátáit nem ismeri, csak maga "
+                                 "Harrison kapitány.",
+        "kraken_text": "A mélytengerek réme hajódat szemelte ki főfogásnak.",
+        "grog_riot_text": "A tengerész szeszesital feliratú hordókban csak hitvány lötty van. A tengeri medvék "
+                          "kijózanodnak. Tartsd meg a kártyát a következő körig. Ha sikerül egy kikötőbe jutnod, a "
+                          "kártya eldobható. Ha nem, kitör a zendülés.",
+        "carousal_text": "Davy Jones születésnapja alkalmából a legénység hatalmas tivornyát rendez. A plusz adag "
+                         "grog fellelkesíti őket, ezért, ha a következő körben hajózáshoz dobott érték kedvezőtlen, "
+                         "egyszer újra dobhatsz helyette.",
+        "monkey3_text": "Az árbockosárban ülő matróz egy háromfejű majmot vél látni a közeli feltérképezetlen "
+                        "szigeten. A legénység partra száll, de semmiféle majmot nem találnak.",
+        "castaways_text": "Hajótörötteket találsz egy szigeten. | fő csatlakozott.",
+        "ghost_ship_text": "Egy legénység nélküli hajót csáklyáztok meg. A legénységedből | főnek rejtélyesen nyoma "
+                           "vész, viszont a fedélzeten kincset találsz.",
+        "sail_text": "A Kalózok Rendelkezéseinek  Egységes Szabályzata (KRESZ) szerint a vitorla egy nagy darab "
+                     "vitorlavászonból áll. Ha jól felsoroltad - és legénységed elhiszi, hogy így történt -, újra te "
+                     "jössz.",
+        "freed_slaves_text": "Hajód elfog sodródó slavert. A legénységnek titokzatos módon nyoma veszett, de "
+                             "rabszolgák némelyike még él. | fő csatlakozott a legénységhez.",
+        "set_sail_to_portroyal_text": "None",
+        "set_sail_to_havanna_text": "None",
+        "set_sail_to_martinique_text": "None",
+        "set_sail_to_curacao_text": "None",
+        "set_sail_to_tortuga_text": "None",
+        "shipwreck_text": "Választhatsz, hogy kimaradsz három körből, amíg a legénységet újra összegyűjtöd egy új "
+                          "hajó fedélzetén, vagy lemondasz róluk, és kiúszol a száműzöttek szigetére.",
+        "voodoo_curse_text": "Egy vudu varázsló átkot mondott a hajódra. Legközelebb ha kincset kell húznod, hagyd "
+                             "ki, és helyette dobd el az átok kártyát.",
+        "voodoo_wind_spell_text": "Egy vudu pap jó szelet kér számodra a szellemektől. Tedd el a kártyát, és egyszer "
+                                  "tetszés szerint elforgathatod a szélirány mutatóját lépés előtt.",
+        "tavern_brawl_text": "Egy összeszólalkozást követően ölre mentek embereid a csapszékében.",
+        "found_port_text": "Egyre többen ismerik a neved a Karib-tengeren. Kedvenc horgonyzóhelyed egyre népszerűbb.",
+        "competition_text": "Fogadtál a fedélzetmesterrel, hogy gyorsabban kötsz matrózcsomót, mint ő.",
+        "compass_text": "Nem a szigetek mentek arrébb, hanem az iránytű rossz. Egy körből kimaradsz, amíg a csillagok "
+                        "alapján tájolva visszakormányozzátok a hajót a helyes irányba.",
+        "luck_text": "None",
+        "breath_text": "Megvan a lélegzetvisszatartó-verseny győztese. Vesztettél egy matrózt.",
+        "pirate_map_0_text": "Egy kincs helyét felfedő térképre akadtál. Tartsd meg a kártyát, amíg a déli kincses "
+                             "szigetre nem vetődsz, és ott egyből beválthatod kincsre. Utána viszont már nem áshatsz "
+                             "le másik kincsért a következő körben.",
+        "pirate_map_1_text": "Egy kincs helyét felfedő térképre akadtál. Tartsd meg a kártyát, amíg az északnyugati "
+                             "kincses szigetre nem vetődsz, és ott egyből beválthatod kincsre. Utána viszont már nem "
+                             "áshatsz le másik kincsért a következő körben.",
+        "treasure_title": "Kincs",
+        "treasure_text": "Találtál {} aranyat.",
+        "greek_fire_title": "Görögtűz",
+        "greek_fire_text": "Szétszór egy választott ellenséges csapatot. Egyszer használható csatánként.",
+        "grenade_title": "Gránát",
+        "grenade_text": "Elsöpör egy tetszőleges ellenséges csapatot. Egyszer használható.",
+        "grapeshot_title": "Kartács",
+        "grapeshot_text": "Minden csapatod ágyúból tüzel az ellenfélre, aki nem támad vissza.",
+        "dog_title": "Kutya",
+        "dog_text": "None",
+        "caltrop_title": "Lábtövis",
+        "caltrop_text": "Az ellenfél a csata végéig hátránnyal harcol. Egyszer használható.",
+        "monkey_title": "Majom",
+        "monkey_text": "Megszerzi a kincset a süllyedő ellenséges hajóról.",
+        "parrot_title": "Papagáj",
+        "parrot_text": "None",
+        "gun_title": "Pisztoly",
+        "gun_text": "Egy töltött pisztoly mindig jól jön a csatában.",
+        "rifle_title": "Puska",
+        "rifle_text": "Tovább tart megtölteni, mint egy pisztolyt, de pontosabb is.",
+        "sirenhorn_title": "Szirénkürt",
+        "sirenhorn_text": "Minden ellenséges csapatból egy fő átáll a játékoshoz.",
+        "map_title": "Térkép",
+        "map_text": "None",
+        "spare_sail_title": "Tartalékvitorla",
+        "spare_sail_text": "None",
+        "hawke_title": "Jane Hawke",
+        "hawke_text": "Amíg útitársként a hajón van, a legénység fejében a lázadás gondolata sem fordul meg.",
+        "fuil_title": "Peter Fuil",
+        "fuil_text": "Amíg útitársként a hajón van, a játékos sebesült matrózai közül meg tud menteni párat.",
+        "lopez_title": "Maria Lopez",
+        "lopez_text": "Amíg útitársként a hajón van, a játékos minden esetben választhat a kincspakli két legfelső "
+                      "lapja közül.",
+        "alvarez_title": "Juan Alvarez",
+        "alvarez_text": "Amíg útitársként a hajón van, csatánként egyszer újrarendezhetőek a csapatok.",
+        "vandenbergh_title": "Anna van den Bergh",
+        "vandenbergh_text": "Amíg útitársként a hajón van, minden kikötőben két fővel több matrózt bérelhet a "
+                            "játékos.",
+        "molenaar_title": "Thomas Molenaar",
+        "molenaar_text": "Amíg útitársként a hajón van, a matrózok olcsóbban bérelhetőek.",
+        "therese_title": "Thérése",
+        "therese_text": "Amíg útitársként a hajón van, a legénységen sosem vesz erőt a skorbut.",
+        "levasseur_title": "Jacques Levasseur",
+        "levasseur_text": "Amíg útitársként a hajón van, erősebb viharban is kormányozható a hajó.",
+        "lizzy_title": "Lizzy",
+        "lizzy_text": "A kalózkirály egyetlen leánya.",
+        "billy_title": "Billy",
+        "billy_text": "Pontosabb ágyúzást tesz lehetővé."
     }

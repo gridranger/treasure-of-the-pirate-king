@@ -441,7 +441,7 @@ class Hajoablak(Frame):
         if user:
             nev = s.language.ship_name_player
             # TODO empire and ship translations should be received more elegant better than this
-            reszletek = '%s %s' % (s.language.get(master.engine.aktivjatekos.empire),
+            reszletek = '%s %s' % (s.language.get(master.engine.aktivjatekos.empire.adjective),
                                    s.language.get(master.engine.aktivjatekos.ship))
         else:
             # TODO also this

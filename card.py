@@ -46,7 +46,7 @@ class KartyaAblak(Toplevel):
             szoveg = self.master.card_texts[self.nev][1] % ertek
         else:
             szoveg = self.master.card_texts[self.nev][1]
-        self.title(s.language.event_card if self.pakli == "event" else s.language.treasure.card)
+        self.title(s.language.event_card if self.pakli == "event" else s.language.treasure_card)
         cimStilus = 'helvetica 14 bold'
         self.kartyalap = Frame(self, relief=GROOVE, bd=2, bg='ivory')
         Label(self.kartyalap, image=Gallery.get(kep)).pack()

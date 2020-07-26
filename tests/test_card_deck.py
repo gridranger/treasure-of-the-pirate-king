@@ -10,8 +10,8 @@ class _DummyDeck(CardDeck):
 
 class TestCardDeck(TestCase):
     def setUp(self):
-        self._test_deck = _DummyDeck()
         self._dummy_cards = ["alma", "korte"]
+        self._test_deck = _DummyDeck(self._dummy_cards)
 
     def test_get_card(self):
         self._test_deck._unused_cards = self._dummy_cards
@@ -22,6 +22,7 @@ class TestCardDeck(TestCase):
 
     @patch("assets.CardDeck.refill_deck")
     def test_get_card_empty_deck(self, refill_deck):
+        self._test_deck._unused_cards = []
         with self.assertRaises(IndexError):
             self._test_deck.get_card()
         refill_deck.assert_called_once()

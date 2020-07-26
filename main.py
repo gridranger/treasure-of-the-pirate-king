@@ -90,8 +90,8 @@ class Application(Tk):
         return text_variable_values
 
     def _load_text_variables(self):
-        for entry, translation in self.language.var_terms.items():
-            self.ui_text_variables.setdefault(entry, StringVar()).set(translation)
+        for term, translation in s.language.var_terms.items():
+            self.ui_text_variables.setdefault(term, StringVar()).set(translation)
 
     def _text_placer(self):
         picked_nations = []
