@@ -1,4 +1,4 @@
-from abc import ABC, abstractmethod
+from abc import ABC
 from settings import ApplicationSettings as s
 from .cardactions import CardActions as actions
 from .eventcardtypes import EventCardTypes as events
@@ -25,6 +25,7 @@ class Card(ABC):
 
 class EventCard(Card):
     pass
+
 
 class LootCard(Card):
     pass
