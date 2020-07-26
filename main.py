@@ -36,9 +36,7 @@ class Application(Tk):
         self.data_reader = DataReader(self)
         self._process_config()
         self.card_texts = {}
-        self.ui_texts = self.language._terms
         self.ui_text_variables = {}
-        # self._load_texts()
         self._load_text_variables()
         self.save_handler = SaveHandler(self)
         self.is_game_setup_in_progress = IntVar(value=0)
@@ -83,9 +81,6 @@ class Application(Tk):
     def _set_windowed_position(self):
         self.overrideredirect(0)
         self.geometry("{}x{}+{}+{}".format(self.width, self.height, 100, 100))
-
-    def _load_texts(self):
-        self.ui_texts = self.data_reader.load_dictionary(self.language, entry_type='text')
 
     def _load_text_variable_values(self):
         text_variable_values = self.data_reader.load_dictionary({Languages.HUNGARIAN.value: "hu",
@@ -133,7 +128,6 @@ class Application(Tk):
             return
         self.language = new_language
         s.language = new_language
-        self._load_texts()
         self._load_text_variables()
         self._text_placer()
         self.card_texts = self.data_reader.load_cards_text()

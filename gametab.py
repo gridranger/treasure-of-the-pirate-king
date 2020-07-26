@@ -2,6 +2,7 @@ from logging import debug
 from tkinter import ALL, E, HORIZONTAL, N, NORMAL, RAISED, S, SUNKEN, W, Frame, Label, Button
 from tkinter.ttk import LabelFrame, Separator
 from assets import Die, Empires, Gallery
+from settings import ApplicationSettings as s
 
 
 class GameTab(Frame):
@@ -56,11 +57,11 @@ class GameTab(Frame):
         self._heading.grid(row=position, column=0, pady=5)
 
     def _build_inventory_display(self, position):
-        gold_frame = LabelFrame(self._inventory_display, text=self._main_window.ui_texts['treasure'])
+        gold_frame = LabelFrame(self._inventory_display, text=s.language.treasure)
         Label(gold_frame, image=Gallery.get("penz-d2")).grid(row=0, column=0)
         Label(gold_frame, textvariable=self._current_player.gold).grid(row=0, column=1)
         gold_frame.grid(row=0, column=0, sticky=N + E + W + S, padx=5)
-        crew_frame = LabelFrame(self._inventory_display, text=self._main_window.ui_texts['crew'])
+        crew_frame = LabelFrame(self._inventory_display, text=s.language.crew)
         Label(crew_frame, image=Gallery.get("crew")).grid(row=0, column=0)
         Label(crew_frame, textvariable=self._current_player.crew).grid(row=0, column=1)
         crew_frame.grid(row=0, column=1, sticky=N + E + W + S, padx=5)
@@ -71,7 +72,7 @@ class GameTab(Frame):
         Separator(self, orient=HORIZONTAL).grid(row=position, column=0, sticky=E + W, padx=5, pady=5)
 
     def _build_score_field(self, position):
-        self._score_field.config(text=self._main_window.ui_texts['scores'])
+        self._score_field.config(text=s.language.scores)
         score_fields = {}
         target_empires = [empire.value for empire in Empires]
         target_empires.remove(self._current_player.empire)
@@ -98,13 +99,13 @@ class GameTab(Frame):
 
     def _build_miss_turn_button(self, should_miss_turn):
         if should_miss_turn > 1:
-            message = self._main_window.ui_texts["miss_turn"] % should_miss_turn
+            message = s.language.miss_turn % should_miss_turn
         else:
-            message = self._main_window.ui_texts["miss_turn_last_time"]
+            message = s.language.miss_turn_last_time
         Button(self._die_field, text=message, command=self._main_window.engine.kimaradas).pack()
         if "leviathan" in self._current_player.states:
             command = self._main_window.engine.leviathan_kijatszasa
-            Button(self._die_field, text=self._main_window.ui_texts["play_leviathan"], command=command).pack()
+            Button(self._die_field, text=s.language.play_leviathan, command=command).pack()
 
     def _build_die(self):
         self._die_field.config(relief=RAISED, bd=2)
@@ -121,7 +122,7 @@ class GameTab(Frame):
 
     def _build_turn_order(self, position):
         players = []
-        turn_order_label = Label(self._turn_order, text=self._main_window.ui_texts['turn_order'])
+        turn_order_label = Label(self._turn_order, text=s.language.turn_order)
         turn_order_label.grid(row=0, column=0, sticky=W)
         for index, player_name in enumerate(self._main_window.player_order):
             player = self._main_window.players[player_name]
@@ -131,7 +132,7 @@ class GameTab(Frame):
         self._turn_order.grid(row=position, column=0, sticky=W, padx=5)
 
     def _build_state_display(self, position):
-        state_field = LabelFrame(self, text=self._main_window.ui_texts['cards'], relief=RAISED,
+        state_field = LabelFrame(self, text=s.language.cards, relief=RAISED,
                                  width=self.master.width - 31)
         state_slots_per_row = int((self.master.width - 31) / 32)
         state_slot_height = 24 + ((int(len(self._current_player.states) / state_slots_per_row) + 1) * 32)
@@ -162,7 +163,7 @@ class GameTab(Frame):
             dobas = self.die.roll()
             if "landland" in self._current_player.states:
                 debug("New roll is possible because of Land, land! bonus.")
-                self._main_window.status_bar.log(self._main_window.ui_texts['land_log'])
+                self._main_window.status_bar.log(s.language.land_log)
                 self._current_player.remove_state("landland")
                 self._land_land_roll = True
             else:

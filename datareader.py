@@ -170,7 +170,7 @@ class DataReader(object):
 
     def _load_common_card_data(self):
         try:
-            error_message = self.master.ui_texts['translation_missing']
+            error_message = "Translation not found for card."
         except AttributeError:
             error_message = self.errors['stringAttributeError']
         all_cards = parse(Paths.cards).getroot()
