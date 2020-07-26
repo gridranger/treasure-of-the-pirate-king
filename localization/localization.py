@@ -39,7 +39,7 @@ class Localization:
     def _fetch_term(self, term):
         translation = self._terms[term]
         if translation is None:
-            raise NotImplementedError(f"Translataion of term '{term}' is missing from the {self._language} language.")
+            raise NotImplementedError(f"Translataion of term '{term}' is missing from the {self.name} language.")
         else:
             return translation
 
