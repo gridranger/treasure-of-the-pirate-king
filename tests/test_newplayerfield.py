@@ -1,7 +1,8 @@
 from unittest import TestCase
 from unittest.mock import Mock, patch
-from main import Application
+from assets import Empires
 from localization import Languages
+from main import Application
 from newgamepanel import NewGamePanel
 from newplayerfield import NewPlayerField
 
@@ -29,19 +30,19 @@ class TestNewPlayerField(TestCase):
         result = self._new_player_field.get_player_state()
         self.assertEqual("", result.name)
         self.assertEqual("#000000", result.color)
-        self.assertEqual("Pirate", result.empire)
+        self.assertEqual("Pirate", result.empire.adjective)
 
     def test_set_player_state(self):
         state = Mock()
         state.color = self._dummy_color
         state.name = "Roger"
-        state.empire = "Pirate"
+        state.empire = Empires.PIRATE.value
         self._new_player_field.set_player_state(state)
         self.assertEqual(1, self._new_player_field.active.get())
-        self.assertEqual("Roger", self._new_player_field.name.get())
+        self.assertEqual(state.name, self._new_player_field.name.get())
         self.assertEqual(self._dummy_color, self._new_player_field.picked_color.get())
         self.assertEqual(self._dummy_color, self._new_player_field._color.cget("bg"))
-        self.assertEqual("Pirate", self._new_player_field.empire_picker.get())
+        self.assertEqual(state.empire.adjective, self._new_player_field.empire_picker.get())
 
     def test_set_player_state_blank(self):
         state = Mock()

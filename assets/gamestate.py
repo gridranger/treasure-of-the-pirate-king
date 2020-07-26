@@ -1,4 +1,4 @@
-from .empire import Empire
+from .empires import Empires
 from .port import Port
 
 
@@ -7,5 +7,5 @@ class GameState(object):
         self.pirate_king_is_defeated = False
         self.first_mate_is_found = False
         self.pirate_kings_treasure_is_found = False
-        self.ports = dict([(empire, Port()) for empire in Empire])
+        self.ports = dict([(empire, Port()) for empire in Empires])
         self.current_turn_number = 0

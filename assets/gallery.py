@@ -1,6 +1,6 @@
 from PIL.ImageTk import PhotoImage
 from PIL.Image import ANTIALIAS, BICUBIC, open as pillow_open
-from assets.empire import Empire
+from assets.empires import Empires
 from settings import ApplicationSettings as app, Paths
 
 
@@ -71,7 +71,7 @@ class Gallery:
 
     @classmethod
     def _generate_flags(cls):
-        for empire in Empire:
+        for empire in Empires:
             flag_name = f"flag_{empire.value.adjective.lower()}"
             flag = cls._get_raw_image(flag_name)
             side_ratio = flag.size[0] / flag.size[1]

@@ -2,7 +2,7 @@
 from time import perf_counter, sleep
 from tkinter import BooleanVar, Canvas, CENTER, Frame, NW
 
-from assets import Empire, Gallery
+from assets import Empires, Gallery
 from helmsman import Helmsman
 from settings import ApplicationSettings
 
@@ -75,7 +75,7 @@ class Board(Frame):
 
     def _collect_ports(self):
         ports = {}
-        capitals = [empire.value.capital for empire in Empire]
+        capitals = [empire.value.capital for empire in Empires]
         for capital in capitals:
             ports[capital] = self.locations[capital][0]
         return ports
@@ -180,7 +180,7 @@ class Board(Frame):
             Gallery.get(ship_type)
 
     def _render_flags(self):
-        for empire in Empire:
+        for empire in Empires:
             Gallery.get(f"flag_{empire.value.adjective.lower()}")
 
     def _render_crewman(self):

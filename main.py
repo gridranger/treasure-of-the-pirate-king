@@ -1,8 +1,9 @@
 from logging import DEBUG, WARNING, basicConfig, getLogger
 from tkinter import DISABLED, E, N, NORMAL, S, W, Frame, IntVar, StringVar, Tk
 from tkinter.messagebox import askokcancel
+from typing import List
 
-from assets import Empire, Gallery
+from assets import Empire, Empires, Gallery
 from board import Board
 from datareader import DataReader
 from game import Vezerlo
@@ -12,7 +13,7 @@ from logframe import LogFrame
 from models import GameState
 from newgamepanel import NewGamePanel
 from savehandler import SaveHandler
-from settings import ApplicationSettings
+from settings import ApplicationSettings as s
 from tabs import Tabs
 
 
@@ -58,9 +59,9 @@ class Application(Tk):
     def _process_config(self):
         settings = self.data_reader.load_settings()
         self.language = Languages.get_language_by_name(settings.language)
-        ApplicationSettings.language = Languages.get_language_by_name(settings.language)
-        ApplicationSettings.application_width = self.width = settings.width
-        ApplicationSettings.application_height = self.height = settings.height
+        s.language = Languages.get_language_by_name(settings.language)
+        s.application_width = self.width = settings.width
+        s.application_height = self.height = settings.height
         self.resolution_code = settings.resolution_code
         self.resolution_list = settings.resolution_list
         self.screen_ratio = self.resolution_code[:4]
@@ -99,12 +100,10 @@ class Application(Tk):
 
     def _text_placer(self):
         picked_nations = []
-        self.title(ApplicationSettings.language.title)
+        self.title(s.language.title)
         self.menu.load_ui_texts()
         if self.is_game_setup_in_progress.get():
             picked_nations = self._save_game_setup_state()
-        for empire in Empire:
-            empire.value.name = self.ui_texts[empire.value.adjective]
         if self.is_game_setup_in_progress.get():
             self._reload_game_setup_state(picked_nations)
         if self.is_game_in_progress.get():
@@ -115,27 +114,30 @@ class Application(Tk):
         for i in range(6):
             empire_name = self.game_board.player_setups[i].empire_picker.get()
             if empire_name != '':
-                current_empire = Empire.get_by_name(empire_name)
+                current_empire = Empires.get_by_name(empire_name)
                 picked_nations.append(current_empire)
             else:
                 picked_nations.append('')
         return picked_nations
 
-    def _reload_game_setup_state(self, picked_nations):
-        for i in range(6):
-            self.game_board.player_setups[i].empire_picker.config(value=Empire.get_names())
-            if picked_nations[i]:
-                self.game_board.player_setups[i].empire_picker.set(picked_nations[i].name)
+    def _reload_game_setup_state(self, picked_nations: List[Empire]):
+        adjectives = [empire.value.adjective for empire in Empires]
+        translated_adjectives = [s.language.get(adjective) for adjective in adjectives]
+        for index, picked_nation in enumerate(picked_nations):
+            self.game_board.player_setups[index].empire_picker.config(value=translated_adjectives)
+            if picked_nation:
+                self.game_board.player_setups[index].empire_picker.set(s.language.get(picked_nation.adjective))
 
     def set_new_language(self, new_language):
         if self.language == new_language:
             return
         self.language = new_language
+        s.language = new_language
         self._load_texts()
         self._load_text_variables()
         self._text_placer()
         self.card_texts = self.data_reader.load_cards_text()
-        self.status_bar.log(self.ui_texts['new_language'])
+        self.status_bar.log(s.language.new_language)
         self.data_reader.save_settings(new_language=new_language)
 
     def _render_panes(self):
@@ -181,7 +183,7 @@ class Application(Tk):
             self._load_game_setup_before_resize(player_data)
         self._text_placer()
         self.menu.select(self.menu.settings_tab)
-        self.status_bar.log('%s %i×%i' % (self.ui_texts['new_resolution'], self.width, self.height))
+        self.status_bar.log('%s %i×%i' % (s.language.new_resolution, self.width, self.height))
 
     def _save_game_setup_before_resize(self):
         player_data = []
@@ -208,7 +210,7 @@ class Application(Tk):
     def confirm_discard_game(self):
         is_game_in_progress = self.is_game_in_progress.get()
         if is_game_in_progress and not askokcancel(self.ui_text_variables['new_game'].get(),
-                                                   self.ui_texts['discard_game']):
+                                                   s.language.discard_game):
             return False
         elif is_game_in_progress:
             self.is_game_in_progress.set(0)
@@ -241,17 +243,19 @@ class Application(Tk):
 
     def select_file_to_load(self):
         if self.is_game_in_progress.get():
-            if not askokcancel(self.ui_text_variables['new_game'].get(), self.ui_texts['discard_game_b']):
+            if not askokcancel(self.ui_text_variables['new_game'].get(), s.language.discard_game_b):
                 return
         game_state = self.save_handler.load_saved_state()
         if game_state is None or not game_state.check():
             return
-        self.status_bar.log(self.ui_texts['loading_game'])
+        self.status_bar.log(s.language.loading_game)
         self.load_game(game_state)
 
     def load_game(self, game_state):
         self._reset_for_game_start()
         for data in game_state.player_data:
+            empire_literal = game_state.player_data[data].empire
+            game_state.player_data[data].empire = Empires.get_by_adjective(empire_literal)
             self.players[data] = Player(self.game_board, game_state.player_data[data])
         self._prepare_new_ui()
         while self.player_order[0] != game_state.next_player:
@@ -264,7 +268,7 @@ class Application(Tk):
             self.engine.set_grogbaroLegyozve()
         self.menu.update_developer_tab()
         self.engine.set_paklik(game_state.card_decks)
-        self.status_bar.log(self.ui_texts["loading_done"])
+        self.status_bar.log(s.language.loading_done)
         self.engine.szakasz_0()
 
     def _reset_for_game_start(self):
@@ -290,7 +294,7 @@ class Application(Tk):
         self._prepare_new_ui()
         self.engine = Vezerlo(self)
         self.menu.update_developer_tab()
-        self.status_bar.log(self.ui_texts["start_game_done"])
+        self.status_bar.log(s.language.start_game_done)
         self.engine.szakasz_0()
 
     def _follow_game_progress_change(self, *args, **kwargs):
@@ -328,7 +332,7 @@ class Application(Tk):
         game_state.wind_index = self.game_board.wind_direction.index(0)
         for player in sorted(list(self.players)):
             game_state.player_data[player] = self.players[player].export()
-        for empire in Empire:
+        for empire in Empires:
             game_state.taverns[empire.value.capital] = self.engine.varostar[empire.value.capital].export_matroz()
         game_state.card_decks = [self.engine.eventdeck, self.engine.eventstack,
                                  self.engine.kincspakli, self.engine.treasurestack]

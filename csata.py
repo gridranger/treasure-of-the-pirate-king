@@ -21,9 +21,7 @@ class Utkozet(Toplevel):
         self.ellensegesZaszlo, self.ellensegesHajoTipusa, self.ellensegesHajoNeve, self.ellensegesLegenyseg, \
             self.zsakmany, self.kincskartyaHuzas = csatainfok
         if self.ellensegesHajoNeve[0:6] == "pirate":
-            self.ellensegesHajoNeve = [s.language.ship_name_pirate0, s.language.ship_name_pirate1,
-                                       s.language.ship_name_pirate3, s.language.ship_name_pirate4,
-                                       s.language.ship_name_pirate5][int(self.ellensegesHajoNeve[-1])]
+            self.ellensegesHajoNeve = s.language.get(self.ellensegesHajoNeve)
         self.gombok = ['gun', 'rifle', 'caltrop', 'grenade', 'grapeshot', 'greek_fire', 'monkey', 'sirenhorn',
                        'sirens']
         self.jatekosMatrozaiFenn = BooleanVar()
@@ -99,11 +97,11 @@ class Utkozet(Toplevel):
         else:
             self.korOsszegzo.config(text=s.language.ship_spotted)
         self.csataGombLista = {}
-        for id, txt, command in (("ship_spotted_fire", s.language.ship_spotted_fire, self.agyuzas),
-                                 ("ship_spotted_boarding", s.language.ship_spotted_boarding, self.megcsaklyazas),
-                                 ("ship_spotted_let_them_flee", s.language.ship_spotted_let_them_flee, self.futnihagy),
-                                 ("ship_spotted_fleeing", s.language.ship_spotted_fleeing, self.menekules)):
-            self.csataGombLista[id] = Button(self.textGombok, text=txt, command=command)
+        for id, command in (("ship_spotted_fire", self.agyuzas),
+                            ("ship_spotted_boarding", self.megcsaklyazas),
+                            ("ship_spotted_let_them_flee", self.futnihagy),
+                            ("ship_spotted_fleeing", self.menekules)):
+            self.csataGombLista[id] = Button(self.textGombok, text=s.language.get(id), command=command)
             self.csataGombLista[id].pack(side=LEFT, padx=3)
         if tamad:
             self.csataGombLista["ship_spotted_let_them_flee"].pack_forget()

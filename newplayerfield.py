@@ -4,7 +4,7 @@ from tkinter.ttk import Combobox
 from PIL.Image import ANTIALIAS, open as pillow_open
 from PIL.ImageTk import PhotoImage
 
-from assets import Empire, Gallery
+from assets import Empires, Gallery
 from models import PlayerState
 from settings import ApplicationSettings as s
 
@@ -31,7 +31,7 @@ class NewPlayerField(Frame):
         self._color.grid(row=1, column=1)
         empire_label = Label(self, textvariable=self._main_window.ui_text_variables['flag_label'])
         empire_label.grid(row=2, column=0, sticky=E)
-        self.empire_picker = Combobox(self, value=Empire.get_names(), takefocus=0, width=12, state='readonly')
+        self.empire_picker = Combobox(self, value=Empires.get_names(), takefocus=0, width=12, state='readonly')
         self.empire_picker.bind("<<ComboboxSelected>>")
         self.empire_picker.grid(row=2, column=1)
         for elem in [self.name, self._color, self.empire_picker]:
@@ -78,12 +78,14 @@ class NewPlayerField(Frame):
             error_message = s.language.color_missing
         elif self.empire_picker.get() == '':
             error_message = s.language.color_missing.flag_missing
-        elif self.empire_picker.get() not in Empire.get_names():
+        elif self.empire_picker.get() not in Empires.get_names():
             error_message = s.language.color_missing.flag_invalid
         return error_message
 
     def get_player_state(self):
-        return PlayerState(self.name.get(), self.picked_color.get(), self.empire_picker.get())
+        empire_by_translation = dict([(s.language.get(empire.value.adjective), empire.value) for empire in Empires])
+        empire = empire_by_translation.get(self.empire_picker.get(), None)
+        return PlayerState(self.name.get(), self.picked_color.get(), empire)
 
     def set_player_state(self, player_state):
         self.active.set(1)
@@ -92,5 +94,4 @@ class NewPlayerField(Frame):
             self.picked_color.set(player_state.color)
             self._color.config(bg=player_state.color)
         if player_state.empire:
-            empire = Empire.get_by_name(player_state.empire)
-            self.empire_picker.set(empire.adjective)
+            self.empire_picker.set(player_state.empire.adjective)

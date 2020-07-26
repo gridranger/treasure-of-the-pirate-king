@@ -1,8 +1,9 @@
 from logging import debug
 from math import sqrt
 from tkinter import IntVar
-from assets import Empire
+from assets import Empires
 from models import PlayerState
+from settings import ApplicationSettings as s
 
 
 class Player(object):
@@ -12,7 +13,7 @@ class Player(object):
         self.color = state.color
         self.empire = state.empire
         self.secondary_color = self._pick_secondary_color()
-        debug("{} joined to the {} empire.".format(self.name, self.empire.capitalize()))
+        debug("{} joined to the {} empire.".format(self.name, s.language.get(self.empire.adjective)))
         self.ship = state.ship
         self.crew = IntVar(value=state.crew)
         self.crew_limit = IntVar()
@@ -26,13 +27,12 @@ class Player(object):
         self.last_roll = state.last_roll
         self.turns_to_miss = IntVar(value=state.turns_to_miss)
         self.scores = {}
-        for empire in [empire.value for empire in Empire]:
+        for empire in [empire.value for empire in Empires]:
             self.scores[empire.adjective] = IntVar(value=state.looted_ships.get(empire, 0))
 
     @property
     def _home_port(self):
-        empire = Empire.get_by_adjective(self.empire)
-        return self._game_board.locations[empire.capital][0]
+        return self._game_board.locations[self.empire.capital][0]
 
     def _pick_secondary_color(self):
         r, g, b = [int(self.color[1:3], 16), int(self.color[3:5], 16), int(self.color[5:], 16)]
@@ -61,7 +61,7 @@ class Player(object):
         self.turns_to_miss.set(self.turns_to_miss.get() + modifier)
 
     def export(self):
-        current_state = PlayerState(self.name, self.color, self.empire)
+        current_state = PlayerState(self.name, self.color, self.empire.adjective)
         current_state.ship = self.ship
         current_state.crew = self.crew.get()
         current_state.coordinates = self.coordinates

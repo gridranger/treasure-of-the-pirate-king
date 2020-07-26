@@ -1,7 +1,7 @@
 from logging import debug
 from tkinter import ALL, E, HORIZONTAL, N, NORMAL, RAISED, S, SUNKEN, W, Frame, Label, Button
 from tkinter.ttk import LabelFrame, Separator
-from assets import Die, Empire, Gallery
+from assets import Die, Empires, Gallery
 
 
 class GameTab(Frame):
@@ -50,7 +50,7 @@ class GameTab(Frame):
         self._build_turn_order(7)
 
     def _build_heading(self, position):
-        flag = Gallery.get(f"flag_{self._current_player.empire.lower()}")
+        flag = Gallery.get(f"flag_{self._current_player.empire.adjective.lower()}")
         Label(self._heading, text=self._current_player.name).grid(row=0, column=0)
         Label(self._heading, image=flag).grid(row=1, column=0)
         self._heading.grid(row=position, column=0, pady=5)
@@ -73,15 +73,16 @@ class GameTab(Frame):
     def _build_score_field(self, position):
         self._score_field.config(text=self._main_window.ui_texts['scores'])
         score_fields = {}
-        target_empires = list(sorted([empire.value.adjective for empire in Empire]))
+        target_empires = [empire.value for empire in Empires]
         target_empires.remove(self._current_player.empire)
         for index, empire in enumerate(target_empires):
-            score_fields[empire] = Frame(self._score_field)
-            flag = Gallery.get(f"flag_{empire.lower()}")
-            Label(score_fields[empire], image=flag).grid(row=0, column=0)
-            Label(score_fields[empire], text=':').grid(row=0, column=1)
-            Label(score_fields[empire], textvariable=self._current_player.scores[empire]).grid(row=0, column=2)
-            score_fields[empire].grid(row=int((index / 2) % 2), column=index % 2, sticky=E + W)
+            score_fields[empire.adjective] = Frame(self._score_field)
+            flag = Gallery.get(f"flag_{empire.adjective.lower()}")
+            Label(score_fields[empire.adjective], image=flag).grid(row=0, column=0)
+            Label(score_fields[empire.adjective], text=':').grid(row=0, column=1)
+            Label(score_fields[empire.adjective], textvariable=self._current_player.scores[empire.adjective]).grid(
+                row=0, column=2)
+            score_fields[empire.adjective].grid(row=int((index / 2) % 2), column=index % 2, sticky=E + W)
         self._score_field.grid(row=position, column=0)
         self._score_field.columnconfigure(ALL, minsize=(self.master.width - 34) / 2)
 
