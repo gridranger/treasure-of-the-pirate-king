@@ -1,15 +1,11 @@
 from abc import ABC
 from settings import ApplicationSettings as s
-from .cardactions import CardActions as actions
-from .eventcardtypes import EventCardTypes as events
-from .treasurecardtypes import TreasureCardTypes as loots
+from .treasurecardtypes import TreasureCardTypes as treasures
 
 
 class Card(ABC):
-    def __init__(self, id, event, details=None):
+    def __init__(self, id):
         self._id = id.value
-        self._event = event
-        self._event_details = details if details else []
 
     @property
     def title(self):
@@ -19,30 +15,38 @@ class Card(ABC):
     def text(self):
         return s.language.get(f"{self._id}_text")
 
-    def action(self):
-        return self._event, self._event_details
+    @property
+    def id(self):
+        return self._id
+
+    def __repr__(self):
+        return f"{self.__class__.__name__} object at {id(self)}"
 
 
 class EventCard(Card):
     pass
 
 
-class LootCard(Card):
+class TreasureCard(Card):
     pass
 
 
-class Leviathan(EventCard):
-    def __init__(self):
-        Card.__init__(self, events.leviathan, actions.ADD_PLAYER_STATUS)
-        self._event_details = [self._id]
+class LootCard(TreasureCard):
+    _next_loot_id = 0
 
-
-class TreasureCard(LootCard):
     def __init__(self, value):
-        Card.__init__(self, loots.treasure, actions.UPDATE_GOLD, [value])
+        Card.__init__(self, treasures.treasure)
         self.value = value
+        self._loot_id, LootCard._next_loot_id = LootCard._next_loot_id, LootCard._next_loot_id + 1
 
     @property
     def text(self):
         text = s.language.get(f"{self._id}_text")
         return text.format(self.value)
+
+    @property
+    def id(self):
+        return f"{self._id}_{self._loot_id}"
+
+    def __repr__(self):
+        return f"{self.__class__.__name__} object, value {self.value}, id {self.id} at {id(self)}"
