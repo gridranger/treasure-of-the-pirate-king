@@ -1,6 +1,7 @@
 from .card import EventCard, LootCard, TreasureCard
 from .eventcardtypes import EventCardTypes
 from .treasurecardtypes import TreasureCardTypes
+from ..encounter import card_encounters
 
 
 class DeckFactory:
@@ -10,6 +11,8 @@ class DeckFactory:
         event_deck = []
         for event_type in EventCardTypes:
             event_deck.append(EventCard(event_type))
+        for encounter in card_encounters:
+            event_deck.append(encounter.ship_name)
         return event_deck
 
     @classmethod
